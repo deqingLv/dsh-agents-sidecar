@@ -22,10 +22,10 @@ import { Button, Pill, StateDot, type StateDotState } from '@deepseek-ai/dsh-cli
 import { useEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import {
-  agentDisplayName,
-  agentFilterOptions,
+  agentSegments,
   buildBoardViewModel,
   clusterSessions,
+  filterSessions,
   formatTemplate,
   normalizeAgentFilter,
   partitionIdleCards,
@@ -384,7 +384,12 @@ export function Board(props: BoardProps): ReactElement {
     ? TIME_WINDOW_OPTIONS
     : [...TIME_WINDOW_OPTIONS, props.filters.timeWindowHours].sort((a, b) => a - b)
   const selectedAgent = normalizeAgentFilter(props.filters.agentFilter)
-  const availableAgents = agentFilterOptions(props.sessions, props.filters.agentFilter)
+  // Segmented board: tab counts answer "what would this tab show?" — every
+  // other filter applies, only the agent condition is lifted.
+  const agentTabFilters: BoardFilterState = { ...props.filters }
+  delete agentTabFilters.agentFilter
+  const agentTabSessions = filterSessions(props.sessions, agentTabFilters, nowMs)
+  const agentTabs = agentSegments(agentTabSessions, props.filters.agentFilter)
   const [showClusters, setShowClusters] = useState(false)
   const clusters = clusterSessions(vm.groups.flatMap((group) => group.cards))
   const fallbackFocusRef = useRef<HTMLSpanElement>(null)
@@ -532,25 +537,6 @@ export function Board(props: BoardProps): ReactElement {
           {BOARD_STRINGS.topbar.cluster}
         </Button>
         <label className={styles['control']}>
-          {t('board.topbar.agentFilter')}
-          <select
-            className={styles['select']}
-            aria-label={t('board.topbar.agentFilterAria')}
-            value={selectedAgent ?? ''}
-            onChange={(ev) => {
-              props.onFiltersChange(withAgentFilter(props.filters, ev.target.value))
-            }}
-            data-testid="agents-sidecar-agent-filter"
-          >
-            <option value="">{t('board.topbar.allAgents')}</option>
-            {availableAgents.map((agent) => (
-              <option key={agent} value={agent}>
-                {agentDisplayName(agent)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles['control']}>
           {BOARD_STRINGS.topbar.timeWindow}
           <select
             className={styles['select']}
@@ -603,6 +589,42 @@ export function Board(props: BoardProps): ReactElement {
           {refreshing ? BOARD_STRINGS.topbar.refreshing : BOARD_STRINGS.topbar.refresh}
         </Button>
       </header>
+
+      {props.hasSnapshot && !props.initialLoadFailed && (
+        <nav
+          className={styles['agentTabs']}
+          aria-label={t('board.topbar.agentTabsAria')}
+          data-testid="agents-sidecar-agent-tabs"
+        >
+          <Pill
+            type="button"
+            active={selectedAgent === null}
+            aria-pressed={selectedAgent === null}
+            onClick={() => { props.onFiltersChange(withAgentFilter(props.filters, '')) }}
+            data-testid="agents-sidecar-agent-tab-all"
+          >
+            {formatTemplate(t('board.topbar.agentTabAll'), { n: agentTabSessions.length })}
+          </Pill>
+          {agentTabs.map((segment) => (
+            <Pill
+              key={segment.agent}
+              type="button"
+              active={selectedAgent === segment.agent}
+              aria-pressed={selectedAgent === segment.agent}
+              onClick={() => {
+                props.onFiltersChange(withAgentFilter(props.filters, segment.agent))
+              }}
+              data-testid="agents-sidecar-agent-tab"
+              data-agent={segment.agent}
+            >
+              {formatTemplate(t('board.topbar.agentTab'), {
+                label: segment.label,
+                n: segment.count,
+              })}
+            </Pill>
+          ))}
+        </nav>
+      )}
 
       {props.hasSnapshot && !props.initialLoadFailed && refreshFailed && (
         <div className={styles['banner']} data-tone="warn" role="status">

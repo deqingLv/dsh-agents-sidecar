@@ -74,6 +74,7 @@ export const DETAIL_STRINGS = createLocaleView({
     hiddenNotice: 'detail.timeline.hiddenNotice',
     showAll: 'detail.timeline.showAll',
     chunkRun: 'detail.timeline.chunkRun',
+    hiddenForDsh: 'detail.timeline.hiddenForDsh',
   },
   states: {
     loadingTitle: 'detail.states.loadingTitle',

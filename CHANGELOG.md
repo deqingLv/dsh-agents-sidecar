@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The session board is segmented by agent: a tab strip lists every agent
+  with sessions (with live counts, adapter-stable order) in place of the old
+  agent dropdown, and a selected tab narrows the board to that agent while
+  every other filter keeps applying.
+- The session detail view hides the merged event stream for dsh sessions:
+  their logs are mostly internal machinery and the narrow pane cannot show
+  them usefully, so only the header facts render.
+
 ### Changed
 
 - The DSH plugin now builds against `@deepseek-ai/dsh-agent` / `dsh-session`

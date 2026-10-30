@@ -185,6 +185,44 @@ describe('header facts render only what the adapter reported', () => {
   })
 })
 
+describe('dsh sessions hide the event stream', () => {
+  const DSH_HEADER: SessionDetailHeaderVM = { ...HEADER, agent: 'dsh' }
+
+  it('renders the compact note instead of the timeline body', () => {
+    const html = renderDetail(DSH_HEADER, timeline(['user', 'assistant', 'tool']))
+
+    expect(html).toContain('agents-sidecar-detail-stream-hidden')
+    expect(html).toContain('dsh 会话不展示会话流')
+    expect(html).not.toContain('agents-sidecar-detail-filter')
+    expect(html).not.toContain('streaming chunks')
+    // The header keeps answering the glance questions.
+    expect(html).toContain('dsh')
+    expect(html).toContain('refactor the scanner')
+  })
+
+  it('matches the dsh token case-insensitively', () => {
+    const html = renderDetail({ ...HEADER, agent: ' DSH ' }, timeline(['user']))
+
+    expect(html).toContain('agents-sidecar-detail-stream-hidden')
+  })
+
+  it('leaves every other agent on the full timeline', () => {
+    const html = renderDetail({ ...HEADER, agent: 'claude' }, timeline(['user']))
+
+    expect(html).toContain('agents-sidecar-detail-filter')
+    expect(html).not.toContain('agents-sidecar-detail-stream-hidden')
+  })
+
+  it('does not render the boundary wrapper either', () => {
+    const replaced = (body: ReactElement): ReactElement =>
+      createElement('div', { 'data-testid': 'agents-sidecar-timeline-degraded' }, body)
+    const html = renderDetail(DSH_HEADER, timeline([]), { timelineBoundary: replaced })
+
+    expect(html).not.toContain('agents-sidecar-timeline-degraded')
+    expect(html).toContain('agents-sidecar-detail-stream-hidden')
+  })
+})
+
 describe('session store metadata projection', () => {
   const row = {
     agent: 'claude',

@@ -84,7 +84,10 @@ jobs:
       matrix:
         os: ${{ github.event_name == 'pull_request' && fromJSON('["ubuntu-latest","macos-latest"]') || (github.event_name == 'push' && fromJSON('["macos-latest"]') || fromJSON('["ubuntu-latest","macos-latest"]')) }}
         python-version: ["3.9", "3.13"]
-    runs-on: ${{ matrix.os }}
+    # The job name (and therefore the required status check) stays keyed to
+    # matrix.os, but Ubuntu 26.04 (ubuntu-latest) has no setup-python build for
+    # 3.9: that one cell runs on the 24.04 image instead.
+    runs-on: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' && 'ubuntu-24.04' || matrix.os }}
     timeout-minutes: 20
 
     steps:

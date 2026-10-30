@@ -96,6 +96,21 @@
   border: 1px solid var(--agsc-border);
 }
 
+/* Segmented board: one tab per agent, All first. Scrolls horizontally on
+   narrow panes instead of wrapping into a second toolbar row. */
+.agentTabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.agentTabs > * {
+  flex: none;
+}
+
 .banner[data-tone='warn'] {
   color: var(--agsc-warn);
   background: var(--dsw-alias-state-warn-tertiary);
