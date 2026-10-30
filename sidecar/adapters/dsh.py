@@ -54,6 +54,26 @@ _DISCOVERY_CANDIDATE_TIMEOUT_S = 3.5
 _DISCOVERY_TIMEOUT_S = 5.0
 _DISCOVERY_HEADER_CACHE_ENTRIES = 512
 _SESSION_FORMAT_VERSION = 0
+# Session-log format generations this adapter understands on disk. Version 4
+# shipped with dsh 0.2.x; older installs still write version 0 logs.
+_SESSION_FORMAT_VERSIONS = (0, 4)
+# DSH names its JSONL artifact after the session-log generation: version zero
+# keeps the original suffix-only name and every later generation carries a
+# lowercase numeric "vN" component (dsh-session-persistence-jsonl
+# logFileName). The newest generation wins when both exist.
+_TRANSCRIPT_BASENAME_LEGACY = "session.jsonl.zstd"
+_TRANSCRIPT_BASENAME_V4 = "session.v4.jsonl.zstd"
+# dsh 0.2.x replaced the single projection-cache document with a per-record
+# layout: one bounded JSON document per session under
+# storages/session_projcache/sessions/<session id>.json, wrapped as
+# {"version": <domain version>, "record": {...}} (dsh-session-projection-cache
+# "per-record" layout). Invalid records are quarantined as
+# "<key>.json.bak.<stamp>", which the suffix filter skips.
+_PROJCACHE_SHARD_NAME = "session_projcache"
+_PROJCACHE_SHARDS_DIRECTORY = "sessions"
+_PROJCACHE_SHARD_SUFFIX = ".json"
+_PROJCACHE_SHARD_BYTES = 1024 * 1024
+_PROJCACHE_SHARD_TOTAL_BYTES = 32 * 1024 * 1024
 
 
 def _metadata_string(mapping: Mapping[str, Any], *keys: str) -> str:
@@ -125,9 +145,32 @@ def _project_key(cwd: str) -> str:
     return "--{}--".format(readable[:251])
 
 
-def _transcript_path(dsh_home: Path, cwd: str, session_id: str) -> Path:
+def _transcript_path(
+    dsh_home: Path,
+    cwd: str,
+    session_id: str,
+    format_version: Optional[int] = None,
+) -> Path:
+    """Resolve one session transcript across format generations.
+
+    A known ``format_version`` maps straight to that generation's filename;
+    without one, an existing file wins over the legacy default so a fresh
+    v4 transcript is still found next to a stale projection-cache identity.
+    """
+
     project = _project_key(cwd) if cwd else "_no-cwd"
-    return dsh_home / "sessions" / project / _encode_segment(session_id) / "session.jsonl.zstd"
+    directory = dsh_home / "sessions" / project / _encode_segment(session_id)
+    if format_version == 4:
+        return directory / _TRANSCRIPT_BASENAME_V4
+    if format_version is not None:
+        return directory / _TRANSCRIPT_BASENAME_LEGACY
+    for basename in (
+        _TRANSCRIPT_BASENAME_V4,
+        _TRANSCRIPT_BASENAME_LEGACY,
+    ):
+        if (directory / basename).exists():
+            return directory / basename
+    return directory / _TRANSCRIPT_BASENAME_LEGACY
 
 
 def _configured_dsh_home(home: Path) -> Optional[Path]:
@@ -267,6 +310,7 @@ class _DurableCandidate:
     directory_name: str
     session_id: str
     transcript: Path
+    transcript_name: str
     identity: _FileIdentity
 
 
@@ -601,8 +645,13 @@ def _scan_directory_names(
     descriptor: int,
     budget: int,
     deadline: float,
+    regular: bool = False,
 ) -> Tuple[List[str], int, bool]:
-    """Collect real child-directory names and prove the entry scan completed."""
+    """Collect real child names and prove the entry scan completed.
+
+    Child directories by default; ``regular`` collects regular files instead,
+    for the per-record projection-cache shards.
+    """
 
     names: List[str] = []
     consumed = 0
@@ -613,7 +662,11 @@ def _scan_directory_names(
                     return names, consumed, False
                 consumed += 1
                 try:
-                    if entry.is_dir(follow_symlinks=False):
+                    if regular:
+                        keep = entry.is_file(follow_symlinks=False)
+                    else:
+                        keep = entry.is_dir(follow_symlinks=False)
+                    if keep:
                         names.append(entry.name)
                 except OSError:
                     continue
@@ -665,13 +718,24 @@ def _enumerate_durable_candidates(
                 if directory_fd < 0:
                     continue
                 try:
-                    transcript_fd, details = _open_regular_at(
-                        directory_fd,
-                        "session.jsonl.zstd",
-                    )
-                    if transcript_fd < 0 or details is None:
+                    transcript_name: Optional[str] = None
+                    details: Optional[os.stat_result] = None
+                    for basename in (
+                        _TRANSCRIPT_BASENAME_V4,
+                        _TRANSCRIPT_BASENAME_LEGACY,
+                    ):
+                        transcript_fd, opened = _open_regular_at(
+                            directory_fd,
+                            basename,
+                        )
+                        if transcript_fd < 0 or opened is None:
+                            continue
+                        os.close(transcript_fd)
+                        transcript_name = basename
+                        details = opened
+                        break
+                    if transcript_name is None or details is None:
                         continue
-                    os.close(transcript_fd)
                 finally:
                     os.close(directory_fd)
                 if session_id in seen_ids:
@@ -686,7 +750,8 @@ def _enumerate_durable_candidates(
                         sessions_path
                         / project_name
                         / directory_name
-                        / "session.jsonl.zstd",
+                        / transcript_name,
+                        transcript_name,
                         _file_identity(details),
                     )
                 )
@@ -709,7 +774,7 @@ def _open_candidate(
         try:
             descriptor, details = _open_regular_at(
                 directory_fd,
-                "session.jsonl.zstd",
+                candidate.transcript_name,
             )
         finally:
             os.close(directory_fd)
@@ -870,6 +935,90 @@ def _read_durable_header(
         return _HeaderDecode(_DecodeOutcome.DETERMINISTIC_INVALID)
 
 
+def _projection_records(dsh_home: Path) -> Dict[str, Tuple[Mapping[str, Any], float, str]]:
+    """Merge every projection-cache layout DSH has shipped.
+
+    Returns session id -> (record, record mtime, record path). The per-record
+    shard layout wins over the retired single-file cache because dsh migrates
+    forward; a missing or malformed store reads as empty, never as an error,
+    and the durable session store backfills whatever the cache missed.
+    """
+
+    records: Dict[str, Tuple[Mapping[str, Any], float, str]] = {}
+    index_path = dsh_home / "storages" / "session_projcache.json"
+    index = read_json_object(index_path, _INDEX_BYTES)
+    tables = as_mapping(index.get("tables"))
+    entries = as_mapping(as_mapping(tables.get("sessions")))
+    try:
+        index_mtime = index_path.stat().st_mtime
+    except OSError:
+        index_mtime = 0.0
+    for raw_session_id, raw_entry in entries.items():
+        if not isinstance(raw_session_id, str) or not raw_session_id:
+            continue
+        records[raw_session_id] = (as_mapping(raw_entry), index_mtime, str(index_path))
+
+    shards_path = (
+        dsh_home
+        / "storages"
+        / _PROJCACHE_SHARD_NAME
+        / _PROJCACHE_SHARDS_DIRECTORY
+    )
+    shards_fd = _open_directory(shards_path)
+    if shards_fd < 0:
+        return records
+    try:
+        deadline = time.monotonic() + _DISCOVERY_TIMEOUT_S
+        names, _, _ = _scan_directory_names(
+            shards_fd,
+            _DISCOVERY_MAX_ENTRIES,
+            deadline,
+            regular=True,
+        )
+        total_bytes = 0
+        for name in names:
+            if time.monotonic() >= deadline:
+                break
+            if not name.endswith(_PROJCACHE_SHARD_SUFFIX):
+                # Quarantined "backup-and-skip" siblings keep their .json
+                # prefix inside a longer .bak.<stamp> suffix and fall out
+                # here.
+                continue
+            session_id = _decode_segment(name[: -len(_PROJCACHE_SHARD_SUFFIX)])
+            if not session_id:
+                continue
+            record_path = shards_path / name
+            try:
+                details = record_path.stat()
+            except OSError:
+                continue
+            size = int(details.st_size)
+            if (
+                size <= 0
+                or size > _PROJCACHE_SHARD_BYTES
+                or total_bytes + size > _PROJCACHE_SHARD_TOTAL_BYTES
+            ):
+                continue
+            document = read_json_object(record_path, _PROJCACHE_SHARD_BYTES)
+            record = as_mapping(document.get("record"))
+            if not record:
+                # The per-record wrapper is {"version", "record"}; a document
+                # without a record is foreign or stale and reads as absent.
+                # The version stamp itself stays informational so a future
+                # domain bump cannot hide sessions whose identity/rows shape
+                # is still readable.
+                continue
+            total_bytes += size
+            records[session_id] = (
+                record,
+                float(details.st_mtime),
+                str(record_path),
+            )
+    finally:
+        os.close(shards_fd)
+    return records
+
+
 def _durable_session(
     candidate: _DurableCandidate,
     header: Mapping[str, Any],
@@ -887,7 +1036,7 @@ def _durable_session(
         or not session_id
         or not isinstance(version, int)
         or isinstance(version, bool)
-        or version != _SESSION_FORMAT_VERSION
+        or version not in _SESSION_FORMAT_VERSIONS
         or not isinstance(created_at, int)
         or isinstance(created_at, bool)
         or created_at < 0
@@ -900,6 +1049,14 @@ def _durable_session(
         or "seedLength" in header
     ):
         return None
+    if version == 4:
+        # Version 4 requires `isSeeded` on every header and marks fork-seeded
+        # sessions true; those replay an inherited prefix that belongs to the
+        # parent session, so only explicitly unseeded top-level sessions
+        # surface here.
+        is_seeded = header.get("isSeeded")
+        if not isinstance(is_seeded, bool) or is_seeded:
+            return None
 
     raw_cwd = header.get("cwd")
     if (
@@ -1295,22 +1452,20 @@ class DSHAdapter(Adapter):
         dsh_home = _configured_dsh_home(home)
         if dsh_home is None:
             return []
-        index_path = dsh_home / "storages" / "session_projcache.json"
-        index = read_json_object(index_path, _INDEX_BYTES)
-        tables = as_mapping(index.get("tables"))
-        entries = as_mapping(as_mapping(tables.get("sessions")))
-        try:
-            index_mtime = index_path.stat().st_mtime
-        except OSError:
-            index_mtime = 0.0
+        records = _projection_records(dsh_home)
 
         sessions: List[Session] = []
-        for raw_session_id, raw_entry in entries.items():
-            if not isinstance(raw_session_id, str) or not raw_session_id:
-                continue
+        for raw_session_id, (raw_entry, record_mtime, record_path) in records.items():
             entry = as_mapping(raw_entry)
             identity = as_mapping(entry.get("identity"))
             cwd = str(identity.get("cwd") or "")
+            format_version = identity.get("formatVersion")
+            if (
+                isinstance(format_version, bool)
+                or not isinstance(format_version, int)
+                or format_version < 0
+            ):
+                format_version = None
             created_at = identity.get("createdAt")
             created_epoch = (
                 float(created_at) / 1000.0
@@ -1331,16 +1486,21 @@ class DSHAdapter(Adapter):
             self._seen_seq[raw_session_id] = seq
 
             try:
-                transcript = _transcript_path(dsh_home, cwd, raw_session_id)
+                transcript = _transcript_path(
+                    dsh_home,
+                    cwd,
+                    raw_session_id,
+                    format_version,
+                )
             except ValueError:
                 continue
             try:
                 transcript_mtime = transcript.stat().st_mtime
             except OSError:
                 transcript_mtime = 0.0
-            updated_at = transcript_mtime or created_epoch or index_mtime
+            updated_at = transcript_mtime or created_epoch or record_mtime
             if seq_grew:
-                updated_at = max(updated_at, index_mtime)
+                updated_at = max(updated_at, record_mtime)
 
             title_row = as_mapping(rows.get("title"))
             title_value = title_row.get("val")
@@ -1354,7 +1514,7 @@ class DSHAdapter(Adapter):
             )
             extra: Dict[str, Any] = {
                 "source": "session_projcache",
-                "index": str(index_path),
+                "index": record_path,
                 "created_at": created_at,
                 **created_at_extra(created_at),
                 "seq": seq,

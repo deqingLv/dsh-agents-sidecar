@@ -26,6 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The sidecar DSH adapter now reads session logs written by dsh `0.2.x`
+  (session-log format v4), which the agents board previously could not see at
+  all. Durable transcripts named `session.v4.jsonl.zstd` are discovered,
+  replayed, and preferred over a same-session `session.jsonl.zstd` when both
+  generations exist; v4 session headers are validated (the new required
+  `isSeeded` flag must be present and false — seeded fork sessions are excluded
+  like other delegated/inherited sessions), and the projection cache is read
+  from both layouts: the legacy single `storages/session_projcache.json` file
+  and the current per-record `storages/session_projcache/sessions/<session
+  id>.json` shards. Per-record shards win id collisions, their mtime drives
+  the `updated_at` fallback and `seq_grew` detection, oversized shards are
+  skipped, and quarantined `.json.bak.<stamp>` files are ignored.
 - The `/sidecar` client contribution now publishes `description` as the thunk
   the slash-menu runtime calls (`contribution.description()`), instead of a
   getter returning a string. Opening `/` no longer logs
