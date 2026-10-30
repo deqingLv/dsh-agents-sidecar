@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The `/sidecar` client contribution now publishes `description` as the thunk
+  the slash-menu runtime calls (`contribution.description()`), instead of a
+  getter returning a string. Opening `/` no longer logs
+  `TypeError: contribution.description is not a function`, and the command
+  source no longer collapses — which had hidden every native and plugin
+  slash command at once.
+
 ## [0.12.0] - 2026-10-30
 
 ### Changed

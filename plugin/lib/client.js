@@ -2662,17 +2662,17 @@ window.__ModuleLoader__.load({
 		* fresh snapshot per popup open; an abort (popup closed) propagates so the
 		* shell can drop the stale request, while every other failure degrades to
 		* the unreachable-guidance overview instead of throwing into the shell.
-		* `description` is a live getter so a locale switch after registration
-		* still reaches the slash menu's next candidate pass.
+		* `description` is a THUNK: the runtime calls `description()` on every
+		* candidate pass, so it still follows a locale switch after registration —
+		* and a plain string there throws `contribution.description is not a
+		* function`, collapsing the entire slash-menu source.
 		*/
 		function createSidecarCommandContribution(deps = {}) {
 			const doFetch = deps.fetchState ?? fetchState;
 			const now = deps.now ?? Date.now;
 			return {
 				name: SIDECAR_COMMAND_NAME,
-				get description() {
-					return tCommand("command.description");
-				},
+				description: () => tCommand("command.description"),
 				available: () => true,
 				ui: {
 					kind: "popupSelect",

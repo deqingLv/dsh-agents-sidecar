@@ -383,10 +383,15 @@ export interface SidecarCommandUiSpec {
   onSelect(option: SidecarSelectOption, session: unknown): void | Promise<void>
 }
 
-/** Structural mirror of ui-commands `CommandContribution`. */
+/**
+ * Structural mirror of ui-commands `CommandContribution`. Field shapes matter:
+ * the runtime resolves rows as `contribution.description()` (and
+ * `contribution.label()` when present) while `icon` is a plain value —
+ * harness `packages/client/ui-commands/src/client/service.ts#candidates`.
+ */
 export interface SidecarCommandContribution {
   readonly name: string
-  readonly description: string
+  description(): string
   available(session: unknown): boolean
   readonly ui: SidecarCommandUiSpec
 }
@@ -413,8 +418,10 @@ export interface SidecarCommandDeps {
  * fresh snapshot per popup open; an abort (popup closed) propagates so the
  * shell can drop the stale request, while every other failure degrades to
  * the unreachable-guidance overview instead of throwing into the shell.
- * `description` is a live getter so a locale switch after registration
- * still reaches the slash menu's next candidate pass.
+ * `description` is a THUNK: the runtime calls `description()` on every
+ * candidate pass, so it still follows a locale switch after registration —
+ * and a plain string there throws `contribution.description is not a
+ * function`, collapsing the entire slash-menu source.
  */
 export function createSidecarCommandContribution(
   deps: SidecarCommandDeps = {},
@@ -423,9 +430,7 @@ export function createSidecarCommandContribution(
   const now = deps.now ?? Date.now
   return {
     name: SIDECAR_COMMAND_NAME,
-    get description(): string {
-      return tCommand('command.description')
-    },
+    description: () => tCommand('command.description'),
     // The glance works in every session state; nothing to gate on.
     available: () => true,
     ui: {

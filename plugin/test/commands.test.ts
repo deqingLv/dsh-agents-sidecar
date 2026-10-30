@@ -504,13 +504,27 @@ describe('createSidecarCommandContribution', () => {
     expect(contribution.name).toBe(SIDECAR_COMMAND_NAME)
     expect(contribution.ui.kind).toBe('popupSelect')
     expect(contribution.available(undefined)).toBe(true)
-    expect(contribution.description).toBe(commandZh['command.description'])
+    expect(contribution.description()).toBe(commandZh['command.description'])
   })
 
-  it('description is a live getter across locale switches', () => {
+  it('publishes description as the thunk the slash menu calls (#81)', () => {
+    const contribution = createSidecarCommandContribution()
+    // The host builds each row as
+    // `{ name, description: contribution.description() }`, so a string value
+    // throws `contribution.description is not a function` and takes every
+    // command down with the failed source.
+    expect(typeof contribution.description).toBe('function')
+    const row = {
+      name: contribution.name,
+      description: contribution.description(),
+    }
+    expect(row.description).toBe(commandZh['command.description'])
+  })
+
+  it('description is a live thunk across locale switches', () => {
     const contribution = createSidecarCommandContribution()
     setLocale('en')
-    expect(contribution.description).toBe(commandEn['command.description'])
+    expect(contribution.description()).toBe(commandEn['command.description'])
   })
 
   it('options() fetches a snapshot (signal forwarded) and renders it', async () => {
