@@ -11,9 +11,9 @@ const CONFIG_PATH = resolve(PLUGIN_ROOT, 'tsdown.client.ts')
 const CLIENT_PATH = resolve(PLUGIN_ROOT, 'lib/client.js')
 const SOURCEMAP_PATH = resolve(PLUGIN_ROOT, 'lib/client.js.map')
 const CLIENT_SOURCE_PATH = resolve(PLUGIN_ROOT, 'src/client/index.ts')
-const STYLE_MANIFEST_KEY = '@shendeguize/dsh-agent-sidecar/style-manifest'
-const STYLE_OWNER_KEY = '@shendeguize/dsh-agent-sidecar/style-owner'
-const STYLE_GENERATION_KEY = '@shendeguize/dsh-agent-sidecar/style-generation'
+const STYLE_MANIFEST_KEY = 'dsh-agents-sidecar/style-manifest'
+const STYLE_OWNER_KEY = 'dsh-agents-sidecar/style-owner'
+const STYLE_GENERATION_KEY = 'dsh-agents-sidecar/style-generation'
 
 const EXPECTED_CSS_MODULES = [
   'src/client/theme/agsc.module.css',
@@ -355,10 +355,10 @@ describe('client CSS build identity', () => {
   it('resets one current-bundle CSS Map before registering every CSS module', () => {
     const client = readFileSync(CLIENT_PATH, 'utf8')
     const resets = [...client.matchAll(
-      /globalThis\[Symbol\.for\("@shendeguize\/dsh-agent-sidecar\/style-manifest"\)\] = (?:\/\* @__PURE__ \*\/ )?new Map\(\);/g,
+      /globalThis\[Symbol\.for\("dsh-agents-sidecar\/style-manifest"\)\] = (?:\/\* @__PURE__ \*\/ )?new Map\(\);/g,
     )]
     const generations = [...client.matchAll(
-      /globalThis\[Symbol\.for\("@shendeguize\/dsh-agent-sidecar\/style-generation"\)\] = \{\};/g,
+      /globalThis\[Symbol\.for\("dsh-agents-sidecar\/style-generation"\)\] = \{\};/g,
     )]
     const resetAt = resets[0]?.index ?? -1
     const firstCssAt = client.indexOf('//#region \\0dsh-css:')
@@ -374,7 +374,7 @@ describe('client CSS build identity', () => {
       const end = client.indexOf('//#endregion', start)
       const region = client.slice(start, end)
       expect(region, cssPath).toMatch(
-        /globalThis\[Symbol\.for\("@shendeguize\/dsh-agent-sidecar\/style-manifest"\)\]\.set\(tagId(?:\$\d+)?, css(?:\$\d+)?\);/,
+        /globalThis\[Symbol\.for\("dsh-agents-sidecar\/style-manifest"\)\]\.set\(tagId(?:\$\d+)?, css(?:\$\d+)?\);/,
       )
     }
   })

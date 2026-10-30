@@ -3,7 +3,7 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-sidecar"
+name = "agents-sidecar"
 dynamic = ["version"]
 description = "A local-first CLI for observing AI-agent sessions"
 readme = "README.md"
@@ -31,7 +31,7 @@ Issues = "https://github.com/shendeguize/AgentSideCar/issues"
 Changelog = "https://github.com/shendeguize/AgentSideCar/blob/main/CHANGELOG.md"
 
 [project.scripts]
-agent-sidecar = "sidecar.cli:main"
+agents-sidecar = "sidecar.cli:main"
 
 [tool.setuptools.dynamic]
 version = {attr = "sidecar.__version__"}

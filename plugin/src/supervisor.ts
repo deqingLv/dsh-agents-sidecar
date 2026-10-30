@@ -5,7 +5,7 @@
  * Pure dependency-injected module: imports nothing from cordis/dsh. The
  * plugin entry (index.ts) wires the real seams — Unix-socket `ping`,
  * `ctx.subprocess.spawn` running `<sidecarCommand> daemon run`, read-only
- * LaunchAgent detection via `agent-sidecar service status` — and registers
+ * LaunchAgent detection via `agents-sidecar service status` — and registers
  * `stop()` inside a `ctx.effect` disposer.
  *
  * Ownership contract: the supervisor only ever terminates processes it

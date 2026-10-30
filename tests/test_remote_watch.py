@@ -1206,7 +1206,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             result = self._run(root, source)
-            files = list(root.glob("agent-sidecar-watch-*.pyz"))
+            files = list(root.glob("agents-sidecar-watch-*.pyz"))
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(
@@ -1356,7 +1356,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
             self.assertTrue(remaining[:-1])
             self.assertLessEqual(len(remaining[:-1]), 2)
             self.assertTrue(all(frame == PING_FRAME for frame in remaining[:-1]))
-            self.assertEqual([], list(root.glob("agent-sidecar-watch-*.pyz")))
+            self.assertEqual([], list(root.glob("agents-sidecar-watch-*.pyz")))
 
     @unittest.skipUnless(os.name == "posix", "pipe cleanup requires POSIX")
     def test_real_silent_pipe_disconnect_kills_child_and_unlinks_temp(self):
@@ -1412,7 +1412,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
             self.assertEqual(0, returncode, stderr)
             self.assertLessEqual(elapsed, 2.5)
             self.assertFalse(process_exists(child_pid))
-            self.assertEqual([], list(root.glob("agent-sidecar-watch-*.pyz")))
+            self.assertEqual([], list(root.glob("agents-sidecar-watch-*.pyz")))
 
     @unittest.skipUnless(os.name == "posix", "signals require POSIX")
     def test_real_cancel_before_ready_kills_child_and_unlinks_temp(self):
@@ -1443,7 +1443,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
                 process.stdin.write(self._zipapp(source))
                 process.stdin.close()
                 child_pid = read_pid_when_ready(pid_path, time.monotonic() + 2)
-                self.assertTrue(list(root.glob("agent-sidecar-watch-*.pyz")))
+                self.assertTrue(list(root.glob("agents-sidecar-watch-*.pyz")))
 
                 os.kill(process.pid, signal.SIGTERM)
                 returncode = process.wait(timeout=3)
@@ -1467,7 +1467,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
             self.assertEqual(0, returncode, stderr)
             self.assertEqual(b"", stdout)
             self.assertFalse(process_exists(child_pid))
-            self.assertEqual([], list(root.glob("agent-sidecar-watch-*.pyz")))
+            self.assertEqual([], list(root.glob("agents-sidecar-watch-*.pyz")))
 
     @unittest.skipUnless(os.name == "posix", "signals require POSIX")
     def test_real_bootstrap_signal_kills_child_and_unlinks_temp(self):
@@ -1522,7 +1522,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
             with self.assertRaises(ProcessLookupError):
                 os.kill(child_pid, 0)
             self.assertEqual(b"", stdout)
-            self.assertEqual([], list(root.glob("agent-sidecar-watch-*.pyz")))
+            self.assertEqual([], list(root.glob("agents-sidecar-watch-*.pyz")))
 
     def test_real_zipapp_clean_home_fails_without_false_ready(self):
         artifact = remote.build_zipapp_bytes()
@@ -1564,7 +1564,7 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
                     result.stdout.splitlines(),
                     run,
                 )
-            self.assertEqual([], list(root.glob("agent-sidecar-watch-*.pyz")))
+            self.assertEqual([], list(root.glob("agents-sidecar-watch-*.pyz")))
 
 
 if __name__ == "__main__":

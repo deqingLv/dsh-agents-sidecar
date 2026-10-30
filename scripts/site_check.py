@@ -411,11 +411,11 @@ def _check_demo_boundary(
         script_sources = directives.get("script-src", ())
         style_sources = directives.get("style-src", ())
         checks.require(
-            script_sources == ("'nonce-agent-sidecar-static-demo'",),
+            script_sources == ("'nonce-agents-sidecar-static-demo'",),
             "demo CSP script-src must contain only the build-time nonce",
         )
         checks.require(
-            style_sources == ("'nonce-agent-sidecar-static-demo'",),
+            style_sources == ("'nonce-agents-sidecar-static-demo'",),
             "demo CSP style-src must contain only the build-time nonce",
         )
         checks.require(
@@ -426,14 +426,14 @@ def _check_demo_boundary(
     checks.require(
         bool(parser.scripts)
         and all(
-            script.get("nonce") == "agent-sidecar-static-demo"
+            script.get("nonce") == "agents-sidecar-static-demo"
             for script in parser.scripts
         ),
         "every demo script must carry the expected nonce",
     )
     checks.require(
         all(
-            style.get("nonce") == "agent-sidecar-static-demo"
+            style.get("nonce") == "agents-sidecar-static-demo"
             for style in parser.styles
         ),
         "every demo style must carry the expected nonce",
@@ -621,7 +621,7 @@ def _extract_cli_invocations(
     for parser in parsers:
         for line in "\n".join(parser.text).splitlines():
             candidate = line.strip()
-            if not candidate.startswith("agent-sidecar "):
+            if not candidate.startswith("agents-sidecar "):
                 continue
             try:
                 tokens = tuple(shlex.split(candidate))
@@ -672,7 +672,7 @@ def _check_cli_commands(
         if command is None:
             checks.require(
                 False,
-                "site documents an unknown CLI command: agent-sidecar {}".format(
+                "site documents an unknown CLI command: agents-sidecar {}".format(
                     " ".join(invocation)
                 ),
             )
@@ -681,7 +681,7 @@ def _check_cli_commands(
         if command not in helps:
             helps[command] = help_runner(command)
         return_code, stdout, stderr = helps[command]
-        command_text = "agent-sidecar " + " ".join(command)
+        command_text = "agents-sidecar " + " ".join(command)
         checks.require(
             return_code == 0 and "usage:" in stdout.casefold(),
             "{} is not backed by CLI help: {}".format(

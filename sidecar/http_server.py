@@ -538,7 +538,7 @@ class SidecarHttpServer:
                 self._running = True
                 thread = threading.Thread(
                     target=self._accept_loop,
-                    name="agent-sidecar-http-accept",
+                    name="agents-sidecar-http-accept",
                     daemon=True,
                 )
                 self._accept_thread = thread
@@ -695,7 +695,7 @@ class SidecarHttpServer:
             thread = threading.Thread(
                 target=self._handle_client,
                 args=(connection,),
-                name="agent-sidecar-http-client",
+                name="agents-sidecar-http-client",
                 daemon=True,
             )
             with self._clients_lock:
@@ -1017,7 +1017,7 @@ class SidecarHttpServer:
             monitor = threading.Thread(
                 target=self._monitor_disconnect,
                 args=(connection, cancellation, finished),
-                name="agent-sidecar-http-disconnect",
+                name="agents-sidecar-http-disconnect",
                 daemon=True,
             )
             with self._clients_lock:

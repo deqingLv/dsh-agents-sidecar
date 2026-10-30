@@ -1,7 +1,7 @@
 import theme from './agsc.module.css'
 
 /** Stable owner value for Agent Sidecar skin anchors. */
-export const PLUGIN_DOM_ID = 'agent-sidecar'
+export const PLUGIN_DOM_ID = 'dsh-agents-sidecar'
 
 /**
  * Closed public registry of bare `data-dsh-part` values.

@@ -190,7 +190,7 @@ describe('loaded session', () => {
     expect(message.content).toEqual([{ type: 'text', text: '两行\n消息' }])
     expect(message.source).toEqual({ kind: 'plugin', plugin: DEFAULT_PLUGIN_NAME })
     // The branded-id slot is a plain unique string tied to the requestId.
-    expect(message.id).toBe('agent-sidecar-req-f11')
+    expect(message.id).toBe('dsh-agents-sidecar-req-f11')
   })
 
   it('honors a custom pluginName in source attribution and message id', async () => {

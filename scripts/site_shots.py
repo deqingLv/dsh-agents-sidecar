@@ -177,7 +177,7 @@ def serve_site(directory: Path) -> Iterator[str]:
     thread = threading.Thread(
         target=server.serve_forever,
         kwargs={"poll_interval": 0.05},
-        name="agent-sidecar-site-shots",
+        name="agents-sidecar-site-shots",
         daemon=False,
     )
     thread.start()
@@ -350,7 +350,7 @@ def capture_screenshots(
     executable = locate_chrome(chrome)
     _build_local_site()
     output.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="agent-sidecar-chrome-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="agents-sidecar-chrome-") as temporary:
         profile = Path(temporary) / "profile"
         with serve_site(SITE_OUTPUT) as base_url:
             _capture_one(

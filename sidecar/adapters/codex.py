@@ -359,7 +359,7 @@ def _read_copied_status(path: Path, session_id: str) -> Optional[Status]:
             break
 
         copy_error: Optional[OSError] = None
-        with tempfile.TemporaryDirectory(prefix="agent-sidecar-codex-") as temporary:
+        with tempfile.TemporaryDirectory(prefix="agents-sidecar-codex-") as temporary:
             copied_db = Path(temporary) / "snapshot.sqlite"
             copied_wal = Path(str(copied_db) + "-wal")
             try:
@@ -428,7 +428,7 @@ def _read_immutable_status(path: Path, session_id: str) -> Optional[Status]:
     if before is None:
         return None
 
-    with tempfile.TemporaryDirectory(prefix="agent-sidecar-codex-main-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="agents-sidecar-codex-main-") as temporary:
         copied_db = Path(temporary) / "snapshot.sqlite"
         try:
             copied_bytes = _copy_regular_file(path, copied_db, before)

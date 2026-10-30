@@ -69,7 +69,7 @@ def _make_slow_binary(path):
     path.write_text(
         "#!/bin/sh\n"
         "printf '{\"seq\":1,\"type\":\"turn/start\"}\\n'\n"
-        "printf ready > \"${AGENT_SIDECAR_TEST_REPLAY_READY:?}\"\n"
+        "printf ready > \"${AGENTS_SIDECAR_TEST_REPLAY_READY:?}\"\n"
         "sleep 30\n",
         encoding="utf-8",
     )
@@ -170,7 +170,7 @@ def _write_projection_cache(dsh_home, session_id, cwd, title):
 class _PassthroughDSHAdapter(DSHAdapter):
     def __init__(self, binary):
         super().__init__(
-            discovery_zstd_binary="agent-sidecar-definitely-missing-zstd"
+            discovery_zstd_binary="agents-sidecar-definitely-missing-zstd"
         )
         self.binary = binary
         self.after_seqs = []
@@ -1560,7 +1560,7 @@ class DSHReplayTests(unittest.TestCase):
         replay_timeout = 2.0
         with mock.patch.dict(
             os.environ,
-            {"AGENT_SIDECAR_TEST_REPLAY_READY": str(ready)},
+            {"AGENTS_SIDECAR_TEST_REPLAY_READY": str(ready)},
         ), mock.patch.object(
             dsh_module.subprocess,
             "Popen",
@@ -1617,7 +1617,7 @@ class DSHReplayTests(unittest.TestCase):
 
         records = replay_dsh_events(
             transcript,
-            zstd_binary="agent-sidecar-definitely-missing-zstd",
+            zstd_binary="agents-sidecar-definitely-missing-zstd",
         )
 
         self.assertEqual([], records)

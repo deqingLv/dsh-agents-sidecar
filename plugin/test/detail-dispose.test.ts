@@ -37,7 +37,7 @@ function render(props: { agent: string; capable: boolean }): string {
 describe('detail dispose control', () => {
   it('is offered only for a dsh session on a capable host', () => {
     expect(render({ agent: 'dsh', capable: true }))
-      .toContain('agent-sidecar-detail-dispose')
+      .toContain('agents-sidecar-detail-dispose')
   })
 
   it('renders nothing at all when the host cannot dispose', () => {

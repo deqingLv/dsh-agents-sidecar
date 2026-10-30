@@ -116,7 +116,7 @@ daemon 不再被当成已死的 daemon。它在首扫结束前不应答任何 pi
 ## 安装
 
 请选择一种 CLI 安装方式。本文档没有声称 Agent Sidecar 已发布到 PyPI，因此不要
-假设 `pipx install agent-sidecar` 会解析到本项目。
+假设 `pipx install agents-sidecar` 会解析到本项目。
 
 推荐的 Release 渠道是仓库根目录安装程序。请从受保护的 `main` 分支下载，完整
 检查文件内容，再运行本地副本：
@@ -133,7 +133,7 @@ rm "$installer"
 省略 `--version v0.11.4` 时会解析最新稳定 GitHub Release。脚本使用 Python 解析
 Release 元数据，要求精确匹配带版本号的 zipapp 和 `SHA256SUMS` 资产，在 macOS
 上使用 `shasum -a 256`、在 Linux 上使用 `sha256sum` 验证校验和，之后才会原子
-替换 `~/.local/bin/agent-sidecar`。可用 `--prefix <path>` 选择其他前缀，用
+替换 `~/.local/bin/agents-sidecar`。可用 `--prefix <path>` 选择其他前缀，用
 `--with-skill` 安装两个 Agent Skill 文件。脚本绝不读取或发送凭据。
 
 仅为方便起见，下面的紧凑形式会下载并立即执行同一个安装程序：
@@ -162,7 +162,7 @@ pipx install 'git+https://github.com/shendeguize/AgentSideCar.git'
 ```
 
 如需安装已发布且不可变的修订版，可在对应标签可用后，将标签（例如 `@v0.11.4`）
-附加到 Git URL 后。两种方式都会创建隔离环境并安装 `agent-sidecar`；该包没有
+附加到 Git URL 后。两种方式都会创建隔离环境并安装 `agents-sidecar`；该包没有
 Python 运行时依赖。
 
 ### 安装 GitHub Release zipapp
@@ -172,20 +172,20 @@ Python 运行时依赖。
 
 ```sh
 version=0.11.4
-curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/agent-sidecar-${version}.pyz"
+curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/agents-sidecar-${version}.pyz"
 curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/SHA256SUMS"
 shasum -a 256 -c SHA256SUMS
-chmod +x "agent-sidecar-${version}.pyz"
-./agent-sidecar-${version}.pyz --version
+chmod +x "agents-sidecar-${version}.pyz"
+./agents-sidecar-${version}.pyz --version
 ```
 
 必须使用同一个 Release 中配套的校验和文件。若要在不安装 Python 包的情况下将
-已验证的产物公开为 `agent-sidecar`：
+已验证的产物公开为 `agents-sidecar`：
 
 ```sh
 mkdir -p "$HOME/.local/bin"
-install -m 0755 "agent-sidecar-${version}.pyz" "$HOME/.local/bin/agent-sidecar"
-agent-sidecar --version
+install -m 0755 "agents-sidecar-${version}.pyz" "$HOME/.local/bin/agents-sidecar"
+agents-sidecar --version
 ```
 
 请确保 `~/.local/bin` 位于 `PATH` 中。发布工作流会在发布前于 macOS 验证 zipapp，
@@ -196,11 +196,11 @@ agent-sidecar --version
 通过当前生效的 Agent Sidecar 命令构建：
 
 ```sh
-agent-sidecar package build --output dist/agent-sidecar.pyz
+agents-sidecar package build --output dist/agents-sidecar.pyz
 ```
 
-在检出版本中，`./agent-sidecar package build --output
-dist/agent-sidecar.pyz` 与上述命令等价。
+在检出版本中，`./agents-sidecar package build --output
+dist/agents-sidecar.pyz` 与上述命令等价。
 
 该命令会原子地创建权限模式为 `0755` 的可执行文件，并输出其路径、SHA-256 摘要和
 大小。它会打包当前生效、已安装的 `sidecar` 包：通过检出版本运行时使用检出版本
@@ -209,11 +209,11 @@ dist/agent-sidecar.pyz` 与上述命令等价。
 确定性一致的重复构建。可以直接运行，也可以通过隔离的 Python 运行：
 
 ```sh
-./dist/agent-sidecar.pyz --version
-python3 -I dist/agent-sidecar.pyz --version
+./dist/agents-sidecar.pyz --version
+python3 -I dist/agents-sidecar.pyz --version
 ```
 
-如果产物在传输中丢失了可执行位，请先用 `chmod +x agent-sidecar.pyz` 恢复，再用
+如果产物在传输中丢失了可执行位，请先用 `chmod +x agents-sidecar.pyz` 恢复，再用
 它启动后台守护进程或安装服务。
 
 ### 使用仓库检出版本
@@ -226,10 +226,10 @@ sh scripts/install-skill.sh
 
 安装程序会创建以下符号链接：
 
-- `~/.local/bin/agent-sidecar`
-- `~/.cursor/skills/agent-sidecar`
-- `~/.claude/skills/agent-sidecar`
-- `~/.dsh/skills/agent-sidecar`
+- `~/.local/bin/agents-sidecar`
+- `~/.cursor/skills/agents-sidecar`
+- `~/.claude/skills/agents-sidecar`
+- `~/.dsh/skills/agents-sidecar`
 
 请确保 `~/.local/bin` 位于 `PATH` 中。这些链接指向当前检出版本，因此请保持仓库
 位置不变；移动后应重新运行安装程序。对指向当前仓库的链接重复安装是幂等的；
@@ -238,16 +238,16 @@ sh scripts/install-skill.sh
 
 希望 CLI 和各 Agent Skill 链接持续跟随工作树的用户可以使用此检出版本安装
 程序。它与 `pipx` CLI 安装互为替代方案，因为两者通常都使用
-`~/.local/bin/agent-sidecar`。
+`~/.local/bin/agents-sidecar`。
 
 安装并非必需，也可以直接从仓库运行：
 
 ```sh
-./agent-sidecar --version
-./agent-sidecar status
+./agents-sidecar --version
+./agents-sidecar status
 ```
 
-下文所有示例都可以把 `agent-sidecar` 替换为 `./agent-sidecar`。
+下文所有示例都可以把 `agents-sidecar` 替换为 `./agents-sidecar`。
 
 `daemon start` 会在脱离终端前，把当前生效的 pipx 控制台脚本、可执行 `.pyz` 或
 检出版本 shim 解析为稳定的绝对命令。因此守护进程启动后不依赖 Shell 的当前工作
@@ -283,8 +283,8 @@ pod 本地观察和执行注入；脚本自身不会把消息经本机转发。
 进程：
 
 ```sh
-agent-sidecar service uninstall
-agent-sidecar daemon stop
+agents-sidecar service uninstall
+agents-sidecar daemon stop
 ```
 
 `service uninstall` 适用于 macOS LaunchAgent 或 Linux systemd user unit。它会保留私有运行时目录、诊断
@@ -300,7 +300,7 @@ sh /path/to/inspected/install.sh --uninstall
 或检出版本 Skill 链接。对于 `pipx` 安装：
 
 ```sh
-pipx uninstall agent-sidecar
+pipx uninstall agents-sidecar
 ```
 
 对于检出版本安装程序创建的链接，请在该检出版本中运行：
@@ -313,10 +313,10 @@ sh scripts/install-skill.sh --uninstall
 Agent Sidecar 产物，再删除它：
 
 ```sh
-rm "$HOME/.local/bin/agent-sidecar"
+rm "$HOME/.local/bin/agents-sidecar"
 ```
 
-正常卸载不包括删除 `~/.agent_sidecar`。删除它可能破坏诊断信息、HTTP 令牌、发送
+正常卸载不包括删除 `~/.agents_sidecar`。删除它可能破坏诊断信息、HTTP 令牌、发送
 审计记录和请求 ID 幂等历史。不要把 `audit reset` 当作卸载命令。
 
 ## 命令
@@ -324,14 +324,14 @@ rm "$HOME/.local/bin/agent-sidecar"
 版本和会话发现：
 
 ```sh
-agent-sidecar --version
-agent-sidecar list
-agent-sidecar list --all
-agent-sidecar list --agent cursor-ide --agent claude
-agent-sidecar list --all --json
-agent-sidecar list --remote
-agent-sidecar list --remote --host <host-alias> --json
-agent-sidecar list --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar --version
+agents-sidecar list
+agents-sidecar list --all
+agents-sidecar list --agent cursor-ide --agent claude
+agents-sidecar list --all --json
+agents-sidecar list --remote
+agents-sidecar list --remote --host <host-alias> --json
+agents-sidecar list --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 `list` 默认显示最近 48 小时内更新的会话。`--all` 会取消此时间过滤。
@@ -341,13 +341,13 @@ agent-sidecar list --remote --remote-python /usr/bin/python3.11 --json
 进程和活跃状态视图：
 
 ```sh
-agent-sidecar ps
-agent-sidecar ps --json
-agent-sidecar status
-agent-sidecar status --json
-agent-sidecar status --remote
-agent-sidecar status --remote --host <host-alias> --json
-agent-sidecar status --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar ps
+agents-sidecar ps --json
+agents-sidecar status
+agents-sidecar status --json
+agents-sidecar status --remote
+agents-sidecar status --remote --host <host-alias> --json
+agents-sidecar status --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 `ps` 报告受支持的本地 Agent 可执行进程；进程存在只是辅助证据，无法可靠归属到
@@ -362,14 +362,14 @@ agent-sidecar status --remote --remote-python /usr/bin/python3.11 --json
 目录下的 `archive.json`。已归档会话一旦重新活跃会自动解档，因此归档不会丢工作。
 
 ```sh
-agent-sidecar archive --idle-longer-than 2h
-agent-sidecar archive --idle-longer-than 2h --dry-run
-agent-sidecar archive --idle-longer-than 24h --yes
-agent-sidecar archive --idle-longer-than 2h --status dead --yes
-agent-sidecar archive list
-agent-sidecar list --archived
-agent-sidecar unarchive <session-prefix>
-agent-sidecar unarchive --all
+agents-sidecar archive --idle-longer-than 2h
+agents-sidecar archive --idle-longer-than 2h --dry-run
+agents-sidecar archive --idle-longer-than 24h --yes
+agents-sidecar archive --idle-longer-than 2h --status dead --yes
+agents-sidecar archive list
+agents-sidecar list --archived
+agents-sidecar unarchive <session-prefix>
+agents-sidecar unarchive --all
 ```
 
 `archive` 选中至少 `--idle-longer-than` 时长没有活动（`30m`、`2h`、`24h`、`7d`
@@ -383,9 +383,9 @@ agent-sidecar unarchive --all
 `--remote`/`--host`，并直接打印可用的调用方式：
 
 ```sh
-ssh <host> agent-sidecar archive --idle-longer-than 24h --yes
-ssh <host> agent-sidecar archive list
-ssh <host> agent-sidecar unarchive --all
+ssh <host> agents-sidecar archive --idle-longer-than 24h --yes
+ssh <host> agents-sidecar archive list
+ssh <host> agents-sidecar unarchive --all
 ```
 
 由于每台主机都会先应用自己的注册表再作答，合并后的 `list --remote` 视图是各主机
@@ -429,7 +429,7 @@ site-packages；从 zipapp 运行时来源为内嵌包。远程无需安装 Agen
 交互式登录时的 `PATH`。
 
 解释器选择采用严格优先级：`--remote-python`，其次是
-`AGENT_SIDECAR_REMOTE_PYTHON`，最后是有界默认候选。该环境变量同样作用于整个
+`AGENTS_SIDECAR_REMOTE_PYTHON`，最后是有界默认候选。该环境变量同样作用于整个
 机群，并且只会在启用远程模式的 `list`、`status` 和 `watch` 中读取；非远程调用
 会忽略它。显式值必须是非空绝对路径，长度不超过 1024 个字符，只包含
 `[A-Za-z0-9._+/-]`，且不含 `..` 路径段。无效的 CLI 或环境变量值会在发起任何
@@ -449,7 +449,7 @@ token。探测响应的所有字段仍会完整校验，但不同的返回 `exec
 固定值。如果该路径在某台主机上缺失、不可执行或低于 Python 3.8，该主机报告
 `python_too_old` 并关闭失败，不会再尝试默认候选或 `python3`。逐主机故障之后，
 本地至多输出一条聚合提示，用不同文案区分显式固定失败与有界默认候选耗尽，并在
-适用时指向 `--remote-python` 和 `AGENT_SIDECAR_REMOTE_PYTHON`。
+适用时指向 `--remote-python` 和 `AGENTS_SIDECAR_REMOTE_PYTHON`。
 
 远程故障按主机隔离，并在 stderr 上使用稳定错误码报告，其中有界数据违规对应
 `resource_limit`。本地行和成功远程主机的行仍会输出。机群部分成功时退出码为
@@ -461,14 +461,14 @@ token。探测响应的所有字段仍会完整校验，但不同的返回 `exec
 可以用唯一的会话 ID 前缀跟踪单个会话，也可以跟踪所有可监视会话：
 
 ```sh
-agent-sidecar watch <session-prefix>
-agent-sidecar watch <session-prefix> --from-start --json
-agent-sidecar watch --all
-agent-sidecar watch --all --from-start --json
-agent-sidecar watch --all --remote
-agent-sidecar watch --all --remote --host <host-alias>
-agent-sidecar watch --all --remote --from-start --json
-agent-sidecar watch --all --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar watch <session-prefix>
+agents-sidecar watch <session-prefix> --from-start --json
+agents-sidecar watch --all
+agents-sidecar watch --all --from-start --json
+agents-sidecar watch --all --remote
+agents-sidecar watch --all --remote --host <host-alias>
+agents-sidecar watch --all --remote --from-start --json
+agents-sidecar watch --all --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 会话前缀与 `--all` 互斥。不使用 `--from-start` 时只输出新观察到的事件。
@@ -532,13 +532,13 @@ sessions only`，并在可能时继续本地监视；如果没有可用本地数
 前缀：
 
 ```sh
-agent-sidecar send <session-prefix> "Please review the latest test failure." --allow-write
-agent-sidecar send <session-prefix> "Summarize your result." --allow-write --timeout 120 --json
-agent-sidecar send <session-prefix> "Retry-safe request." --allow-write --request-id <stable-unique-id> --json
-agent-sidecar send <session-prefix> --allow-write -- "-message beginning with a hyphen"
-agent-sidecar send <full-session-id> "Use this exact target." --agent claude --exact-session --allow-write
-printf '%s' "Keep this out of the agent-sidecar argv." | agent-sidecar send <session-prefix> --message-stdin --allow-write
-printf '%s' '<exact-message>' | agent-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<stable-unique-id>' --json
+agents-sidecar send <session-prefix> "Please review the latest test failure." --allow-write
+agents-sidecar send <session-prefix> "Summarize your result." --allow-write --timeout 120 --json
+agents-sidecar send <session-prefix> "Retry-safe request." --allow-write --request-id <stable-unique-id> --json
+agents-sidecar send <session-prefix> --allow-write -- "-message beginning with a hyphen"
+agents-sidecar send <full-session-id> "Use this exact target." --agent claude --exact-session --allow-write
+printf '%s' "Keep this out of the agents-sidecar argv." | agents-sidecar send <session-prefix> --message-stdin --allow-write
+printf '%s' '<exact-message>' | agents-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<stable-unique-id>' --json
 ```
 
 只能在用户明确要求该消息或操作时使用。`--allow-write` 是强制参数，因为原生
@@ -550,7 +550,7 @@ Agent 可以联系其服务提供方、运行工具并修改会话或工作区�
 插件向外部 Agent 注入时总会同时使用这两个参数。
 
 `--message-stdin` 从标准输入读取消息以替代位置参数，因此消息不会出现在
-`agent-sidecar` 的 argv、Shell 历史或进程列表中。两种消息来源互斥：必须恰好
+`agents-sidecar` 的 argv、Shell 历史或进程列表中。两种消息来源互斥：必须恰好
 提供一种。标准输入按字节读入并施加相同的字节上限，随后必须按严格 UTF-8
 解码；消息经过与位置参数完全相同的校验、注入管线、审计身份、回执和退出码。
 标准输入必须来自管道或重定向：交互式终端会被用法错误拒绝（退出码 `2`），
@@ -584,7 +584,7 @@ stderr。请求 ID 幂等性只在相关记录仍位于当前日志或轮转日�
 锁支持；这些原语不可用时，该功能不受支持并关闭失败。
 
 该绑定属于持久安全状态。不得为绕过 `unsafe_lock` 而删除、移动、重建或替换
-`AGENT_SIDECAR_RUNTIME_DIR`、其中的审计文件或 home 锚点 marker。该错误表示既有
+`AGENTS_SIDECAR_RUNTIME_DIR`、其中的审计文件或 home 锚点 marker。该错误表示既有
 历史或命名空间身份无法证明；删除 marker 不会让重试变安全。默认行为是关闭失败并
 保留证据。只有操作者明确开始一条真正新的 request lineage 时，才可以使用新的
 owner-private runtime 路径和新 request ID；此后必须保留该新命名空间及其审计历史。
@@ -674,7 +674,7 @@ outcome）且投递未知。不得使用新 request ID 自动或手动盲目重�
 已完成但投递未知的结果；退出码 `2` 表示有效恢复结果产生前的预检或用法拒绝；
 中断时退出码为 `130`，投递状态未知。
 
-位置参数消息会出现在 `agent-sidecar` 命令 argv 中，可能被 Shell 历史记录保存，
+位置参数消息会出现在 `agents-sidecar` 命令 argv 中，可能被 Shell 历史记录保存，
 也可能在进程列表中可见；`--message-stdin` 可以让消息不出现在 Sidecar 命令行
 中。无论使用哪种来源，对于 Cursor CLI，提示词仍会出现在原生子进程 argv 中，
 因为该上游恢复契约要求 argv 传输。不要使用此命令发送机密。
@@ -683,7 +683,7 @@ outcome）且投递未知。不得使用新 request ID 自动或手动盲目重�
 历史的情况下修复 inode 绑定：
 
 ```sh
-agent-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
+agents-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
 ```
 
 无法证明可重绑时，reset 是受支持的后备恢复方式。默认 reset 会先将活动审计密钥、
@@ -691,14 +691,14 @@ agent-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
 拒绝运行，绝不会静默删除归档：
 
 ```sh
-agent-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
+agents-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
 ```
 
 发送正在使用审计命名空间时，reset 会拒绝运行。如需不可逆删除活动状态和全部归档，
 必须使用更强的确认文本：
 
 ```sh
-agent-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
+agents-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
 ```
 
 这些命令都是显式恢复操作，绝不能用作自动错误处理。`audit_corrupt` 附带
@@ -708,8 +708,8 @@ fail-closed，并使用 reset 归档，不要手动修改。
 打开实时终端仪表盘，或渲染一次不含 ANSI 的快照：
 
 ```sh
-agent-sidecar tui
-agent-sidecar tui --once
+agents-sidecar tui
+agents-sidecar tui --once
 ```
 
 按 `q` 退出交互式仪表盘。
@@ -717,13 +717,13 @@ agent-sidecar tui --once
 管理可选的每用户守护进程：
 
 ```sh
-agent-sidecar daemon start
-agent-sidecar daemon start --http
-agent-sidecar daemon start --http --http-port 43123
-agent-sidecar daemon status
-agent-sidecar daemon stop
-agent-sidecar daemon run
-agent-sidecar daemon run --http
+agents-sidecar daemon start
+agents-sidecar daemon start --http
+agents-sidecar daemon start --http --http-port 43123
+agents-sidecar daemon status
+agents-sidecar daemon stop
+agents-sidecar daemon run
+agents-sidecar daemon run --http
 ```
 
 `start` 启动脱离终端的守护进程，并且是幂等的。`run` 在前台运行相同守护进程，
@@ -740,18 +740,18 @@ agent-sidecar daemon run --http
 需要显式把守护进程安装为当前用户拥有的服务：
 
 ```sh
-agent-sidecar service install [--http [--http-port PORT]] [--force]
-agent-sidecar service install
-agent-sidecar service install --http
-agent-sidecar service install --http --http-port 43123
-agent-sidecar service status
-agent-sidecar service uninstall
+agents-sidecar service install [--http [--http-port PORT]] [--force]
+agents-sidecar service install
+agents-sidecar service install --http
+agents-sidecar service install --http --http-port 43123
+agents-sidecar service status
+agents-sidecar service uninstall
 ```
 
 服务绝不会自动安装。在 macOS 上，它会把经过验证的用户 plist 写入
-`~/Library/LaunchAgents/com.agent-sidecar.daemon.plist`，在 `gui/<uid>` 域
-加载标签 `com.agent-sidecar.daemon`，并同时配置 `RunAtLoad` 和 `KeepAlive`。
-在 Linux 上，它会写入 `~/.config/systemd/user/agent-sidecar.service`，只使用
+`~/Library/LaunchAgents/com.agents-sidecar.daemon.plist`，在 `gui/<uid>` 域
+加载标签 `com.agents-sidecar.daemon`，并同时配置 `RunAtLoad` 和 `KeepAlive`。
+在 Linux 上，它会写入 `~/.config/systemd/user/agents-sidecar.service`，只使用
 `systemctl --user`，绝不写入 `/etc`、调用 `sudo` 或自动修改 user lingering。
 Linux unit 以前台 `daemon run` 运行，包含 `Restart=on-failure`、
 `KillMode=control-group`、`NoNewPrivileges`、只读系统/主目录策略、明确的
@@ -764,7 +764,7 @@ Linux unit 以前台 `daemon run` 运行，包含 `Restart=on-failure`、
 除非提供 `--force`，否则会被拒绝：
 
 ```sh
-agent-sidecar service install --http --http-port 43123 --force
+agents-sidecar service install --http --http-port 43123 --force
 ```
 
 `--force` 会有意卸载并替换定义，造成服务中断；失败时会尝试回滚，但回滚本身也
@@ -793,11 +793,11 @@ systemd user unit 并停止其守护进程，但会保留私有运行时目录�
 
 守护进程维护会话快照、自适应扫描并扇出规范化事件。默认使用：
 
-- 运行时目录：`~/.agent_sidecar`（可用 `AGENT_SIDECAR_RUNTIME_DIR` 覆盖）；
-- Unix 套接字：`~/.agent_sidecar/daemon.sock`；
-- PID 文件：`~/.agent_sidecar/daemon.pid`。
+- 运行时目录：`~/.agents_sidecar`（可用 `AGENTS_SIDECAR_RUNTIME_DIR` 覆盖）；
+- Unix 套接字：`~/.agents_sidecar/daemon.sock`；
+- PID 文件：`~/.agents_sidecar/daemon.pid`。
 
-另有 `AGENT_SIDECAR_REMOTE_PYTHON`：当未提供 `--remote-python` 时，它提供
+另有 `AGENTS_SIDECAR_REMOTE_PYTHON`：当未提供 `--remote-python` 时，它提供
 机群级远程解释器绝对路径。只有启用远程模式的 `list`、`status` 和 `watch` 会
 读取它；优先级依次为 CLI 选项、环境变量、有界默认候选。
 
@@ -875,9 +875,9 @@ Bearer Authorization Header 提供令牌。适配器没有 send、audit-reset、
 
 ## Agent Skill 集成
 
-已安装的 Cursor、Claude 和 dsh Skill 链接公开同一个 `skills/agent-sidecar`
+已安装的 Cursor、Claude 和 dsh Skill 链接公开同一个 `skills/agents-sidecar`
 Bundle。
-该 Skill 指示 Agent：本地观察先查询 `agent-sidecar status --json`；只有用户要求
+该 Skill 指示 Agent：本地观察先查询 `agents-sidecar status --json`；只有用户要求
 时才使用远程监控；绝不隐藏远程监视故障或缺口警告；绝不自动重试远程监视；只有
 用户要求时才启动或停止守护进程。
 
@@ -891,10 +891,10 @@ reset。
 
 ## DSH 插件
 
-`plugin/` 目录提供 `@shendeguize/dsh-agent-sidecar`——一个原生 DSH 插件，把
+`plugin/` 目录提供 `dsh-agents-sidecar`——一个原生 DSH 插件，把
 Agent Sidecar 带进 dsh Web 界面：跨 agent 监控看板、带 dsh 谱系与检索的
 会话详情时间线、可选启用的消息注入、可选启用的 AI 旁路分析，以及内嵌的
-agent-sidecar Skill 提供器。插件通过 Unix 套接字消费 sidecar 守护进程，并以
+agents-sidecar Skill 提供器。插件通过 Unix 套接字消费 sidecar 守护进程，并以
 「探测—领养—否则托管」策略管理守护进程生命周期；它绝不代装 sidecar CLI。
 
 一等 Agent Center 使用 DSH 官方 `shell.overlay` 注册表与宿主 Modal。主侧栏
@@ -958,7 +958,7 @@ token。
 并不证明模型 turn 已开始或成功；必须观察目标会话的 timeline 或终端 turn 才能
 确认实际结果。
 
-插件是唯一 DSH 注入界面：直接 `agent-sidecar send` 不支持 `dsh` 目标。带 preset
+插件是唯一 DSH 注入界面：直接 `agents-sidecar send` 不支持 `dsh` 目标。带 preset
 的 DSH cold 目标仍返回 `409` 冲突；inbox accepted 的结果仍需观察 timeline。
 Kimi 在插件中也没有 live inbox 或 steer 例外；其受保护恢复使用外部 send 路径，
 且永不返回 delivered 回执。
@@ -979,14 +979,14 @@ ID 与内容一起脱敏。
 将其安装到 dsh profile；该命令把包解析委托给 pnpm：
 
 ```sh
-dsh plugin --profile web add @shendeguize/dsh-agent-sidecar
+dsh plugin --profile web add dsh-agents-sidecar
 ```
 
 每个配置键都有默认值，因此一行裸插件配置即可零配置挂载。若要覆盖默认值，
 请在 profile 的 `cordis.patch.yml` 中对应插件行添加 `config:` 块：
 
 ```yaml
-- id: agent-sidecar
+- id: agents-sidecar
   config:
     daemon:
       policy: adopt-only
@@ -1003,7 +1003,7 @@ dsh plugin --profile web add @shendeguize/dsh-agent-sidecar
   `analysis.provider` 与 `analysis.model` 构成一对：两者都留空时复用宿主默认
   模型，两者都非空时选择显式路由。设置卡会显示解析后的路由，并阻止保存不完整
   的 pair。
-- `skill.provide`（默认开启）经 dsh Skill 注册表内嵌提供 agent-sidecar
+- `skill.provide`（默认开启）经 dsh Skill 注册表内嵌提供 agents-sidecar
   Skill；文件系统已安装的同名 Skill 自动优先。
 
 设置卡允许暂存编辑即时生效的 inject、analysis 和 UI 组。daemon 生命周期、
@@ -1011,7 +1011,7 @@ sidecar 调用与 stream 对账周期在设置卡中只读；如需修改，请�
 的 `cordis.patch` `config` 块并重启 DSH。
 
 浏览器界面默认跟随宿主 DSH 的 `--dsw-*` token 与 Skin Center。皮肤和插件可通过
-稳定的 `data-dsh-plugin="agent-sidecar"` / `data-dsh-part` 锚点以及文档列出的
+稳定的 `data-dsh-plugin="agents-sidecar"` / `data-dsh-part` 锚点以及文档列出的
 `--agsc-*` 变量做定制；生成的 class 名称仅属于内部实现细节。公共 part、变量、
 默认值与最小覆盖示例见插件手册的[主题契约](plugin/README.md#theming)。
 
@@ -1038,9 +1038,9 @@ Changelog 和发布治理请参见[贡献指南](CONTRIBUTING.md)。
 1. 在 `sidecar/__init__.py` 中设置目标版本，并更新描述当前版本的文档引用；明确
    属于历史记录的引用应保留。
 2. 运行 `python3 scripts/check.py` 以及所有发布专用检查。
-3. 使用相同源码构建 `dist/agent-sidecar.pyz` 两次，确认报告的 SHA-256 值一致。
+3. 使用相同源码构建 `dist/agents-sidecar.pyz` 两次，确认报告的 SHA-256 值一致。
 4. 从检出版本之外的目录分别以可执行方式和 `python3 -I` 方式冒烟测试 zipapp，
-   并确认 wheel 提供 `agent-sidecar` 控制台脚本且元数据中没有 `Requires-Dist`。
+   并确认 wheel 提供 `agents-sidecar` 控制台脚本且元数据中没有 `Requires-Dist`。
 5. 遵循权威的[发布流程](CONTRIBUTING.md#release-procedure)：从 CI 全绿的 `main`
    提交发布；最终版本将 `release` 分支快进；创建唯一且不可变的 `v<version>`
    标签；由受保护的 GitHub 工作流验证并发布 zipapp、校验和及来源证明。本文档
@@ -1098,7 +1098,7 @@ macOS LaunchAgent 和实验性 `send` 明确排除在外。Windows 目前不受�
 
 ### Agent Sidecar 在哪里存储自己的状态？
 
-默认运行时目录为 `~/.agent_sidecar`。其中可能包含 Unix 套接字、PID 文件、有界
+默认运行时目录为 `~/.agents_sidecar`。其中可能包含 Unix 套接字、PID 文件、有界
 诊断、HTTP 令牌和临时端口记录、[已归档会话](#archive-idle-sessions)的
 `archive.json` 注册表，以及仅在可变更发送操作之后出现的私有审计状态。
 删除任何内容前请参见[卸载](#uninstall)；正常卸载会有意保留与安全有关的历史。

@@ -18,7 +18,7 @@
  */
 
 /** Route namespace; must mirror routes.ts `API_PREFIX` (pinned by test). */
-export const API_PREFIX = '/plugins/agent-sidecar/api'
+export const API_PREFIX = '/plugins/dsh-agents-sidecar/api'
 
 /** Default overall request deadline (design §5.3: 15s fetch timeout). */
 export const DEFAULT_TIMEOUT_MS = 15_000

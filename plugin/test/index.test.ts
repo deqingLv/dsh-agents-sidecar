@@ -360,7 +360,7 @@ describe('Config schema', () => {
     const config = Config({})
     expect(config.daemon.policy).toBe('adopt-or-host')
     expect(config.daemon.backoffLimit).toBe(5)
-    expect(config.sidecar.command).toEqual(['agent-sidecar'])
+    expect(config.sidecar.command).toEqual(['agents-sidecar'])
     expect(config.sidecar.runtimeDir).toBe('')
     expect(config.stream.reconcileActiveMs).toBe(2000)
     expect(config.stream.reconcileIdleMs).toBe(10000)
@@ -392,7 +392,7 @@ describe('Config schema', () => {
 
 describe('entry exports', () => {
   it('exposes the named plugin faces and no default export', () => {
-    expect(name).toBe('agent-sidecar')
+    expect(name).toBe('dsh-agents-sidecar')
     expect(inject).toEqual(['webServer', 'subprocess'])
     expect(typeof apply).toBe('function')
     expect(typeof Config).toBe('function')
@@ -906,7 +906,7 @@ describe('M2 injection wiring', () => {
       source: unknown
     }
     expect(message.content).toEqual([{ type: 'text', text: 'hello from the board' }])
-    expect(message.source).toEqual({ kind: 'plugin', plugin: 'agent-sidecar' })
+    expect(message.source).toEqual({ kind: 'plugin', plugin: 'dsh-agents-sidecar' })
     expect(steer).not.toHaveBeenCalled()
     expect(currentSelection).not.toHaveBeenCalled()
   })
@@ -1039,7 +1039,7 @@ describe('M2 injection wiring', () => {
     let published = false
     let fake: FakeCtx | undefined
     const resume = vi.fn(async (options: FakeResumeOptions) => {
-      fake!.disposeEffect('agent-sidecar: cold dsh resume services release')
+      fake!.disposeEffect('dsh-agents-sidecar: cold dsh resume services release')
       runSetupSynchronously(options)
       published = true
       return {
@@ -1203,8 +1203,8 @@ describe('M2 injection wiring', () => {
     expect(first.json).toEqual({ outcome: 'delivered' })
     expect(oldFollowup).toHaveBeenCalledTimes(1)
 
-    await fake.disposeEffect('agent-sidecar: cold dsh resume services release')
-    await fake.disposeEffect('agent-sidecar: agents binding release')
+    await fake.disposeEffect('dsh-agents-sidecar: cold dsh resume services release')
+    await fake.disposeEffect('dsh-agents-sidecar: agents binding release')
     expect(oldDispose).toHaveBeenCalledTimes(1)
 
     const newFollowup = vi.fn()
@@ -1281,9 +1281,9 @@ describe('M2 injection wiring', () => {
     ).signal
 
     const releasing = Promise.resolve(
-      fake.disposeEffect('agent-sidecar: cold dsh resume services release'),
+      fake.disposeEffect('dsh-agents-sidecar: cold dsh resume services release'),
     )
-    await fake.disposeEffect('agent-sidecar: agents binding release')
+    await fake.disposeEffect('dsh-agents-sidecar: agents binding release')
     expect(oldSignal?.aborted).toBe(true)
 
     const newFollowup = vi.fn()
@@ -1713,7 +1713,7 @@ describe('M3 fusion wiring', () => {
 
     // Once the lazy binding is disposed, its captured service is no longer
     // consulted and the holder continues with a sidecar-only generation.
-    await fake.disposeEffect('agent-sidecar: fusion dsh feed release')
+    await fake.disposeEffect('dsh-agents-sidecar: fusion dsh feed release')
     const callsAfterDispose = get.mock.calls.length
     const afterDispose = await fetchPath(fake.routes[0]!, 'session/after-dispose')
     expect(afterDispose.status).toBe(404)
@@ -1848,7 +1848,7 @@ describe('M3 analysis wiring (T5.10a)', () => {
     expect(requested.status).toBe(200)
     expect(requested.json.outcome).toBe('completed')
     expect(requested.json.summary).toBe('analysis says: all good')
-    expect(String(requested.json.analysisSessionId)).toMatch(/^agent-sidecar-analysis-/)
+    expect(String(requested.json.analysisSessionId)).toMatch(/^agents-sidecar-analysis-/)
     expect(typeof requested.json.disclaimer).toBe('string')
     expect(created).toHaveLength(1)
 
@@ -1858,7 +1858,7 @@ describe('M3 analysis wiring (T5.10a)', () => {
     expect(primedText).toContain('demo session') // title via fusion's unified view
     expect(primedText).toContain('[path]') // semantic payload redacts project paths
     expect(primedText).toContain('anything odd?') // question rides the head
-    expect(followups[0]!.source).toEqual({ kind: 'plugin', plugin: 'agent-sidecar' })
+    expect(followups[0]!.source).toEqual({ kind: 'plugin', plugin: 'dsh-agents-sidecar' })
 
     // Unknown session target: fusion resolves nothing → honest 404.
     const missing = await postAction(route, {
@@ -2173,7 +2173,7 @@ describe('settings wiring (M2 review F-1)', () => {
     apply(fake.ctx, offConfig)
     cleanups.push(() => fake.disposeAll())
 
-    expect(settings.registrations).toEqual([{ ns: 'agent-sidecar', applies: 'live' }])
+    expect(settings.registrations).toEqual([{ ns: 'dsh-agents-sidecar', applies: 'live' }])
 
     const prepareBody = {
       type: 'inject.prepare',

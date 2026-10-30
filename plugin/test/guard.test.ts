@@ -31,7 +31,7 @@ function mockReq(init: MockReqInit = {}): GuardableRequest {
   }
   return {
     method: init.method ?? 'GET',
-    url: init.url ?? '/plugins/agent-sidecar/api/state',
+    url: init.url ?? '/plugins/dsh-agents-sidecar/api/state',
     headers,
     rawHeaders: init.rawHeaders,
     socket: {

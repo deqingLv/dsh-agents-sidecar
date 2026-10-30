@@ -8,7 +8,7 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  name: '@shendeguize/dsh-agent-sidecar',
+  name: 'dsh-agents-sidecar',
   entry: ['src/index.ts'],
   outDir: 'lib',
   format: ['esm'],

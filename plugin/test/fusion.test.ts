@@ -704,7 +704,7 @@ describe('getSessionTimeline', () => {
       sidecarEvent('sess-inject', {
         kind: 'user',
         text: queueMarker,
-        extra: { seq: 106, source: { kind: 'plugin', plugin: 'agent-sidecar' } },
+        extra: { seq: 106, source: { kind: 'plugin', plugin: 'dsh-agents-sidecar' } },
       }),
     )
     for (let seq = 107; seq < 138; seq += 1) {
@@ -714,7 +714,7 @@ describe('getSessionTimeline', () => {
       sidecarEvent('sess-inject', {
         kind: 'user',
         text: steerMarker,
-        extra: { seq: 138, source: { kind: 'plugin', plugin: 'agent-sidecar' } },
+        extra: { seq: 138, source: { kind: 'plugin', plugin: 'dsh-agents-sidecar' } },
       }),
     )
     for (let seq = 139; seq < 144; seq += 1) {

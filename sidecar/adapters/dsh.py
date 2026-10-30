@@ -381,7 +381,7 @@ def _snapshot_executable(
     snapshot: Optional[tempfile.TemporaryDirectory] = None
     destination_fd = -1
     try:
-        snapshot = tempfile.TemporaryDirectory(prefix="agent-sidecar-dsh-")
+        snapshot = tempfile.TemporaryDirectory(prefix="agents-sidecar-dsh-")
         os.chmod(snapshot.name, 0o700)
         directory_details = Path(snapshot.name).lstat()
         geteuid = getattr(os, "geteuid", None)

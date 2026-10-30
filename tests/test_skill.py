@@ -8,10 +8,10 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 INSTALLER = REPO_ROOT / "scripts" / "install-skill.sh"
-SKILL_DIR = REPO_ROOT / "skills" / "agent-sidecar"
+SKILL_DIR = REPO_ROOT / "skills" / "agents-sidecar"
 SKILL_FILE = SKILL_DIR / "SKILL.md"
 REFERENCE_FILE = SKILL_DIR / "reference.md"
-CLI_SOURCE = REPO_ROOT / "agent-sidecar"
+CLI_SOURCE = REPO_ROOT / "agents-sidecar"
 
 
 def run_installer(home, *arguments):
@@ -31,10 +31,10 @@ def run_installer(home, *arguments):
 
 def installed_paths(home):
     return (
-        home / ".cursor" / "skills" / "agent-sidecar",
-        home / ".claude" / "skills" / "agent-sidecar",
-        home / ".dsh" / "skills" / "agent-sidecar",
-        home / ".local" / "bin" / "agent-sidecar",
+        home / ".cursor" / "skills" / "agents-sidecar",
+        home / ".claude" / "skills" / "agents-sidecar",
+        home / ".dsh" / "skills" / "agents-sidecar",
+        home / ".local" / "bin" / "agents-sidecar",
     )
 
 
@@ -53,7 +53,7 @@ class SkillFormatTests(unittest.TestCase):
             self.assertTrue(value.strip())
             metadata[key] = value.strip()
 
-        self.assertEqual("agent-sidecar", metadata["name"])
+        self.assertEqual("agents-sidecar", metadata["name"])
         self.assertRegex(metadata["name"], r"^[a-z0-9-]{1,64}$")
         description = metadata["description"]
         self.assertLessEqual(len(description), 1024)
@@ -89,9 +89,9 @@ class SkillFormatTests(unittest.TestCase):
 
         # DSH injection guidance routes through the plugin surface instead
         # of a direct send.
-        self.assertIn("@shendeguize/dsh-agent-sidecar", text)
-        self.assertIn("/plugins/agent-sidecar/api/action", text)
-        self.assertIn("~/.dsh/skills/agent-sidecar", text)
+        self.assertIn("dsh-agents-sidecar", text)
+        self.assertIn("/plugins/agents-sidecar/api/action", text)
+        self.assertIn("~/.dsh/skills/agents-sidecar", text)
 
     def test_reference_documents_daemon_replay_and_subscribe_protocol(self):
         reference_text = REFERENCE_FILE.read_text(encoding="utf-8")
@@ -176,7 +176,7 @@ class InstallerTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(0, help_result.returncode, help_result.stderr)
-            self.assertIn("agent-sidecar", help_result.stdout)
+            self.assertIn("agents-sidecar", help_result.stdout)
 
     def test_installed_cli_manages_daemon_from_arbitrary_directory(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -188,7 +188,7 @@ class InstallerTests(unittest.TestCase):
             environment = {
                 **os.environ,
                 "HOME": str(home),
-                "AGENT_SIDECAR_RUNTIME_DIR": str(runtime),
+                "AGENTS_SIDECAR_RUNTIME_DIR": str(runtime),
                 "PYTHONDONTWRITEBYTECODE": "1",
             }
             environment.pop("PYTHONPATH", None)

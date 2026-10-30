@@ -62,7 +62,7 @@ try:
 except ImportError:
     _fcntl = None
 
-RUNTIME_ENV = "AGENT_SIDECAR_RUNTIME_DIR"
+RUNTIME_ENV = "AGENTS_SIDECAR_RUNTIME_DIR"
 LEGACY_RUNTIME_ENV = "AGENT_SIDECAR_HOME"
 SOCKET_NAME = "daemon.sock"
 PIDFILE_NAME = "daemon.pid"
@@ -161,7 +161,7 @@ def default_runtime_dir() -> Path:
     configured = os.environ.get(RUNTIME_ENV) or os.environ.get(LEGACY_RUNTIME_ENV)
     if configured:
         return Path(os.path.expandvars(os.path.expanduser(configured)))
-    return Path.home() / ".agent_sidecar"
+    return Path.home() / ".agents_sidecar"
 
 
 def _socket_is_live(path: Path, timeout: float = 0.1) -> bool:
@@ -436,7 +436,7 @@ class SidecarDaemon:
         thread = threading.Thread(
             target=self.serve_forever,
             args=(stop_event,),
-            name="agent-sidecar-daemon",
+            name="agents-sidecar-daemon",
             daemon=True,
         )
         thread.start()
@@ -481,7 +481,7 @@ class SidecarDaemon:
             if len(self._shutdown_diagnostics) < MAX_SHUTDOWN_DIAGNOSTICS:
                 self._shutdown_diagnostics += (diagnostic,)
         try:
-            sys.stderr.write("agent-sidecar daemon log_error: {}\n".format(code))
+            sys.stderr.write("agents-sidecar daemon log_error: {}\n".format(code))
             sys.stderr.flush()
         except (AttributeError, OSError, ValueError):
             pass
@@ -1662,7 +1662,7 @@ class SidecarDaemon:
             self._scan_thread = threading.Thread(
                 target=self._scan_loop,
                 args=(stop_event, initial_working),
-                name="agent-sidecar-scan",
+                name="agents-sidecar-scan",
                 daemon=True,
             )
             self._scan_thread.start()
@@ -1687,7 +1687,7 @@ class SidecarDaemon:
                 thread = threading.Thread(
                     target=self._handle_client,
                     args=(connection,),
-                    name="agent-sidecar-client",
+                    name="agents-sidecar-client",
                     daemon=True,
                 )
                 with self._clients_lock:

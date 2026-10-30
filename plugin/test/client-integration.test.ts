@@ -368,7 +368,7 @@ describe('client injection eligibility', () => {
         expect(html).toContain('separate Kimi ACP process')
         expect(html).toContain('never attaches to or steers the existing terminal')
         expect(html).toContain('Prepare protected resume')
-        expect(html).not.toContain('agent-sidecar-inject-blocked-reason')
+        expect(html).not.toContain('agents-sidecar-inject-blocked-reason')
         expect(html).not.toContain('steer (mid-turn)')
         expect(html).not.toContain('type="radio"')
         expect(effectiveInjectMode('kimi', 'steer')).toBe('queue')
@@ -930,11 +930,11 @@ describe('timeline source outcome integration', () => {
       const healthyHtml = renderBoundary(healthy, 0)
       const failedHtml = renderBoundary(failed, 0)
       expect(healthyHtml).toContain('healthy-empty-content')
-      expect(healthyHtml).not.toContain('agent-sidecar-timeline-degraded')
+      expect(healthyHtml).not.toContain('agents-sidecar-timeline-degraded')
       expect(failedHtml).toContain('role="alert"')
       expect(failedHtml).toContain('All usable timeline sources failed')
       expect(failedHtml).toContain('0 available · 3 unavailable · 1 failed')
-      expect(failedHtml).toContain('agent-sidecar-timeline-retry')
+      expect(failedHtml).toContain('agents-sidecar-timeline-retry')
       expect(failedHtml).toContain('Back to board')
       expect(failedHtml).not.toContain('healthy-empty-content')
     } finally {
@@ -977,13 +977,13 @@ describe('timeline source outcome integration', () => {
     try {
       setLocale('zh')
       const html = renderBoundary(volatileOnly, 1, 'timeline-body')
-      expect(html).toContain('agent-sidecar-timeline-volatile')
+      expect(html).toContain('agents-sidecar-timeline-volatile')
       // Entries stay visible and the failure banner stays away.
       expect(html).toContain('timeline-body')
-      expect(html).not.toContain('agent-sidecar-timeline-degraded')
+      expect(html).not.toContain('agents-sidecar-timeline-degraded')
 
       expect(renderBoundary(durable, 1, 'timeline-body')).not.toContain(
-        'agent-sidecar-timeline-volatile',
+        'agents-sidecar-timeline-volatile',
       )
     } finally {
       setLocale('zh')
@@ -1036,7 +1036,7 @@ describe('timeline source outcome integration', () => {
     // The generic "press refresh" line is useless while nothing is
     // listening; the actionable fact is that the daemon is not running.
     const down = renderBoundary(failed, 0, 'ignored', { daemonState: 'failed' })
-    expect(down).toContain('agent-sidecar daemon start')
+    expect(down).toContain('agents-sidecar daemon start')
     expect(down).not.toContain('可点击「刷新」重试时间线来源')
 
     const deferred = renderBoundary(failed, 0, 'ignored', { daemonState: 'defer' })
@@ -1044,7 +1044,7 @@ describe('timeline source outcome integration', () => {
 
     const running = renderBoundary(failed, 0, 'ignored', { daemonState: 'hosted' })
     expect(running).toContain('可点击「刷新」重试时间线来源')
-    expect(running).not.toContain('agent-sidecar daemon start')
+    expect(running).not.toContain('agents-sidecar daemon start')
   })
 
   it('fails closed on an unknown outcome and keeps field-less legacy pages healthy', () => {
@@ -1258,7 +1258,7 @@ describe('board agent filtering and initial snapshot state', () => {
         filters: { timeWindowHours: 24, showDead: false, agentFilter: secretLikeAgent },
       })
       const select =
-        html.match(/<select[^>]*data-testid="agent-sidecar-agent-filter"[\s\S]*?<\/select>/)
+        html.match(/<select[^>]*data-testid="agents-sidecar-agent-filter"[\s\S]*?<\/select>/)
           ?.[0] ?? ''
       expect(select).toContain('All agents')
       expect(select).toContain('aria-label="Filter sessions by agent type"')
@@ -1305,7 +1305,7 @@ describe('board agent filtering and initial snapshot state', () => {
       expect(english).toContain('aria-busy="false"')
       expect(english).toContain('Refresh failed')
       expect(english).toContain('>Refresh</button>')
-      expect(english).not.toContain('agent-sidecar-board-loading')
+      expect(english).not.toContain('agents-sidecar-board-loading')
 
       setLocale('zh')
       const chinese = renderBoard({
@@ -1332,15 +1332,15 @@ describe('board agent filtering and initial snapshot state', () => {
       expect(data).toContain('aria-busy="false"')
       expect(data).toContain('stale-card')
       expect(data).toContain('data-tone="warn"')
-      expect(data).not.toContain('agent-sidecar-board-loading')
+      expect(data).not.toContain('agents-sidecar-board-loading')
 
       const empty = renderBoard({ hasSnapshot: true })
       expect(empty).toContain('No observed sessions yet')
-      expect(empty).not.toContain('agent-sidecar-board-loading')
+      expect(empty).not.toContain('agents-sidecar-board-loading')
 
       const error = renderBoard({ daemonState: 'failed', hasSnapshot: true })
       expect(error).toContain('sidecar is offline')
-      expect(error).not.toContain('agent-sidecar-board-loading')
+      expect(error).not.toContain('agents-sidecar-board-loading')
     } finally {
       setLocale('zh')
     }
@@ -1363,9 +1363,9 @@ describe('board agent filtering and initial snapshot state', () => {
         ],
         filters: { timeWindowHours: 24, showDead: false, collapseIdle: true },
       })
-      expect(html).toContain('data-testid="agent-sidecar-collapse-idle"')
+      expect(html).toContain('data-testid="agents-sidecar-collapse-idle"')
       expect(html).toContain('Fold idle')
-      expect(html).toContain('data-testid="agent-sidecar-idle-summary"')
+      expect(html).toContain('data-testid="agents-sidecar-idle-summary"')
       expect(html).toContain('2 idle sessions')
       expect(html).not.toContain('idle-1')
       expect(html).not.toContain('idle-2')
@@ -1421,7 +1421,7 @@ describe('AnalysisPanel conversation rendering', () => {
   it('renders explicit user/assistant messages and a segmented pending assistant update', () => {
     const state: AnalysisGlueState = {
       phase: 'answering',
-      analysisSessionId: 'agent-sidecar-analysis-test',
+      analysisSessionId: 'agents-sidecar-analysis-test',
       exchanges: [{
         question: null,
         summary: 'first insight',
@@ -1466,7 +1466,7 @@ describe('full-page analysis navigation', () => {
     )
     expect(MOUNT_SOURCE).toContain('setMainView(analysisRoute.source.view)')
     expect(MOUNT_SOURCE).toContain('setDetail(analysisRoute.source.detail)')
-    expect(MOUNT_SOURCE).toContain('data-testid="agent-sidecar-analysis-back"')
+    expect(MOUNT_SOURCE).toContain('data-testid="agents-sidecar-analysis-back"')
     expect(MOUNT_SOURCE).toContain('onAnalyze={openAnalysis}')
     expect(DETAIL_VIEW_SOURCE).toContain(
       "props.onAnalyze({ targetKind: 'session', targetId: sessionId })",
@@ -1682,7 +1682,7 @@ describe('board/detail navigation focus and scroll', () => {
 
   it('keeps detail focus semantic and all pending callbacks cancellable', () => {
     expect(DETAIL_VIEW_SOURCE).toContain(
-      '[data-testid="agent-sidecar-detail"] header button:not([disabled])',
+      '[data-testid="agents-sidecar-detail"] header button:not([disabled])',
     )
     expect(DETAIL_VIEW_SOURCE).toContain('window.cancelAnimationFrame(focusFrameRef.current)')
     expect(MOUNT_SOURCE).toContain(
@@ -1724,7 +1724,7 @@ describe('SettingsCard', () => {
       saving: false,
     }))
 
-    expect(html).toContain('data-dsh-plugin="agent-sidecar"')
+    expect(html).toContain('data-dsh-plugin="dsh-agents-sidecar"')
     expect(html).toContain('data-dsh-part="settings-card"')
     expect(html).toContain('aria-expanded="false"')
   })
@@ -2574,8 +2574,8 @@ describe('settings-glue', () => {
   })
 
   it('joins and splits the sidecar command line', () => {
-    expect(joinCommand(['uv', 'run', 'agent-sidecar'])).toBe('uv run agent-sidecar')
-    expect(splitCommand('  uv   run  agent-sidecar ')).toEqual(['uv', 'run', 'agent-sidecar'])
+    expect(joinCommand(['uv', 'run', 'agents-sidecar'])).toBe('uv run agents-sidecar')
+    expect(splitCommand('  uv   run  agents-sidecar ')).toEqual(['uv', 'run', 'agents-sidecar'])
     expect(splitCommand('')).toEqual([])
   })
 

@@ -11,7 +11,7 @@
  * - `sidebar.footer.action` (list slot, root scope): the connection-dot
  *   footer widget;
  * - `settings.plugin.item` (keyed slot, root scope): the settings card,
- *   keyed by the host-side namespace `agent-sidecar`;
+ *   keyed by the host-side namespace `dsh-agents-sidecar`;
  * - the lazily registered `/sidecar` command and optional better-sidebar
  *   mini tab.
  *
@@ -66,19 +66,19 @@ import { mountSidebarTab } from './sidebar-tab.tsx'
 import { createDefaultIntegration, type BoardUiPort } from './ui-integration.ts'
 import type { SidecarConfigView } from './settings-glue.ts'
 
-export const name = 'agent-sidecar'
+export const name = 'dsh-agents-sidecar'
 
 /** The slot registry is the only hard dependency; settingsScope and locale are lazy. */
 export const inject = ['slots']
 
 /** Entry id (list slots) and cell key (settings keyed slot) in one. */
-const ENTRY_ID = 'agent-sidecar'
+const ENTRY_ID = 'dsh-agents-sidecar'
 
 /** Distinct list-seat id for the frame-wide Agent Center surface. */
-const CENTER_ENTRY_ID = 'agent-sidecar-center'
+const CENTER_ENTRY_ID = 'dsh-agents-sidecar-center'
 
 /** Host-side settings namespace (host half registers it via ctx.settings). */
-const SETTINGS_NAMESPACE = 'agent-sidecar'
+const SETTINGS_NAMESPACE = 'dsh-agents-sidecar'
 
 /**
  * Structural face of the `settingsScope` binder service provided by
@@ -128,7 +128,7 @@ function mountHostLocale(ctx: ClientContext): void {
     const lctx = injected as ClientContext & HostLocalePort
     lctx.effect(
       () => attachHostLocale(lctx),
-      'agent-sidecar: host locale bridge',
+      'dsh-agents-sidecar: host locale bridge',
     )
   })
 }
@@ -137,9 +137,9 @@ function mountHostLocale(ctx: ClientContext): void {
 // Style lifecycle.
 // ---------------------------------------------------------------------------
 
-const STYLE_OWNER = Symbol.for('@shendeguize/dsh-agent-sidecar/style-owner')
-const STYLE_MANIFEST = Symbol.for('@shendeguize/dsh-agent-sidecar/style-manifest')
-const STYLE_GENERATION = Symbol.for('@shendeguize/dsh-agent-sidecar/style-generation')
+const STYLE_OWNER = Symbol.for('dsh-agents-sidecar/style-owner')
+const STYLE_MANIFEST = Symbol.for('dsh-agents-sidecar/style-manifest')
+const STYLE_GENERATION = Symbol.for('dsh-agents-sidecar/style-generation')
 
 type StyleGlobals = Record<PropertyKey, unknown>
 
@@ -292,7 +292,7 @@ export function apply(ctx: ClientContext): void {
     } catch (err) {
       // e.g. an environment without EventSource: the board renders its
       // empty/unknown state instead of taking the plugin fiber down.
-      console.error('agent-sidecar: data stream start failed', err)
+      console.error('dsh-agents-sidecar: data stream start failed', err)
     }
     if (typeof document === 'undefined') {
       return () => {
@@ -307,9 +307,9 @@ export function apply(ctx: ClientContext): void {
       document.removeEventListener('visibilitychange', onVisibility)
       controller.stop()
     }
-  }, 'agent-sidecar: client data feed')
+  }, 'dsh-agents-sidecar: client data feed')
 
-  ctx.effect(keepStylesAlive, 'agent-sidecar: injected styles')
+  ctx.effect(keepStylesAlive, 'dsh-agents-sidecar: injected styles')
 
   // Seat 1: frame-wide Agent Center. Root scope keeps it reachable from an
   // empty conversation, and the retained navigation snapshot makes early
@@ -327,15 +327,15 @@ export function apply(ctx: ClientContext): void {
       {
         isCollision: isRegistrationCollision,
         onError: (error) => {
-          console.error('agent-sidecar: center overlay registration failed', error)
+          console.error('dsh-agents-sidecar: center overlay registration failed', error)
         },
         onTimeout: () => {
-          console.error('agent-sidecar: center overlay handoff timed out')
+          console.error('dsh-agents-sidecar: center overlay handoff timed out')
         },
       },
     ))
   } catch (err) {
-    console.error('agent-sidecar: center overlay mount failed', err)
+    console.error('dsh-agents-sidecar: center overlay mount failed', err)
   }
 
   // Sidebar navigation shares the same narrow callback as the footer and
@@ -343,10 +343,10 @@ export function apply(ctx: ClientContext): void {
   try {
     ctx.effect(
       () => mountSidebarEntry(openAgentCenter, sidebarEntryCopy),
-      'agent-sidecar: sidebar entry',
+      'dsh-agents-sidecar: sidebar entry',
     )
   } catch (err) {
-    console.error('agent-sidecar: sidebar entry mount failed', err)
+    console.error('dsh-agents-sidecar: sidebar entry mount failed', err)
   }
 
   // Seat 2: cross-agent board as the "Sidecar" conversation tab.
@@ -364,15 +364,15 @@ export function apply(ctx: ClientContext): void {
       {
         isCollision: isRegistrationCollision,
         onError: (error) => {
-          console.error('agent-sidecar: board tab registration failed', error)
+          console.error('dsh-agents-sidecar: board tab registration failed', error)
         },
         onTimeout: () => {
-          console.error('agent-sidecar: board tab handoff timed out')
+          console.error('dsh-agents-sidecar: board tab handoff timed out')
         },
       },
     ))
   } catch (err) {
-    console.error('agent-sidecar: board tab mount failed', err)
+    console.error('dsh-agents-sidecar: board tab mount failed', err)
   }
 
   // Seat 3: footer status widget.
@@ -389,15 +389,15 @@ export function apply(ctx: ClientContext): void {
       {
         isCollision: isRegistrationCollision,
         onError: (error) => {
-          console.error('agent-sidecar: footer widget registration failed', error)
+          console.error('dsh-agents-sidecar: footer widget registration failed', error)
         },
         onTimeout: () => {
-          console.error('agent-sidecar: footer widget handoff timed out')
+          console.error('dsh-agents-sidecar: footer widget handoff timed out')
         },
       },
     ))
   } catch (err) {
-    console.error('agent-sidecar: footer widget mount failed', err)
+    console.error('dsh-agents-sidecar: footer widget mount failed', err)
   }
 
   // Seat 4: settings card, once the optional settingsScope service resolves.
@@ -423,7 +423,7 @@ export function apply(ctx: ClientContext): void {
         }
         sctx.effect(
           () => scope.subscribe(adoptDefaults),
-          'agent-sidecar: settings→filter defaults',
+          'dsh-agents-sidecar: settings→filter defaults',
         )
         adoptDefaults()
 
@@ -438,19 +438,19 @@ export function apply(ctx: ClientContext): void {
           {
             isCollision: isRegistrationCollision,
             onError: (error) => {
-              console.error('agent-sidecar: settings card registration failed', error)
+              console.error('dsh-agents-sidecar: settings card registration failed', error)
             },
             onTimeout: () => {
-              console.error('agent-sidecar: settings card handoff timed out')
+              console.error('dsh-agents-sidecar: settings card handoff timed out')
             },
           },
         ))
       } catch (err) {
-        console.error('agent-sidecar: settings card mount failed', err)
+        console.error('dsh-agents-sidecar: settings card mount failed', err)
       }
     })
   } catch (err) {
-    console.error('agent-sidecar: settings scope injection failed', err)
+    console.error('dsh-agents-sidecar: settings scope injection failed', err)
   }
 
   // Seat 5: the `/sidecar` slash command, lazy on the commandUi service.
@@ -461,7 +461,7 @@ export function apply(ctx: ClientContext): void {
   try {
     registerSidecarCommand(ctx, { openCenter: openAgentCenter })
   } catch (err) {
-    console.error('agent-sidecar: /sidecar command mount failed', err)
+    console.error('dsh-agents-sidecar: /sidecar command mount failed', err)
   }
 
   // Seat 6 (optional): the better-sidebar mini tab, parked on the
@@ -472,6 +472,6 @@ export function apply(ctx: ClientContext): void {
   try {
     mountSidebarTab(ctx, controller)
   } catch (err) {
-    console.error('agent-sidecar: better-sidebar tab mount failed', err)
+    console.error('dsh-agents-sidecar: better-sidebar tab mount failed', err)
   }
 }

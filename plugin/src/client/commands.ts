@@ -436,7 +436,7 @@ export function createSidecarCommandContribution(
           snapshot = await doFetch({ signal })
         } catch (err) {
           if (isApiError(err) && err.kind === 'aborted') throw err
-          console.error('agent-sidecar: /sidecar state fetch failed', err)
+          console.error('dsh-agents-sidecar: /sidecar state fetch failed', err)
         }
         const overviewOpts: OverviewComputeOptions = { nowMs: now() }
         if (deps.topN !== undefined) overviewOpts.topN = deps.topN
@@ -485,15 +485,15 @@ export function registerSidecarCommand(
         {
           isCollision: isRegistrationCollision,
           onError: (error) => {
-            console.error('agent-sidecar: /sidecar command registration failed', error)
+            console.error('dsh-agents-sidecar: /sidecar command registration failed', error)
           },
           onTimeout: () => {
-            console.error('agent-sidecar: /sidecar command handoff timed out')
+            console.error('dsh-agents-sidecar: /sidecar command handoff timed out')
           },
         },
       )
     })
   } catch (err) {
-    console.error('agent-sidecar: commandUi injection failed', err)
+    console.error('dsh-agents-sidecar: commandUi injection failed', err)
   }
 }

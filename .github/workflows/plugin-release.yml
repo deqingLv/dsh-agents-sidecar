@@ -46,7 +46,7 @@ jobs:
             echo "plugin package version ${package_version} does not match ${tag}" >&2
             exit 1
           fi
-          echo "publishing @shendeguize/dsh-agent-sidecar@${package_version}"
+          echo "publishing dsh-agents-sidecar@${package_version}"
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

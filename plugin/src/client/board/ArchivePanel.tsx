@@ -206,7 +206,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
       closeLabel={BOARD_STRINGS.archive.cancel}
       description={BOARD_STRINGS.archive.explain}
     >
-      <div className={styles['archiveBody']} data-testid="agent-sidecar-archive-dialog">
+      <div className={styles['archiveBody']} data-testid="agents-sidecar-archive-dialog">
         <div className={styles['archiveControls']}>
           <label className={styles['control']}>
             {BOARD_STRINGS.archive.threshold}
@@ -219,7 +219,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
                 setPreview(null)
                 setPhase('idle')
               }}
-              data-testid="agent-sidecar-archive-threshold"
+              data-testid="agents-sidecar-archive-threshold"
             >
               {THRESHOLD_ORDER.map((token) => (
                 <option key={token} value={token}>
@@ -240,7 +240,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
                   setPreview(null)
                   setPhase('idle')
                 }}
-                data-testid="agent-sidecar-archive-custom"
+                data-testid="agents-sidecar-archive-custom"
               />
               {BOARD_STRINGS.archive.customMinutes}
             </label>
@@ -250,7 +250,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
             variant="outline"
             disabled={idleSeconds === null || phase === 'previewing' || phase === 'applying'}
             onClick={runPreview}
-            data-testid="agent-sidecar-archive-preview"
+            data-testid="agents-sidecar-archive-preview"
           >
             {phase === 'previewing'
               ? BOARD_STRINGS.archive.previewing
@@ -273,7 +273,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
               </span>
             )}
             {outcome.disposeFailed > 0 && (
-              <span data-testid="agent-sidecar-archive-dispose-failed">
+              <span data-testid="agents-sidecar-archive-dispose-failed">
                 {formatTemplate(BOARD_STRINGS.archive.doneDisposeFailed, {
                   n: outcome.disposeFailed,
                 })}
@@ -346,7 +346,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
                   className={styles['checkbox']}
                   checked={dispose}
                   onChange={(ev) => { setDispose(ev.target.checked) }}
-                  data-testid="agent-sidecar-archive-dispose"
+                  data-testid="agents-sidecar-archive-dispose"
                 />
                 {formatTemplate(BOARD_STRINGS.archive.dispose, { n: disposableSelected })}
               </label>
@@ -360,7 +360,7 @@ export function ArchiveDialog(props: ArchiveDialogProps): ReactElement {
                 variant="primary"
                 disabled={selectedTargets.length === 0 || phase === 'applying'}
                 onClick={runApply}
-                data-testid="agent-sidecar-archive-confirm"
+                data-testid="agents-sidecar-archive-confirm"
               >
                 {phase === 'applying'
                   ? BOARD_STRINGS.archive.confirming
@@ -409,7 +409,7 @@ export function ArchivedSection(props: ArchivedSectionProps): ReactElement | nul
   return (
     <section
       {...surfaceProps('board-card', styles['archivedPanel'])}
-      data-testid="agent-sidecar-archived"
+      data-testid="agents-sidecar-archived"
     >
       <div className={styles['archivedHead']}>
         <button
@@ -418,7 +418,7 @@ export function ArchivedSection(props: ArchivedSectionProps): ReactElement | nul
           aria-expanded={open}
           title={open ? BOARD_STRINGS.archived.collapse : BOARD_STRINGS.archived.expand}
           onClick={() => { setOpen((visible) => !visible) }}
-          data-testid="agent-sidecar-archived-toggle"
+          data-testid="agents-sidecar-archived-toggle"
         >
           <span className={styles['chevron']} aria-hidden>
             {open ? '▾' : '▸'}
@@ -433,7 +433,7 @@ export function ArchivedSection(props: ArchivedSectionProps): ReactElement | nul
             variant="ghost"
             disabled={busy !== null}
             onClick={() => { restore('all', 'all') }}
-            data-testid="agent-sidecar-archived-restore-all"
+            data-testid="agents-sidecar-archived-restore-all"
           >
             {busy === 'all'
               ? BOARD_STRINGS.archived.restoring

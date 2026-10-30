@@ -3,13 +3,13 @@ import type { CenterNavigation } from './center.ts'
 import css from './sidebar-entry.module.css'
 import { PLUGIN_DOM_ID, surfaceProps } from '../theme/parts.ts'
 
-export const SIDEBAR_ENTRY_SELECTOR = '[data-agent-sidecar-sidebar-entry]'
-const ENTRY_ATTRIBUTE = 'data-agent-sidecar-sidebar-entry'
-const LABEL_ATTRIBUTE = 'data-agent-sidecar-sidebar-entry-label'
+export const SIDEBAR_ENTRY_SELECTOR = '[data-agents-sidecar-sidebar-entry]'
+const ENTRY_ATTRIBUTE = 'data-agents-sidecar-sidebar-entry'
+const LABEL_ATTRIBUTE = 'data-agents-sidecar-sidebar-entry-label'
 const SVG_NS = 'http://www.w3.org/2000/svg'
-const ENTRY_BINDING = Symbol.for('@shendeguize/dsh-agent-sidecar/sidebar-entry-binding')
-const ENTRY_BRAND = Symbol.for('@shendeguize/dsh-agent-sidecar/sidebar-entry-brand')
-const ENTRY_DISPATCHER = Symbol.for('@shendeguize/dsh-agent-sidecar/sidebar-entry-dispatcher')
+const ENTRY_BINDING = Symbol.for('dsh-agents-sidecar/sidebar-entry-binding')
+const ENTRY_BRAND = Symbol.for('dsh-agents-sidecar/sidebar-entry-brand')
+const ENTRY_DISPATCHER = Symbol.for('dsh-agents-sidecar/sidebar-entry-dispatcher')
 const warnedForeignEntries = new WeakSet<object>()
 
 interface QueryScope { querySelector(selector: string): unknown | null }
@@ -205,7 +205,7 @@ function existingEntry(button: HTMLButtonElement): SidebarEntryElements | null {
 }
 
 function rejectLegacyEntry(): null {
-  console.warn('[agent-sidecar] Sidebar legacy entry cannot be safely replaced; leaving it untouched.')
+  console.warn('[dsh-agents-sidecar] Sidebar legacy entry cannot be safely replaced; leaving it untouched.')
   return null
 }
 
@@ -275,7 +275,7 @@ export function mountSidebarEntry(
   if (candidate !== null && !isOwnedSidebarEntry(candidate)) {
     if (!warnedForeignEntries.has(candidate)) {
       warnedForeignEntries.add(candidate)
-      console.warn('[agent-sidecar] Sidebar entry collision: refusing to modify a foreign '
+      console.warn('[dsh-agents-sidecar] Sidebar entry collision: refusing to modify a foreign '
         + SIDEBAR_ENTRY_SELECTOR + ' node.')
     }
     return () => {}

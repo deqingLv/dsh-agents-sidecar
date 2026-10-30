@@ -1,7 +1,7 @@
 /**
  * Unit tests for the sidecar `send` CLI executor (design §4.d path two).
  *
- * A temp-dir mock Node script simulates the `agent-sidecar send` contract
+ * A temp-dir mock Node script simulates the `agents-sidecar send` contract
  * (reads stdin fully, records argv + a stdin sha256 observation to a file,
  * then emits a scenario-selected JSON receipt / exit code), and a real
  * `node:child_process.spawn` adapter drives it through {@link SpawnLike}.
@@ -56,7 +56,7 @@ it('keeps the Copilot-compatible external send argv contract version-stable', ()
 })
 
 // ---------------------------------------------------------------------------
-// Mock `agent-sidecar` CLI: a Node script driven by MOCK_SCENARIO.
+// Mock `agents-sidecar` CLI: a Node script driven by MOCK_SCENARIO.
 // ---------------------------------------------------------------------------
 
 const MOCK_SCRIPT = `'use strict'
@@ -188,7 +188,7 @@ main()
 `
 
 const workDir = mkdtempSync(join(tmpdir(), 'send-cli-test-'))
-const scriptPath = join(workDir, 'mock-agent-sidecar.cjs')
+const scriptPath = join(workDir, 'mock-agents-sidecar.cjs')
 writeFileSync(scriptPath, MOCK_SCRIPT)
 
 afterAll(() => {
@@ -334,7 +334,7 @@ describe('createSendCliExecutor', () => {
   it('exposes the send-cli executor kind and spec defaults', () => {
     const { executor } = harness('ok')
     expect(executor.kind).toBe('send-cli')
-    expect(DEFAULT_SEND_CLI_COMMAND).toEqual(['agent-sidecar'])
+    expect(DEFAULT_SEND_CLI_COMMAND).toEqual(['agents-sidecar'])
     expect(DEFAULT_SEND_TIMEOUT_MS).toBe(30_000)
   })
 
@@ -624,7 +624,7 @@ describe('createSendCliExecutor', () => {
 
   it('keeps an asynchronously missing CLI unknown after stdin submission starts', async () => {
     const { executor } = harness('ok', {
-      command: [join(workDir, 'definitely-missing-agent-sidecar')],
+      command: [join(workDir, 'definitely-missing-agents-sidecar')],
     })
     const result = await executor.execute(request())
     expect(result.outcome).toBe('unknown')

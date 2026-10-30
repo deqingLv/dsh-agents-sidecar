@@ -1,4 +1,4 @@
-"""agent_sidecar core package."""
+"""agents_sidecar core package."""
 
 from sidecar.model import Event, Session, Status
 

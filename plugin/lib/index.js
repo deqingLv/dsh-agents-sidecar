@@ -6,7 +6,7 @@ import { createConnection } from "node:net";
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { performance } from "node:perf_hooks";
 /** Prefix marker used to keep dedicated analysis sessions off the board. */
-const ANALYSIS_SESSION_PREFIX$2 = "agent-sidecar-analysis-";
+const ANALYSIS_SESSION_PREFIX$2 = "agents-sidecar-analysis-";
 /** Title chars kept in prompts and logs (titles are untrusted input too). */
 const MAX_TITLE_CHARS = 200;
 /** Appended to the input text when it was cut at `maxInputChars`. */
@@ -94,7 +94,7 @@ var AnalysisEngine = class {
 		this.analysisTimeoutMs = deps.analysisTimeoutMs ?? 6e4;
 		this.createTimeoutMs = deps.createTimeoutMs ?? 2e4;
 		this.maxActiveSessions = deps.maxActiveSessions ?? 4;
-		this.pluginName = deps.pluginName ?? "agent-sidecar";
+		this.pluginName = deps.pluginName ?? "dsh-agents-sidecar";
 	}
 	/** Number of live (or being-created) analysis sessions. */
 	get activeCount() {
@@ -444,7 +444,7 @@ var AnalysisEngine = class {
 //#endregion
 //#region src/config.ts
 /**
-* Composition config for the dsh-agent-sidecar host half (design §6, scoped
+* Composition config for the dsh-agents-sidecar host half (design §6, scoped
 * to the task-approved field set). schemastery-validated by the cordis
 * Loader; every field carries a default so a bare patch row (no `config:`
 * block) mounts with zero configuration, and `.description()` strings feed
@@ -484,8 +484,8 @@ const Config = z.object({
 		backoffLimit: z.natural().min(1).default(5).description("托管失败熔断阈值:连续失败达到该次数后停止重启并进入 FAILED")
 	}).description("daemon 生命周期治理"),
 	sidecar: z.object({
-		command: z.array(String).default(["agent-sidecar"]).description("sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 [\"python3\", \"/path/to/agent-sidecar.pyz\"]);插件绝不代装"),
-		runtimeDir: z.string().default("").description("运行时目录:留空用默认 ~/.agent_sidecar(尊重 AGENT_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon")
+		command: z.array(String).default(["agents-sidecar"]).description("sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 [\"python3\", \"/path/to/agents-sidecar.pyz\"]);插件绝不代装"),
+		runtimeDir: z.string().default("").description("运行时目录:留空用默认 ~/.agents_sidecar(尊重 AGENTS_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon")
 	}).description("sidecar 调用方式"),
 	stream: z.object({
 		reconcileActiveMs: z.natural().min(100).default(2e3).description("对账快照周期(有会话工作中,毫秒)"),
@@ -508,7 +508,7 @@ const Config = z.object({
 		auto: z.boolean().default(false).description("自动归档:把空闲超过阈值的 idle/dead 会话从看板隐藏(只影响展示,不动会话文件与进程;会话一旦重新有活动自动解档)。仅对本插件拉起的 daemon 生效,且需 daemon 重启;默认关闭"),
 		autoAfterHours: z.natural().min(1).max(720).default(24).description("自动归档的无活动阈值(小时,默认 24;仅在自动归档开启时生效)")
 	}).description("自动归档策略"),
-	skill: z.object({ provide: z.boolean().default(true).description("是否经 registerProvider 内嵌提供 agent-sidecar skill(设计 §6 默认开;文件系统已装的同名 skill 自动优先;改动需重载插件生效)") }).description("skill 模式")
+	skill: z.object({ provide: z.boolean().default(true).description("是否经 registerProvider 内嵌提供 agents-sidecar skill(设计 §6 默认开;文件系统已装的同名 skill 自动优先;改动需重载插件生效)") }).description("skill 模式")
 });
 /**
 * Return the dotted names of apply-time keys a resolved config changes.
@@ -1686,7 +1686,7 @@ function sanitizedExecutorDetail(error, fallback) {
 	return (normalized === "" ? fallback : `${fallback}: ${normalized}`).slice(0, MAX_EXECUTOR_DETAIL_CHARS);
 }
 function createDshInjectExecutor(deps) {
-	const pluginName = deps.pluginName ?? "agent-sidecar";
+	const pluginName = deps.pluginName ?? "dsh-agents-sidecar";
 	const log = deps.log ?? (() => {});
 	const resumeTimeoutMs = deps.resumeTimeoutMs ?? 3e4;
 	const now = deps.now ?? performance.now.bind(performance);
@@ -2341,7 +2341,7 @@ function createDshDisposer(opts) {
 }
 const DSH_AGENT = "dsh";
 const KEY_SEP = "\0";
-const ANALYSIS_SESSION_PREFIX$1 = "agent-sidecar-analysis-";
+const ANALYSIS_SESSION_PREFIX$1 = "agents-sidecar-analysis-";
 /** Analysis sessions are private tool sessions and cannot become board data. */
 function isAnalysisSession$1(sessionId, extra) {
 	return sessionId.startsWith(ANALYSIS_SESSION_PREFIX$1) || extra?.["agentSidecarAnalysis"] === true;
@@ -3603,7 +3603,7 @@ function guardWriteAction(verdictCtx, opts) {
 //#endregion
 //#region src/routes.ts
 /** Route namespace, per the `/plugins/<package>/` convention (design §4.f). */
-const API_PREFIX = "/plugins/agent-sidecar/api";
+const API_PREFIX = "/plugins/dsh-agents-sidecar/api";
 const DEFAULT_MAX_SSE_CLIENTS = 8;
 const DEFAULT_SSE_HEARTBEAT_MS = 15e3;
 const DEFAULT_SSE_BUFFER_LIMIT = 256;
@@ -3737,8 +3737,8 @@ function subpathOf(rawUrl) {
 	} catch {
 		return null;
 	}
-	if (pathname === "/plugins/agent-sidecar/api") return "";
-	if (pathname.startsWith(`/plugins/agent-sidecar/api/`)) return pathname.slice(27);
+	if (pathname === "/plugins/dsh-agents-sidecar/api") return "";
+	if (pathname.startsWith(`/plugins/dsh-agents-sidecar/api/`)) return pathname.slice(32);
 	return null;
 }
 /** Query string of the request (empty params when the URL is unparsable). */
@@ -4527,7 +4527,7 @@ function createRoutes(deps, opts = {}) {
 }
 //#endregion
 //#region src/send-cli.ts
-const DEFAULT_SEND_CLI_COMMAND = Object.freeze(["agent-sidecar"]);
+const DEFAULT_SEND_CLI_COMMAND = Object.freeze(["agents-sidecar"]);
 /** Detail cap for collected stderr (2 KiB). */
 const STDERR_DETAIL_BYTES = 2 * 1024;
 /** send --json responses are ≤4 MiB; anything past this is garbage. */
@@ -4776,7 +4776,7 @@ function createSendCliExecutor(deps) {
 /** Bound for the last-event text summary kept per session. */
 const EVENT_TEXT_LIMIT = 160;
 const INVALID_PROPERTY = Symbol("invalid-property");
-const ANALYSIS_SESSION_PREFIX = "agent-sidecar-analysis-";
+const ANALYSIS_SESSION_PREFIX = "agents-sidecar-analysis-";
 function ownValue(record, key) {
 	try {
 		const descriptor = Object.getOwnPropertyDescriptor(record, key);
@@ -5003,28 +5003,28 @@ var SessionStore = class {
 //#endregion
 //#region src/skills-provider.ts
 /** Registry name of this provider (distinct from the skill it serves). */
-const SKILL_PROVIDER_NAME = "agent-sidecar-plugin";
+const SKILL_PROVIDER_NAME = "dsh-agents-sidecar-plugin";
 /** The one skill this provider serves (same name as the filesystem copy). */
-const SIDECAR_SKILL_NAME = "agent-sidecar";
-/** Routing description; aligned with skills/agent-sidecar/SKILL.md frontmatter. */
-const SIDECAR_SKILL_DESCRIPTION = "Monitors readonly local AI agent sessions (claude/codex/cursor/dsh/kimi/copilot) and reports their state and progress via the agent-sidecar CLI and the Sidecar board in dsh web. Use when the user asks for agent status, session progress, to monitor agents, which agent is waiting or working, or explicitly asks to send a message or feedback to an agent.";
+const SIDECAR_SKILL_NAME = "agents-sidecar";
+/** Routing description; aligned with skills/agents-sidecar/SKILL.md frontmatter. */
+const SIDECAR_SKILL_DESCRIPTION = "Monitors readonly local AI agent sessions (claude/codex/cursor/dsh/kimi/copilot) and reports their state and progress via the agents-sidecar CLI and the Sidecar board in dsh web. Use when the user asks for agent status, session progress, to monitor agents, which agent is waiting or working, or explicitly asks to send a message or feedback to an agent.";
 /**
 * dsh-scene skill body: semantically consistent with the canonical
-* `skills/agent-sidecar/SKILL.md`, condensed for the plugin context —
+* `skills/agents-sidecar/SKILL.md`, condensed for the plugin context —
 * observation goes CLI/board, while mutation distinguishes protected Kimi
 * spawn-resume, in-process DSH injection, and the external send CLI path.
 */
 const SIDECAR_SKILL_CONTENT = `# Agent Sidecar (dsh plugin edition)
 
-This dsh composition runs the \`dsh-agent-sidecar\` plugin. Observation is
+This dsh composition runs the \`dsh-agents-sidecar\` plugin. Observation is
 the default; every mutation needs an explicit user request in the same turn.
 
 ## Observe
 
-1. Check \`command -v agent-sidecar\`. If missing, do not install anything
-   unless the user explicitly asks; point them at the agent_sidecar repo
+1. Check \`command -v agents-sidecar\`. If missing, do not install anything
+   unless the user explicitly asks; point them at the agents_sidecar repo
    install options instead.
-2. Run \`agent-sidecar status --json\` first; summarize sessions by agent,
+2. Run \`agents-sidecar status --json\` first; summarize sessions by agent,
    status, title, project, and age from \`updated_at\`.
 3. Other observation commands, only when they match the request:
    \`list --json\` (48h window), \`list --all --json\`, \`ps --json\`,
@@ -5062,7 +5062,7 @@ the default; every mutation needs an explicit user request in the same turn.
   current default provider/model pair (\`dsh_model_unconfigured\` otherwise)
   and rejects any proven explicit or implicit preset
   (\`dsh_preset_unsupported\`); unknown persistence, preset, or host-service
-  state fails closed. Direct \`agent-sidecar send\` still returns
+  state fails closed. Direct \`agents-sidecar send\` still returns
   \`unsupported_dsh\`; only that CLI path is unsupported, not DSH injection
   through this plugin.
 - For **claude / codex / cursor-cli / copilot** sessions in \`waiting\`/\`idle\`, use
@@ -5073,10 +5073,10 @@ the default; every mutation needs an explicit user request in the same turn.
   otherwise:
 
   \`\`\`sh
-  agent-sidecar send <session-prefix> "<exact-message>" --allow-write --request-id "<stable-unique-id>" --json
+  agents-sidecar send <session-prefix> "<exact-message>" --allow-write --request-id "<stable-unique-id>" --json
   \`\`\`
 
-- On the external \`agent-sidecar send\` path, preserve the returned
+- On the external \`agents-sidecar send\` path, preserve the returned
   \`request_id\` and \`replayed\` fields. It rejects remote, \`working\`,
   \`dead\`, child, and unsupported-agent sessions. \`cursor-ide\` and
   \`cursor-ide\` has no mutation path; Copilot uses its authenticated
@@ -5086,18 +5086,18 @@ the default; every mutation needs an explicit user request in the same turn.
   \`audit_error\`, \`cleanup_incomplete\`, or any result with
   \`delivery: "unknown"\` — the agent may already have received the
   message. Report the unknown state plainly and ask the user what to do.
-- The audit store is fail-closed; never run \`agent-sidecar audit reset\`
+- The audit store is fail-closed; never run \`agents-sidecar audit reset\`
   automatically.
 
 ## Reference
 
-Full schemas, exit codes, and boundaries: \`skills/agent-sidecar/SKILL.md\`
-and \`reference.md\` in the agent_sidecar repository (also installable as a
+Full schemas, exit codes, and boundaries: \`skills/agents-sidecar/SKILL.md\`
+and \`reference.md\` in the agents_sidecar repository (also installable as a
 filesystem skill via \`scripts/install-skill.sh\`; a user-managed filesystem
 copy automatically shadows this plugin-provided one).`;
 const RESOURCE_BASE = {
 	kind: "opaque",
-	description: "Self-contained skill provided by the dsh-agent-sidecar plugin; the canonical long-form reference (SKILL.md + reference.md) lives in the agent_sidecar repository under skills/agent-sidecar/."
+	description: "Self-contained skill provided by the dsh-agents-sidecar plugin; the canonical long-form reference (SKILL.md + reference.md) lives in the agents_sidecar repository under skills/agents-sidecar/."
 };
 const INVOCATION = {
 	modelInvocable: true,
@@ -5118,7 +5118,7 @@ const SIDECAR_SKILL_CANDIDATE = {
 const provider = {
 	name: SKILL_PROVIDER_NAME,
 	list: () => Promise.resolve([SIDECAR_SKILL_CANDIDATE]),
-	get: (candidate) => Promise.resolve(candidate.name === "agent-sidecar" ? {
+	get: (candidate) => Promise.resolve(candidate.name === "agents-sidecar" ? {
 		name: SIDECAR_SKILL_NAME,
 		description: SIDECAR_SKILL_DESCRIPTION,
 		invocation: INVOCATION,
@@ -5129,7 +5129,7 @@ const provider = {
 	} : void 0)
 };
 /**
-* Register the agent-sidecar skill provider on `ctx.skills`.
+* Register the agents-sidecar skill provider on `ctx.skills`.
 *
 * Yield rule (per live test, env_facts.md): none needed beyond the rank —
 * dsh's registry dedupes same-name skills natively, and this provider's
@@ -5487,13 +5487,13 @@ var DaemonSupervisor = class {
 };
 //#endregion
 //#region src/index.ts
-const name = "agent-sidecar";
+const name = "dsh-agents-sidecar";
 /** Required services; see the module doc for why `agents` is lazy instead. */
 const inject = ["webServer", "subprocess"];
 /** `SOCKET_NAME` in sidecar/daemon.py. */
 const SOCKET_NAME = "daemon.sock";
 /** `RUNTIME_ENV` / `LEGACY_RUNTIME_ENV` in sidecar/daemon.py. */
-const RUNTIME_ENV = "AGENT_SIDECAR_RUNTIME_DIR";
+const RUNTIME_ENV = "AGENTS_SIDECAR_RUNTIME_DIR";
 const LEGACY_RUNTIME_ENV = "AGENT_SIDECAR_HOME";
 /** SIGTERM → grace → SIGKILL window for a hosted daemon (design §4.a: 5s). */
 const DAEMON_GRACE_MS = 5e3;
@@ -5547,12 +5547,12 @@ const SERVICE_PRESENT = /^service is (?:running|loaded|degraded)/m;
 /**
 * Resolve the effective runtime directory the way sidecar/daemon.py
 * `default_runtime_dir()` does: explicit config wins, then the
-* AGENT_SIDECAR_RUNTIME_DIR / legacy AGENT_SIDECAR_HOME environment of the
-* dsh host process, then `~/.agent_sidecar`.
+* AGENTS_SIDECAR_RUNTIME_DIR / legacy AGENT_SIDECAR_HOME environment of the
+* dsh host process, then `~/.agents_sidecar`.
 */
 function resolveRuntimeDir(configured, env) {
 	const raw = configured.trim() !== "" ? configured.trim() : (env[RUNTIME_ENV] ?? env[LEGACY_RUNTIME_ENV] ?? "").trim();
-	if (raw === "") return join(homedir(), ".agent_sidecar");
+	if (raw === "") return join(homedir(), ".agents_sidecar");
 	const expanded = raw === "~" ? homedir() : raw.startsWith("~/") ? join(homedir(), raw.slice(2)) : raw;
 	return isAbsolute(expanded) ? expanded : resolve(expanded);
 }
@@ -5634,7 +5634,7 @@ function apply(ctx, config) {
 	/** Explicit redirect only when configured; the ambient env already flows. */
 	const childEnv = config.sidecar.runtimeDir.trim() !== "" ? { [RUNTIME_ENV]: runtimeDir } : void 0;
 	const log = (level, msg, meta) => {
-		ctx.logger[level](meta === void 0 ? `agent-sidecar: ${msg}` : `agent-sidecar: ${msg} ${JSON.stringify(meta)}`);
+		ctx.logger[level](meta === void 0 ? `dsh-agents-sidecar: ${msg}` : `dsh-agents-sidecar: ${msg} ${JSON.stringify(meta)}`);
 	};
 	/** Clamped per-line forwarding of daemon output (design §4.c, S8-safe). */
 	const forwardLines = (stream, level) => {
@@ -5642,7 +5642,7 @@ function apply(ctx, config) {
 		stream.on("error", () => {});
 		createInterface({ input: stream }).on("line", (line) => {
 			const text = line.length > LOG_LINE_LIMIT ? `${line.slice(0, LOG_LINE_LIMIT)}…` : line;
-			if (text.trim() !== "") ctx.logger[level](`agent-sidecar daemon: ${text}`);
+			if (text.trim() !== "") ctx.logger[level](`agents-sidecar daemon: ${text}`);
 		});
 	};
 	/**
@@ -6180,7 +6180,7 @@ function apply(ctx, config) {
 			removeRoute();
 			fusionHolder.current.stop();
 		};
-	}, "agent-sidecar: host assembly (route + reconciler + supervisor + fusion + analysis)");
+	}, "dsh-agents-sidecar: host assembly (route + reconciler + supervisor + fusion + analysis)");
 	let dshFeedGeneration = 0;
 	ctx.inject(["sessions"], (injected) => {
 		const sctx = injected;
@@ -6211,7 +6211,7 @@ function apply(ctx, config) {
 			downgraded.start();
 			fusionHolder.current = downgraded;
 			withFeed.stop();
-		}, "agent-sidecar: fusion dsh feed release");
+		}, "dsh-agents-sidecar: fusion dsh feed release");
 		log("debug", "fusion dsh event feed online (sessions service bound)");
 	});
 	ctx.inject(["agents", "sessionPersistence"], (injected) => {
@@ -6228,7 +6228,7 @@ function apply(ctx, config) {
 			hostServiceGeneration += 1;
 			if (coldServices === bound) coldServices = null;
 			await dshExecutor.invalidateColdServiceGeneration(bound);
-		}, "agent-sidecar: cold dsh resume services release");
+		}, "dsh-agents-sidecar: cold dsh resume services release");
 		log("debug", "cold dsh resume services online", {
 			agentsAvailable: true,
 			persistenceAvailable: true
@@ -6242,14 +6242,14 @@ function apply(ctx, config) {
 		mctx.effect(() => () => {
 			hostServiceGeneration += 1;
 			if (liveAgentDefaultModel === bound) liveAgentDefaultModel = null;
-		}, "agent-sidecar: default model generation release");
+		}, "dsh-agents-sidecar: default model generation release");
 	});
 	ctx.inject(["agents"], (injected) => {
 		const actx = injected;
 		liveAgents = actx.agents;
 		actx.effect(() => () => {
 			liveAgents = null;
-		}, "agent-sidecar: agents binding release");
+		}, "dsh-agents-sidecar: agents binding release");
 		log("debug", "dsh live inject + analysis paths online (agents service bound)");
 	});
 	ctx.inject(["skills"], (injected) => {
@@ -6270,7 +6270,7 @@ function apply(ctx, config) {
 			const reportBakedDrift = (next) => {
 				const drifted = bakedConfigDrift(config, next);
 				if (drifted.length === 0) return;
-				log("warn", `settings values read at apply time were not applied: ${drifted.join(", ")}; set these in the profile's cordis patch for the 'agent-sidecar' row, since a plugin reload reads the entry config rather than the settings document`);
+				log("warn", `settings values read at apply time were not applied: ${drifted.join(", ")}; set these in the profile's cordis patch for the 'dsh-agents-sidecar' row, since a plugin reload reads the entry config rather than the settings document`);
 			};
 			reportBakedDrift(effective);
 			const unwatch = scope.watch((next) => {
@@ -6280,13 +6280,13 @@ function apply(ctx, config) {
 			sctx.effect(() => () => {
 				unwatch();
 				effective = config;
-			}, "agent-sidecar: settings scope release");
+			}, "dsh-agents-sidecar: settings scope release");
 			log("debug", "settings namespace registered", { applies: "live" });
 		} catch (err) {
 			log("warn", `settings namespace registration failed: ${String(err)}`);
 		}
 	});
-	ctx.logger.info(`agent-sidecar: host half assembled (policy=${config.daemon.policy}, socket=${socketPath}, route=${API_PREFIX})`);
+	ctx.logger.info(`dsh-agents-sidecar: host half assembled (policy=${config.daemon.policy}, socket=${socketPath}, route=${API_PREFIX})`);
 }
 //#endregion
 export { Config, apply, inject, name };

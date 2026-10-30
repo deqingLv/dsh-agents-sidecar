@@ -1,5 +1,5 @@
 /**
- * Composition config for the dsh-agent-sidecar host half (design §6, scoped
+ * Composition config for the dsh-agents-sidecar host half (design §6, scoped
  * to the task-approved field set). schemastery-validated by the cordis
  * Loader; every field carries a default so a bare patch row (no `config:`
  * block) mounts with zero configuration, and `.description()` strings feed
@@ -31,7 +31,7 @@ export interface DaemonConfig {
 export interface SidecarInvocationConfig {
   /** argv prefix of the sidecar executable (PATH name, absolute path, or e.g. python3+zipapp as multiple entries). */
   command: string[]
-  /** Empty = default `~/.agent_sidecar` (honoring AGENT_SIDECAR_RUNTIME_DIR); non-empty redirects via env for spawned daemons. */
+  /** Empty = default `~/.agents_sidecar` (honoring AGENTS_SIDECAR_RUNTIME_DIR); non-empty redirects via env for spawned daemons. */
   runtimeDir: string
 }
 
@@ -91,7 +91,7 @@ export interface ArchivePolicyConfig {
 
 /** Skill provider switch (design §6/§7 path two; wired in M4/T6.2). */
 export interface SkillConfig {
-  /** Register the embedded agent-sidecar skill on ctx.skills (read at apply; restart semantics). */
+  /** Register the embedded agents-sidecar skill on ctx.skills (read at apply; restart semantics). */
   provide: boolean
 }
 
@@ -142,15 +142,15 @@ export const Config: z<Config> = z.object({
     .object({
       command: z
         .array(String)
-        .default(['agent-sidecar'])
+        .default(['agents-sidecar'])
         .description(
-          'sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 ["python3", "/path/to/agent-sidecar.pyz"]);插件绝不代装',
+          'sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 ["python3", "/path/to/agents-sidecar.pyz"]);插件绝不代装',
         ),
       runtimeDir: z
         .string()
         .default('')
         .description(
-          '运行时目录:留空用默认 ~/.agent_sidecar(尊重 AGENT_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon',
+          '运行时目录:留空用默认 ~/.agents_sidecar(尊重 AGENTS_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon',
         ),
     })
     .description('sidecar 调用方式'),
@@ -234,7 +234,7 @@ export const Config: z<Config> = z.object({
         .boolean()
         .default(true)
         .description(
-          '是否经 registerProvider 内嵌提供 agent-sidecar skill(设计 §6 默认开;文件系统已装的同名 skill 自动优先;改动需重载插件生效)',
+          '是否经 registerProvider 内嵌提供 agents-sidecar skill(设计 §6 默认开;文件系统已装的同名 skill 自动优先;改动需重载插件生效)',
         ),
     })
     .description('skill 模式'),

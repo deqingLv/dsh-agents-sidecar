@@ -132,7 +132,7 @@ class LaunchdTests(unittest.TestCase):
         self.home = self.root / "home"
         self.home.mkdir(mode=0o700)
         self.launchctl = make_executable(self.root / "launchctl")
-        self.entry = make_executable(self.root / "agent-sidecar")
+        self.entry = make_executable(self.root / "agents-sidecar")
         self.runtime = self.root / "runtime"
         self.prefix = (str(self.entry.resolve()),)
 
@@ -253,7 +253,7 @@ class LaunchdTests(unittest.TestCase):
             document["ProgramArguments"],
         )
         environment = document["EnvironmentVariables"]
-        self.assertEqual({"AGENT_SIDECAR_RUNTIME_DIR", "PATH"}, set(environment))
+        self.assertEqual({"AGENTS_SIDECAR_RUNTIME_DIR", "PATH"}, set(environment))
         self.assertNotIn("HOME", environment)
         self.assertNotIn("token", repr(document).casefold())
 

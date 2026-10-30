@@ -49,7 +49,7 @@ export type { ArchivedCardVM, DaemonVersionDrift }
  * mark. Mirrors package.json `name` (client code cannot read package.json at
  * runtime); pinned against it by test/client-integration.test.ts.
  */
-export const PLUGIN_ID = '@shendeguize/dsh-agent-sidecar'
+export const PLUGIN_ID = 'dsh-agents-sidecar'
 
 /** localStorage key for the persisted board filters. */
 export const FILTERS_STORAGE_KEY = `${PLUGIN_ID}:board-filters`
@@ -463,7 +463,7 @@ export class SidecarController {
       return true
     } catch (err) {
       if (!this.isCurrentGeneration(generation)) return false
-      console.error('agent-sidecar: manual refresh failed', err)
+      console.error('dsh-agents-sidecar: manual refresh failed', err)
       this.settleInitialFailure(generation)
       return false
     }

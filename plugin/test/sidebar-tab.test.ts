@@ -460,14 +460,14 @@ describe('sidebar tab component', () => {
       ],
     }))
     const html = render(source)
-    expect(html).toContain('data-testid="agent-sidecar-sidebar-tab"')
-    expect(html).toContain('data-dsh-plugin="agent-sidecar"')
+    expect(html).toContain('data-testid="agents-sidecar-sidebar-tab"')
+    expect(html).toContain('data-dsh-plugin="dsh-agents-sidecar"')
     expect(html).toContain('data-dsh-part="sidebar-tab"')
     expect(html).toContain(`aria-label="${zh['sidebar.tabTitle']}"`)
     expect(html).toContain('data-visible="true"')
-    expect(html).toContain('data-testid="agent-sidecar-sidebar-counts"')
+    expect(html).toContain('data-testid="agents-sidecar-sidebar-counts"')
     expect(html).toContain('aria-expanded="false"')
-    expect(html).toContain('aria-controls="agent-sidecar-sidebar-detail-0"')
+    expect(html).toContain('aria-controls="agents-sidecar-sidebar-detail-0"')
     expect(html).toContain('1 工作中 · 1 等待中')
     expect(html).toContain('Alpha task')
     expect(html).toContain('Beta task')
@@ -500,7 +500,7 @@ describe('sidebar tab component', () => {
     const sessions = Array.from({ length: MAX_RECENT_SESSIONS + 2 }, (_, i) =>
       card({ sessionId: `sess-${i}`, updatedAtMs: 1_700_000_000_000 + i }))
     const source = new FakeSource(viewState({ sessions }))
-    const rows = render(source).match(/data-testid="agent-sidecar-sidebar-session"/g) ?? []
+    const rows = render(source).match(/data-testid="agents-sidecar-sidebar-session"/g) ?? []
     expect(rows).toHaveLength(MAX_RECENT_SESSIONS)
   })
 

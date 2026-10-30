@@ -1,45 +1,45 @@
 ---
-name: agent-sidecar
+name: agents-sidecar
 description: Monitors readonly local AI agent sessions and reports their state and progress, with remote monitoring only on request and explicit local send support. Use when the user asks for agent status, session progress, to monitor agents, which agent is waiting or working, or explicitly asks to send a message or feedback to an agent.
 user-invocable: true
 ---
 
 # Agent Sidecar
 
-Use `agent-sidecar` to inspect agent sessions without changing their
+Use `agents-sidecar` to inspect agent sessions without changing their
 transcripts, configuration, or hooks. Observation is the default. `send` is an
 experimental, explicitly authorized mutation that starts a separate native
 headless-resume process.
 
 ## Observation workflow
 
-1. Check `command -v agent-sidecar`.
+1. Check `command -v agents-sidecar`.
    - If it is missing, do not install anything unless the user explicitly asks.
      Point them to the documented alternatives: `pipx install .` from a
      checkout, `pipx install 'git+https://github.com/shendeguize/AgentSideCar.git'`,
      the deterministic zipapp, or `scripts/install-skill.sh` for checkout
      symlinks. Do not claim a PyPI-hosted package.
-2. Run `agent-sidecar status --json` first. Summarize the active sessions by
+2. Run `agents-sidecar status --json` first. Summarize the active sessions by
    agent, status, title, project, and age from `updated_at`.
 3. Use another observation command only when it matches the request:
-   - `agent-sidecar list --json` lists sessions updated in the last 48 hours.
-   - `agent-sidecar list --all --json` includes older sessions.
-   - `agent-sidecar ps --json` checks supported local agent processes.
-   - `agent-sidecar watch <session-prefix> --json` follows one session.
-   - `agent-sidecar watch --all --json` follows normalized events from all
+   - `agents-sidecar list --json` lists sessions updated in the last 48 hours.
+   - `agents-sidecar list --all --json` includes older sessions.
+   - `agents-sidecar ps --json` checks supported local agent processes.
+   - `agents-sidecar watch <session-prefix> --json` follows one session.
+   - `agents-sidecar watch --all --json` follows normalized events from all
      sessions. If an established daemon stream drops, it warns before switching
      to direct tailing because transition events may be missed.
-   - `agent-sidecar watch --all --remote --json` concurrently follows local
+   - `agents-sidecar watch --all --remote --json` concurrently follows local
      sessions and eligible remote hosts, but use it only for an explicit remote
      or cross-host watch request.
-   - `agent-sidecar tui` opens the interactive terminal dashboard; `q` exits.
-   - `agent-sidecar archive list --json` shows sessions hidden from every
+   - `agents-sidecar tui` opens the interactive terminal dashboard; `q` exits.
+   - `agents-sidecar archive list --json` shows sessions hidden from every
      listing by the local archive registry. Hiding them with
-     `agent-sidecar archive --idle-longer-than 2h [--yes]` or releasing them
-     with `agent-sidecar unarchive <session-prefix>` needs an explicit
+     `agents-sidecar archive --idle-longer-than 2h [--yes]` or releasing them
+     with `agents-sidecar unarchive <session-prefix>` needs an explicit
      request; both are per host, so a pod's registry is managed on the pod
      over ssh. Show the selection before applying it.
-4. Start the daemon with `agent-sidecar daemon start` only when the user asks
+4. Start the daemon with `agents-sidecar daemon start` only when the user asks
    for continuous monitoring, the TUI, or explicitly asks to start it. The
    command is idempotent. Status and list queries work without it by falling
    back to direct readonly scans. The daemon writes its socket and PID plus
@@ -48,34 +48,34 @@ headless-resume process.
    private `http.token` and owns transient `http.port` while running. These
    daemon observation writes make no persistent transcript or agent
    configuration changes. This normal start remains Unix-socket only.
-5. Stop the daemon with `agent-sidecar daemon stop` only when the user asks.
+5. Stop the daemon with `agents-sidecar daemon stop` only when the user asks.
 
 ## Packaging and persistent service boundaries
 
-`agent-sidecar package build --output dist/agent-sidecar.pyz` creates a
+`agents-sidecar package build --output dist/agents-sidecar.pyz` creates a
 deterministic, executable zipapp and prints its path, SHA-256 digest, and size.
 It can be run directly or with `python3 -I`. A pipx console script, executable
 zipapp, and checkout shim all resolve `daemon start` to a stable absolute
 runtime command, so background startup is independent of the caller's current
 working directory.
 
-`agent-sidecar service status` is a read-only combined supervisor and daemon
+`agents-sidecar service status` is a read-only combined supervisor and daemon
 health query and may be used when it helps answer a status or diagnostic
 request. On macOS the supervisor is the current user's
-`com.agent-sidecar.daemon` LaunchAgent; on Linux it is the current user's
-`agent-sidecar.service` systemd user unit. The Linux unit uses
+`com.agents-sidecar.daemon` LaunchAgent; on Linux it is the current user's
+`agents-sidecar.service` systemd user unit. The Linux unit uses
 `Restart=on-failure`, `KillMode=control-group`, bounded journald output, and a
 private writable runtime directory. It never writes `/etc`, invokes `sudo`, or
 enables lingering automatically.
 
-Never run `agent-sidecar service install`, `service install --force`, or
+Never run `agents-sidecar service install`, `service install --force`, or
 `service uninstall` unless the user explicitly requests that service mutation
 in the current turn. Continuous monitoring, daemon start, HTTP, status, or
 packaging requests do not imply permission to install a persistent service.
 Service installation is never automatic. Service control is unsupported on
 platforms other than macOS and Linux.
 
-When explicitly requested, install with `agent-sidecar service install`; add
+When explicitly requested, install with `agents-sidecar service install`; add
 `--http` and optional `--http-port <port>` only when the user also explicitly
 requests HTTP. A changed validated definition requires `--force`, which
 unloads and replaces the job and can interrupt monitoring. Warn that rollback
@@ -92,7 +92,7 @@ of service removal.
 ## Explicit HTTP panel workflow
 
 Enable HTTP only when the user explicitly asks for the HTTP API or browser
-panel. Use `agent-sidecar daemon start --http`; add `--http-port <port>` only
+panel. Use `agents-sidecar daemon start --http`; add `--http-port <port>` only
 when the user selects a value from `0` through `65535`. Omitted or zero means
 an ephemeral port. `daemon run` accepts the same flags for a foreground daemon.
 Do not add HTTP merely for ordinary status, list, watch, TUI, or continuous
@@ -111,7 +111,7 @@ remote or LAN. Its authenticated surface is status plus an NDJSON event stream;
 it has no send, reset, control, or CORS surface. Strict Host/Origin validation,
 bounded clients and streams, private mode-`0600` token/port files, and
 one-process/port ownership apply. Unsafe HTTP metadata fails startup. Stop the
-daemon with `agent-sidecar daemon stop` when the user asks; it closes streams
+daemon with `agents-sidecar daemon stop` when the user asks; it closes streams
 and releases the owned listener and port record.
 
 For remote monitoring, run `list --remote --json`, `status --remote --json`, or
@@ -125,7 +125,7 @@ When the user supplies an exact remote interpreter, append
 `--remote-python <absolute-path>` to remote `list`, `status`, or
 `watch --all`. One value applies to every selected host in that invocation;
 there is no per-host interpreter setting. Selection precedence is the CLI
-option, then `AGENT_SIDECAR_REMOTE_PYTHON`, then the bounded defaults. The
+option, then `AGENTS_SIDECAR_REMOTE_PYTHON`, then the bounded defaults. The
 environment variable is read only for remote-enabled forms of those three
 commands.
 
@@ -193,7 +193,7 @@ bind writes to the exact agent, full session ID, and request ID, and should
 keep the message out of the Sidecar argv:
 
 ```sh
-printf '%s' '<exact-message>' | agent-sidecar send '<full-session-id>' --agent '<agent-name>' --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
+printf '%s' '<exact-message>' | agents-sidecar send '<full-session-id>' --agent '<agent-name>' --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
 ```
 
 `--agent` restricts resolution to that exact agent name, case-insensitively.
@@ -237,7 +237,7 @@ Kimi is an exact-version special case. For Kimi Code `0.38.0`, always use the
 protected manual spawn-resume form:
 
 ```sh
-printf '%s' '<exact-message>' | agent-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
+printf '%s' '<exact-message>' | agents-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
 ```
 
 This starts one bounded `kimi acp` process; it does not attach to a live Kimi
@@ -315,7 +315,7 @@ inode, or key changes fail closed. Send requires the necessary POSIX
 descriptor-relative, no-follow, and locking primitives.
 
 Treat that namespace as persistent security state. Never delete, move, recreate,
-or replace `AGENT_SIDECAR_RUNTIME_DIR`, audit files, or the home-anchor marker
+or replace `AGENTS_SIDECAR_RUNTIME_DIR`, audit files, or the home-anchor marker
 to bypass `unsafe_lock`; it means retained history or identity cannot be
 proved. Preserve the evidence and do not retry. Only when the user explicitly
 starts a genuinely new request lineage may a new owner-private runtime path and
@@ -339,20 +339,20 @@ Codex also receive the native prompt through stdin, but Cursor CLI necessarily
 includes it in the child argv. Warn against sending secrets through either
 form.
 
-Never invoke `agent-sidecar audit rebind` or `audit reset` automatically,
+Never invoke `agents-sidecar audit rebind` or `audit reset` automatically,
 including in response to `audit_corrupt`, `audit_error`, or `unsafe_lock`.
 Rebind is available only for an explicitly reported
 `detail: "namespace_moved"` and never reconstructs a missing or corrupt marker:
 
 ```sh
-agent-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
+agents-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
 ```
 
 When rebind cannot prove the original epoch, key fingerprint, and valid
 retained logs, use the explicit archive reset:
 
 ```sh
-agent-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
+agents-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
 ```
 
 Reset refuses an active send and archives the key, marker, and retained logs
@@ -362,7 +362,7 @@ stronger explicit command below irreversibly deletes active state and all
 archives:
 
 ```sh
-agent-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
+agents-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
 ```
 
 Report the history consequence before either recovery operation; neither is
@@ -373,16 +373,16 @@ hooks, inject messages, or modify transcript stores.
 
 ## DSH injection goes through the plugin
 
-DSH discovers this skill through the `~/.dsh/skills/agent-sidecar` link
+DSH discovers this skill through the `~/.dsh/skills/agents-sidecar` link
 created by `scripts/install-skill.sh`. Inside DSH, observation is unchanged:
 run `status`, `list`, `ps`, `watch`, `tui`, and the daemon lifecycle commands
 exactly as documented above.
 
 Injection is different inside DSH. When a DSH user asks to inject or send a
-message into a monitored session, do not construct an `agent-sidecar send`
+message into a monitored session, do not construct an `agents-sidecar send`
 command; direct them to the injection panel of the
-`@shendeguize/dsh-agent-sidecar` plugin, which submits to the plugin's
-`/plugins/agent-sidecar/api/action` endpoint. That path injects `dsh`
+`dsh-agents-sidecar` plugin, which submits to the plugin's
+`/plugins/agents-sidecar/api/action` endpoint. That path injects `dsh`
 sessions in-process, routes eligible external targets through the same
 audited `send` contract, and enforces the plugin's `inject.enabled` gate plus
 its per-injection confirmation. A direct send to a `dsh` session is

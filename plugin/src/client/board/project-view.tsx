@@ -95,7 +95,7 @@ function SessionRow(props: {
       type="button"
       className={styles['session']}
       onClick={() => onSelect({ agent: session.agent, sessionId: session.sessionId })}
-      data-testid="agent-sidecar-project-session"
+      data-testid="agents-sidecar-project-session"
     >
       <Pill className={styles['statusPill']}>
         {dotState === null
@@ -192,7 +192,7 @@ function ProjectSection(props: {
 }): ReactElement {
   const { group, onSelect } = props
   return (
-    <section className={styles['group']} data-testid="agent-sidecar-project-group">
+    <section className={styles['group']} data-testid="agents-sidecar-project-group">
       <div className={styles['groupHead']}>
         <span
           className={styles['groupName']}
@@ -223,7 +223,7 @@ function ProjectSection(props: {
             onClick={() => {
               props.onAnalyzeProject?.({ targetKind: 'project', targetId: group.key })
             }}
-            data-testid="agent-sidecar-analyze-project"
+            data-testid="agents-sidecar-analyze-project"
           >
             {t('project.analyze')}
           </Button>
@@ -272,7 +272,7 @@ export function ProjectView(props: ProjectViewProps): ReactElement {
       {...surfaceProps('project-view', styles['root'])}
       ref={props.rootRef}
       onScroll={(event) => { props.onScrollTopChange(event.currentTarget.scrollTop) }}
-      data-testid="agent-sidecar-project-view"
+      data-testid="agents-sidecar-project-view"
     >
       <header className={styles['topbar']}>
         <span

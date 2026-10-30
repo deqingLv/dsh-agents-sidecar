@@ -15,7 +15,7 @@ from sidecar import remote_transport
 from sidecar.remote_types import MAX_ARTIFACT_BYTES
 
 
-DEFAULT_RELEASE_PATH = Path("dist/agent-sidecar.pyz")
+DEFAULT_RELEASE_PATH = Path("dist/agents-sidecar.pyz")
 RELEASE_SHEBANG = b"#!/usr/bin/env python3\n"
 MAX_RELEASE_BYTES = MAX_ARTIFACT_BYTES
 _MAX_SYMLINK_DEPTH = 16

@@ -2,7 +2,7 @@
  * Sidecar `send` CLI executor — injection path two of design §4.d
  * (.local/tasks/make_dsh_mode/design/dsh_plugin_design.md): external agents
  * (claude / codex / cursor-cli / copilot) are reached by spawning
- * `agent-sidecar send <session_id> --agent <agent> --exact-session
+ * `agents-sidecar send <session_id> --agent <agent> --exact-session
  * --message-stdin --allow-write --json`.
  *
  * Contract facts verified against sidecar/cli.py and sidecar/inject.py:
@@ -96,7 +96,7 @@ export interface SendCliOptions {
 // Tunables.
 // ---------------------------------------------------------------------------
 
-export const DEFAULT_SEND_CLI_COMMAND: readonly string[] = Object.freeze(['agent-sidecar'])
+export const DEFAULT_SEND_CLI_COMMAND: readonly string[] = Object.freeze(['agents-sidecar'])
 export const DEFAULT_SEND_TIMEOUT_MS = 30_000
 export const HARD_TIMEOUT_BUFFER_MS = 5_000
 /** Detail cap for collected stderr (2 KiB). */

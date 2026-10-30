@@ -158,10 +158,10 @@ describe('style lifecycle source contract', () => {
     )
 
     expect(source).toContain(
-      "const STYLE_MANIFEST = Symbol.for('@shendeguize/dsh-agent-sidecar/style-manifest')",
+      "const STYLE_MANIFEST = Symbol.for('dsh-agents-sidecar/style-manifest')",
     )
     expect(source).toContain(
-      "const STYLE_GENERATION = Symbol.for('@shendeguize/dsh-agent-sidecar/style-generation')",
+      "const STYLE_GENERATION = Symbol.for('dsh-agents-sidecar/style-generation')",
     )
     expect(source).toContain('const manifest = snapshotStyleManifest(globals)')
     expect(source).toMatch(

@@ -3,7 +3,7 @@ import type { RefObject } from 'react'
 
 const DIALOG_SELECTOR = '[role="dialog"][aria-modal="true"]'
 const MODAL_ISOLATION_STATE = Symbol.for(
-  '@shendeguize/dsh-agent-sidecar/modal-isolation-state',
+  'dsh-agents-sidecar/modal-isolation-state',
 )
 const FOCUSABLE_SELECTOR = [
   'a[href],area[href],button:not([disabled])',

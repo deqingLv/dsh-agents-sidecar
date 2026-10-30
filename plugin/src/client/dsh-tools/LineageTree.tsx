@@ -63,7 +63,7 @@ function TreeRow(props: {
     <div
       className={css['treeRow']}
       style={{ paddingLeft: node.depth * 16 }}
-      data-testid="agent-sidecar-lineage-row"
+      data-testid="agents-sidecar-lineage-row"
       data-role={node.role}
     >
       {node.hasChildren ? (
@@ -141,7 +141,7 @@ function Tree(props: {
           {tree.incompleteNotice}
         </div>
       )}
-      <div className={css['tree']} role="tree" data-testid="agent-sidecar-lineage-tree">
+      <div className={css['tree']} role="tree" data-testid="agents-sidecar-lineage-tree">
         {visibleLineageNodes(tree.nodes, collapsed).map((node) => (
           <TreeRow
             key={node.id}
@@ -170,7 +170,7 @@ export function LineageTree(props: LineageTreeProps): ReactElement {
   })
 
   return (
-    <section {...surfaceProps('dsh-tools', css['panel'])} data-testid="agent-sidecar-lineage">
+    <section {...surfaceProps('dsh-tools', css['panel'])} data-testid="agents-sidecar-lineage">
       <div className={css['panelHead']}>
         <span className={css['panelTitle']}>{S.title}</span>
         {view.kind === 'tree' && (
@@ -195,7 +195,7 @@ export function LineageTree(props: LineageTreeProps): ReactElement {
         <div
           className={css['degradeCard']}
           data-reason={view.card.reason}
-          data-testid="agent-sidecar-lineage-degraded"
+          data-testid="agents-sidecar-lineage-degraded"
         >
           <span className={css['degradeTitle']}>{view.card.title}</span>
           <span className={css['degradeBody']}>{view.card.body}</span>

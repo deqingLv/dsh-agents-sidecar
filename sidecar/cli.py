@@ -133,7 +133,7 @@ WATCH_HOST_WIDTH = 16
 WATCH_PRODUCER_JOIN_SECONDS = 1.0
 WATCH_QUEUE_ITEMS = 256
 WATCH_QUEUE_POLL_SECONDS = 0.05
-REMOTE_PYTHON_ENV = "AGENT_SIDECAR_REMOTE_PYTHON"
+REMOTE_PYTHON_ENV = "AGENTS_SIDECAR_REMOTE_PYTHON"
 _EVENT_FIELDS = ("ts", "agent", "session_id", "kind", "text", "extra")
 _SESSION_LINE = (
     "{branch}{agent:<11} {status:<7} {session:<16} {age:>4}"
@@ -347,7 +347,7 @@ def _local_only_error(command: str, argv: Sequence[str]) -> str:
 
     return (
         "{command}: archiving is per host; --remote/--host are unsupported. "
-        "Run it on the host instead: ssh HOST agent-sidecar {argv}\n".format(
+        "Run it on the host instead: ssh HOST agents-sidecar {argv}\n".format(
             command=sanitize_terminal_text(command),
             argv=sanitize_terminal_text(shlex.join(argv)),
         )
@@ -430,7 +430,7 @@ class _PendingTailArgumentParser(argparse.ArgumentParser):
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="agent-sidecar",
+        prog="agents-sidecar",
         description=(
             "Observation commands are read-only. send starts a local headless "
             "resume and may modify agent state."
@@ -646,7 +646,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "read the message from piped or redirected standard input "
             "instead of a positional argument, keeping it out of the "
-            "agent-sidecar command line; interactive terminals are refused"
+            "agents-sidecar command line; interactive terminals are refused"
         ),
     )
     send_parser.add_argument(
@@ -801,7 +801,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_RELEASE_PATH,
         metavar="PATH",
-        help="artifact path (default: dist/agent-sidecar.pyz)",
+        help="artifact path (default: dist/agents-sidecar.pyz)",
     )
 
     daemon_parser = commands.add_parser("daemon", help="manage the local sidecar daemon")
@@ -1391,7 +1391,7 @@ def _report_archive_scope(stderr: TextIO) -> None:
         return
     stderr.write(
         "remote: {} session(s) archived on this host are not listed; each "
-        "remote host applies its own registry (ssh HOST agent-sidecar "
+        "remote host applies its own registry (ssh HOST agents-sidecar "
         "archive list)\n".format(archived)
     )
     stderr.flush()
@@ -1417,14 +1417,14 @@ def _report_remote_python_hint(
     if explicit:
         stderr.write(
             "remote: the interpreter set via "
-            "--remote-python/AGENT_SIDECAR_REMOTE_PYTHON is missing or "
+            "--remote-python/AGENTS_SIDECAR_REMOTE_PYTHON is missing or "
             "older than 3.8 on {} host(s)\n".format(host_count)
         )
     else:
         stderr.write(
             "remote: no Python >= 3.8 found among bounded candidates on "
             "{} host(s); use --remote-python <absolute-path> or "
-            "AGENT_SIDECAR_REMOTE_PYTHON to pin an interpreter\n".format(
+            "AGENTS_SIDECAR_REMOTE_PYTHON to pin an interpreter\n".format(
                 host_count
             )
         )
@@ -2957,7 +2957,7 @@ def _report_send_error(error: object, message: str, stderr: TextIO) -> None:
     if getattr(error, "detail", None) == "namespace_moved":
         stderr.write(
             "send: audit namespace moved; run "
-            "`agent-sidecar audit rebind --allow-write "
+            "`agents-sidecar audit rebind --allow-write "
             "--confirm REBIND-SEND-AUDIT`\n"
         )
         stderr.flush()

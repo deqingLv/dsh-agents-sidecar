@@ -179,7 +179,7 @@ function SessionCard(props: {
   return (
     <article
       {...surfaceProps('board-card', styles['card'])}
-      data-testid="agent-sidecar-card"
+      data-testid="agents-sidecar-card"
     >
       <button
         ref={openerRef}
@@ -218,7 +218,7 @@ function SessionCard(props: {
         className={styles['cardId']}
         title={`${card.sessionId}\n${BOARD_STRINGS.card.copyId}`}
         onClick={onCopyId}
-        data-testid="agent-sidecar-card-id"
+        data-testid="agents-sidecar-card-id"
       >
         {card.shortId}
         {copied && <span className={styles['copied']} role="status">{BOARD_STRINGS.card.copied}</span>}
@@ -316,7 +316,7 @@ function ProjectGroup(props: {
                   ? BOARD_STRINGS.group.collapseIdle
                   : BOARD_STRINGS.group.expandIdle}
                 onClick={() => { setIdleExpanded((open) => !open) }}
-                data-testid="agent-sidecar-idle-summary"
+                data-testid="agents-sidecar-idle-summary"
               >
                 <span className={styles['chevron']} aria-hidden>
                   {idleExpanded ? '▾' : '▸'}
@@ -448,7 +448,7 @@ export function Board(props: BoardProps): ReactElement {
       {...surfaceProps('board', styles['root'])}
       ref={props.rootRef}
       onScroll={(event) => { props.onScrollTopChange(event.currentTarget.scrollTop) }}
-      data-testid="agent-sidecar-board"
+      data-testid="agents-sidecar-board"
       aria-busy={!props.hasSnapshot}
     >
       <header {...surfaceProps('board-toolbar', styles['topbar'])}>
@@ -477,7 +477,7 @@ export function Board(props: BoardProps): ReactElement {
           aria-pressed={props.filters.statusFilter === 'working'}
           title={statusBadgeTitle('working')}
           onClick={() => { toggleStatusFilter('working') }}
-          data-testid="agent-sidecar-count-working"
+          data-testid="agents-sidecar-count-working"
         >
           {vm.workingCount > 0
             ? <StateDot state="ongoing" size={8} />
@@ -490,14 +490,14 @@ export function Board(props: BoardProps): ReactElement {
           aria-pressed={props.filters.statusFilter === 'waiting'}
           title={statusBadgeTitle('waiting')}
           onClick={() => { toggleStatusFilter('waiting') }}
-          data-testid="agent-sidecar-count-waiting"
+          data-testid="agents-sidecar-count-waiting"
         >
           {vm.waitingCount > 0
             ? <StateDot state="warning" size={8} />
             : <span className={styles['dot']} data-tone="neutral" />}
           {formatTemplate(BOARD_STRINGS.topbar.countWaiting, { n: vm.waitingCount })}
         </Pill>
-        <span className={styles['countTotal']} data-testid="agent-sidecar-count-total">
+        <span className={styles['countTotal']} data-testid="agents-sidecar-count-total">
           {formatTemplate(BOARD_STRINGS.topbar.countTotal, { n: vm.totalCount })}
         </span>
         <span className={styles['spacer']} />
@@ -506,7 +506,7 @@ export function Board(props: BoardProps): ReactElement {
             size="sm"
             variant="outline"
             onClick={() => { props.onAnalyze?.({ targetKind: 'cross-agent' }) }}
-            data-testid="agent-sidecar-analyze-cross-agent"
+            data-testid="agents-sidecar-analyze-cross-agent"
           >
             {BOARD_STRINGS.topbar.analyzeCrossAgent}
           </Button>
@@ -517,7 +517,7 @@ export function Board(props: BoardProps): ReactElement {
             variant="outline"
             title={BOARD_STRINGS.archive.openTitle}
             onClick={() => { setArchiveOpen(true) }}
-            data-testid="agent-sidecar-archive-open"
+            data-testid="agents-sidecar-archive-open"
           >
             {BOARD_STRINGS.archive.open}
           </Button>
@@ -527,7 +527,7 @@ export function Board(props: BoardProps): ReactElement {
           variant="outline"
           onClick={() => { setShowClusters((visible) => !visible) }}
           aria-pressed={showClusters}
-          data-testid="agent-sidecar-cluster-toggle"
+          data-testid="agents-sidecar-cluster-toggle"
         >
           {BOARD_STRINGS.topbar.cluster}
         </Button>
@@ -540,7 +540,7 @@ export function Board(props: BoardProps): ReactElement {
             onChange={(ev) => {
               props.onFiltersChange(withAgentFilter(props.filters, ev.target.value))
             }}
-            data-testid="agent-sidecar-agent-filter"
+            data-testid="agents-sidecar-agent-filter"
           >
             <option value="">{t('board.topbar.allAgents')}</option>
             {availableAgents.map((agent) => (
@@ -589,7 +589,7 @@ export function Board(props: BoardProps): ReactElement {
             onChange={(ev) =>
               props.onFiltersChange({ ...props.filters, collapseIdle: ev.target.checked })
             }
-            data-testid="agent-sidecar-collapse-idle"
+            data-testid="agents-sidecar-collapse-idle"
           />
           {BOARD_STRINGS.topbar.collapseIdle}
         </label>
@@ -625,7 +625,7 @@ export function Board(props: BoardProps): ReactElement {
       )}
 
       {showClusters && (
-        <section className={styles['clusterPanel']} data-testid="agent-sidecar-clusters">
+        <section className={styles['clusterPanel']} data-testid="agents-sidecar-clusters">
           <header className={styles['clusterHead']}>
             <span className={styles['clusterTitle']}>{BOARD_STRINGS.cluster.title}</span>
             <span className={styles['groupCount']}>
@@ -683,7 +683,7 @@ export function Board(props: BoardProps): ReactElement {
         <div
           className={styles['empty']}
           role="status"
-          data-testid="agent-sidecar-board-loading"
+          data-testid="agents-sidecar-board-loading"
         >
           {t('board.states.loading')}
         </div>

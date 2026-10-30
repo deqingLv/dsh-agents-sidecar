@@ -102,7 +102,7 @@ export type WebRouteHandler = (
 ) => void | Promise<void>
 
 /** Route namespace, per the `/plugins/<package>/` convention (design §4.f). */
-export const API_PREFIX = '/plugins/agent-sidecar/api'
+export const API_PREFIX = '/plugins/dsh-agents-sidecar/api'
 
 /**
  * The slice of {@link InjectGateway} the routes drive. A `Pick` keeps the

@@ -177,7 +177,7 @@ interface DaemonConfig {
 interface SidecarInvocationConfig {
   /** argv prefix of the sidecar executable (PATH name, absolute path, or e.g. python3+zipapp as multiple entries). */
   command: string[];
-  /** Empty = default `~/.agent_sidecar` (honoring AGENT_SIDECAR_RUNTIME_DIR); non-empty redirects via env for spawned daemons. */
+  /** Empty = default `~/.agents_sidecar` (honoring AGENTS_SIDECAR_RUNTIME_DIR); non-empty redirects via env for spawned daemons. */
   runtimeDir: string;
 }
 /** Reconciler snapshot cadences (design §4.b / ADR-2). */
@@ -231,7 +231,7 @@ interface ArchivePolicyConfig {
 }
 /** Skill provider switch (design §6/§7 path two; wired in M4/T6.2). */
 interface SkillConfig {
-  /** Register the embedded agent-sidecar skill on ctx.skills (read at apply; restart semantics). */
+  /** Register the embedded agents-sidecar skill on ctx.skills (read at apply; restart semantics). */
   provide: boolean;
 }
 /** Validated composition config (all defaults filled by the schema). */
@@ -396,7 +396,7 @@ interface DshSessionFace {
 }
 //#endregion
 //#region src/index.d.ts
-declare const name = "agent-sidecar";
+declare const name = "dsh-agents-sidecar";
 /** Required services; see the module doc for why `agents` is lazy instead. */
 declare const inject: string[];
 /** `ctx.webServer` face (route registration only). */

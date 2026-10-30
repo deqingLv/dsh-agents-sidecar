@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The DSH plugin is now published as `dsh-agents-sidecar` instead of
+  `@shendeguize/dsh-agent-sidecar`, and its runtime identity moved with the
+  name: the cordis row id and package specifier, the settings namespace, the
+  locale namespace, the Center entry id, the `data-dsh-plugin` owner value and
+  the injected-message source all use `dsh-agents-sidecar`. The plugin-owned
+  HTTP prefix changed from `/plugins/agent-sidecar/api` to
+  `/plugins/dsh-agents-sidecar/api`. Existing profiles that still carry a
+  `id: agent-sidecar` patch row must rename that row (or remove and reinstall
+  the plugin) to pick up the new identity. The Python package and module name
+  (`sidecar`) and the upstream repository URLs are unchanged.
+- The CLI is now `agents-sidecar` instead of `agent-sidecar`, and the rest of
+  the product's on-disk identity moved with it: the `[project.scripts]` entry
+  point and the repository shim (`./agents-sidecar`), the `dist/agents-sidecar.pyz`
+  artifact, the skill bundle (`skills/agents-sidecar`, installed as
+  `~/.cursor/skills/agents-sidecar`, `~/.claude/skills/agents-sidecar` and
+  `~/.dsh/skills/agents-sidecar`, with the executable linked at
+  `~/.local/bin/agents-sidecar`), the `AGENT_SIDECAR_*` environment variables
+  (now `AGENTS_SIDECAR_*`), the default runtime directory (`~/.agents_sidecar`)
+  and its send-audit namespace anchor (`.agents_sidecar-namespaces`), the
+  macOS LaunchAgent label (`com.agents-sidecar.daemon`) and the Linux user unit
+  (`agents-sidecar.service`). The legacy `AGENT_SIDECAR_HOME` alias is still
+  read, so a runtime directory that existed only under that variable keeps
+  working; every other consumer must move to the new names.
+  This is a migration, not an in-place upgrade: stop the old daemon and run
+  `agent-sidecar service uninstall` before removing the old executable and
+  skill links, then reinstall and run `agents-sidecar service install`. A
+  daemon left running under the old label keeps its socket in the old runtime
+  directory, which the renamed CLI never looks at. Release assets follow the
+  new name from the next release; already-published tags keep their
+  `agent-sidecar-<version>.pyz` assets.
+
 ### Fixed
 
 - The DSH plugin's danger notices are readable again instead of being red text

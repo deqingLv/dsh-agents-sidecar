@@ -45,8 +45,8 @@ class ReleaseZipappTests(unittest.TestCase):
     def test_build_is_reproducible_bounded_executable_and_isolated(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
-            first_path = root / "one" / "agent-sidecar.pyz"
-            second_path = root / "two" / "agent-sidecar.pyz"
+            first_path = root / "one" / "agents-sidecar.pyz"
+            second_path = root / "two" / "agents-sidecar.pyz"
 
             first = build_release_zipapp(first_path)
             second = build_release_zipapp(second_path)
@@ -93,11 +93,11 @@ class ReleaseZipappTests(unittest.TestCase):
 
             self.assertEqual(0, version.returncode, version.stderr)
             self.assertEqual(
-                "agent-sidecar {}\n".format(__version__),
+                "agents-sidecar {}\n".format(__version__),
                 version.stdout,
             )
             self.assertEqual(0, list_help.returncode, list_help.stderr)
-            self.assertIn("usage: agent-sidecar list", list_help.stdout)
+            self.assertIn("usage: agents-sidecar list", list_help.stdout)
 
             if os.name == "posix":
                 direct = subprocess.run(
@@ -112,7 +112,7 @@ class ReleaseZipappTests(unittest.TestCase):
                 )
                 self.assertEqual(0, direct.returncode, direct.stderr)
                 self.assertEqual(
-                    "agent-sidecar {}\n".format(__version__),
+                    "agents-sidecar {}\n".format(__version__),
                     direct.stdout,
                 )
 
@@ -120,7 +120,7 @@ class ReleaseZipappTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
             outer = root / "outer.pyz"
-            nested = root / "nested" / "agent-sidecar.pyz"
+            nested = root / "nested" / "agents-sidecar.pyz"
             build_release_zipapp(outer)
             environment = isolated_environment(root / "home")
 
@@ -157,7 +157,7 @@ class ReleaseZipappTests(unittest.TestCase):
             self.assertEqual(outer.read_bytes(), nested.read_bytes())
             self.assertEqual(0, version.returncode, version.stderr)
             self.assertEqual(
-                "agent-sidecar {}\n".format(__version__),
+                "agents-sidecar {}\n".format(__version__),
                 version.stdout,
             )
 
@@ -170,7 +170,7 @@ class ReleaseZipappTests(unittest.TestCase):
             with self.subTest(directory=directory):
                 with tempfile.TemporaryDirectory(dir=directory) as temporary:
                     root = Path(temporary)
-                    output = root / "nested" / "agent-sidecar.pyz"
+                    output = root / "nested" / "agents-sidecar.pyz"
 
                     result = build_release_zipapp(output)
 
@@ -210,7 +210,7 @@ class ReleaseZipappTests(unittest.TestCase):
                 outside,
                 target_is_directory=True,
             )
-            output = trusted / "nested" / "missing" / "agent-sidecar.pyz"
+            output = trusted / "nested" / "missing" / "agents-sidecar.pyz"
 
             with self.assertRaises(ReleaseError):
                 build_release_zipapp(output)
@@ -227,7 +227,7 @@ class ReleaseZipappTests(unittest.TestCase):
             canonical.mkdir(mode=0o700, parents=True)
             alias = system / "alias"
             alias.symlink_to("canonical", target_is_directory=True)
-            output = alias / "agent-sidecar.pyz"
+            output = alias / "agents-sidecar.pyz"
 
             with mock.patch(
                 "sidecar.release._ROOT_UID",
@@ -249,7 +249,7 @@ class ReleaseZipappTests(unittest.TestCase):
             sibling.mkdir(mode=0o700)
             alias = branch / "alias"
             alias.symlink_to("../sibling", target_is_directory=True)
-            requested = alias / "agent-sidecar.pyz"
+            requested = alias / "agents-sidecar.pyz"
 
             with mock.patch(
                 "sidecar.release._ROOT_UID",
@@ -281,7 +281,7 @@ class ReleaseZipappTests(unittest.TestCase):
                 target_is_directory=True,
             )
             second.symlink_to("nested/..", target_is_directory=True)
-            requested = first / "agent-sidecar.pyz"
+            requested = first / "agents-sidecar.pyz"
 
             with mock.patch(
                 "sidecar.release._ROOT_UID",
@@ -294,7 +294,7 @@ class ReleaseZipappTests(unittest.TestCase):
             self.assertEqual(canonical.read_bytes(), requested.read_bytes())
             self.assertEqual([], list(nested.iterdir()))
             self.assertEqual(
-                {"agent-sidecar.pyz", "nested", "second"},
+                {"agents-sidecar.pyz", "nested", "second"},
                 {path.name for path in sibling.iterdir()},
             )
 
@@ -306,7 +306,7 @@ class ReleaseZipappTests(unittest.TestCase):
             system.mkdir(mode=0o700)
             escape = system / "escape"
             escape.symlink_to("/..", target_is_directory=True)
-            requested = escape / "agent-sidecar.pyz"
+            requested = escape / "agents-sidecar.pyz"
 
             with mock.patch(
                 "sidecar.release._ROOT_UID",
@@ -331,7 +331,7 @@ class ReleaseZipappTests(unittest.TestCase):
                 "first",
                 target_is_directory=True,
             )
-            output = system / "first" / "agent-sidecar.pyz"
+            output = system / "first" / "agents-sidecar.pyz"
 
             with mock.patch(
                 "sidecar.release._ROOT_UID",
@@ -358,7 +358,7 @@ class ReleaseZipappTests(unittest.TestCase):
             outside.mkdir(mode=0o700)
             alias = links / "alias"
             alias.symlink_to("../canonical", target_is_directory=True)
-            output = alias / "agent-sidecar.pyz"
+            output = alias / "agents-sidecar.pyz"
             real_readlink = os.readlink
             swapped = []
 
@@ -397,7 +397,7 @@ class ReleaseZipappTests(unittest.TestCase):
             outside = root / "outside"
             outside.mkdir(mode=0o700)
             moved = root / "moved-trusted"
-            output = nested / "agent-sidecar.pyz"
+            output = nested / "agents-sidecar.pyz"
             real_open = os.open
             swapped = []
 
@@ -425,7 +425,7 @@ class ReleaseZipappTests(unittest.TestCase):
             unsafe = root / "unsafe"
             unsafe.mkdir(mode=0o700)
             unsafe.chmod(0o777)
-            output = unsafe / "agent-sidecar.pyz"
+            output = unsafe / "agents-sidecar.pyz"
 
             with mock.patch(
                 "sidecar.release.os.geteuid",
@@ -439,7 +439,7 @@ class ReleaseZipappTests(unittest.TestCase):
     def test_failed_replace_leaves_original_and_no_temporary_file(self):
         with tempfile.TemporaryDirectory() as temporary:
             parent = Path(temporary).resolve()
-            target = parent / "agent-sidecar.pyz"
+            target = parent / "agents-sidecar.pyz"
             target.write_bytes(b"original")
 
             with mock.patch(
@@ -454,7 +454,7 @@ class ReleaseZipappTests(unittest.TestCase):
 
     def test_oversized_artifact_fails_before_creating_output_parent(self):
         with tempfile.TemporaryDirectory() as temporary:
-            output = Path(temporary).resolve() / "missing" / "agent-sidecar.pyz"
+            output = Path(temporary).resolve() / "missing" / "agents-sidecar.pyz"
             with mock.patch(
                 "sidecar.release.remote_transport.build_zipapp_bytes",
                 return_value=b"x" * MAX_RELEASE_BYTES,
@@ -519,7 +519,7 @@ class WheelSmokeTests(unittest.TestCase):
             )
             self.assertEqual(0, built.returncode, built.stderr)
             wheels = list(
-                wheelhouse.glob("agent_sidecar-{}-*.whl".format(__version__))
+                wheelhouse.glob("agents_sidecar-{}-*.whl".format(__version__))
             )
             self.assertEqual(1, len(wheels), built.stdout)
             wheel_path = wheels[0]
@@ -535,7 +535,7 @@ class WheelSmokeTests(unittest.TestCase):
                 self.assertFalse(
                     any(name.startswith("tests/") for name in archive.namelist())
                 )
-            self.assertIn("\nName: agent-sidecar\n", "\n" + metadata)
+            self.assertIn("\nName: agents-sidecar\n", "\n" + metadata)
             self.assertIn(
                 "\nVersion: {}\n".format(__version__),
                 "\n" + metadata,
@@ -562,7 +562,7 @@ class WheelSmokeTests(unittest.TestCase):
             scripts = environment_dir / ("Scripts" if os.name == "nt" else "bin")
             python = scripts / ("python.exe" if os.name == "nt" else "python")
             console = scripts / (
-                "agent-sidecar.exe" if os.name == "nt" else "agent-sidecar"
+                "agents-sidecar.exe" if os.name == "nt" else "agents-sidecar"
             )
             environment = isolated_environment(root / "home")
             environment["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
@@ -601,6 +601,6 @@ class WheelSmokeTests(unittest.TestCase):
             )
             self.assertEqual(0, version.returncode, version.stderr)
             self.assertEqual(
-                "agent-sidecar {}\n".format(__version__),
+                "agents-sidecar {}\n".format(__version__),
                 version.stdout,
             )

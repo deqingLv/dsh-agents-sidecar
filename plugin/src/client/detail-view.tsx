@@ -46,7 +46,7 @@ import { t } from './locales/index.ts'
 import { surfaceProps } from './theme/parts.ts'
 import css from './detail-view.module.css'
 
-const ANALYSIS_DISABLED_REASON_ID = 'agent-sidecar-analysis-disabled-reason'
+const ANALYSIS_DISABLED_REASON_ID = 'agents-sidecar-analysis-disabled-reason'
 
 type FetchSessionForEligibility = (
   sessionId: string,
@@ -148,7 +148,7 @@ export function DetailInjectTrigger(props: DetailInjectTriggerProps): ReactEleme
         title={hint}
         aria-describedby={reason === null ? undefined : reasonId}
         onClick={() => { requestInjectOpen(reason, props.onOpen) }}
-        data-testid="agent-sidecar-detail-inject"
+        data-testid="agents-sidecar-detail-inject"
       >
         {t('detail.actions.inject')}
       </Button>
@@ -156,7 +156,7 @@ export function DetailInjectTrigger(props: DetailInjectTriggerProps): ReactEleme
         <span
           id={reasonId}
           className={css['analysisDisabledReason']}
-          data-testid="agent-sidecar-detail-inject-reason"
+          data-testid="agents-sidecar-detail-inject-reason"
         >
           {hint}
         </span>
@@ -247,7 +247,7 @@ export function DetailDisposeButton(props: DetailDisposeButtonProps): ReactEleme
           setOutcome(null)
           setConfirming(true)
         }}
-        data-testid="agent-sidecar-detail-dispose"
+        data-testid="agents-sidecar-detail-dispose"
       >
         {t('detail.actions.dispose')}
       </Button>
@@ -255,7 +255,7 @@ export function DetailDisposeButton(props: DetailDisposeButtonProps): ReactEleme
         <span
           className={css['analysisDisabledReason']}
           role="alert"
-          data-testid="agent-sidecar-detail-dispose-outcome"
+          data-testid="agents-sidecar-detail-dispose-outcome"
         >
           {t(failureKey)}
         </span>
@@ -267,7 +267,7 @@ export function DetailDisposeButton(props: DetailDisposeButtonProps): ReactEleme
         closeLabel={t('detail.dispose.cancel')}
         description={t('detail.dispose.explain')}
       >
-        <div data-testid="agent-sidecar-detail-dispose-confirm">
+        <div data-testid="agents-sidecar-detail-dispose-confirm">
           <Button
             size="sm"
             variant="ghost"
@@ -281,7 +281,7 @@ export function DetailDisposeButton(props: DetailDisposeButtonProps): ReactEleme
             variant="primary"
             disabled={busy}
             onClick={run}
-            data-testid="agent-sidecar-detail-dispose-confirm-run"
+            data-testid="agents-sidecar-detail-dispose-confirm-run"
           >
             {busy ? t('detail.dispose.disposing') : t('detail.dispose.confirm')}
           </Button>
@@ -352,15 +352,15 @@ export function TimelineAvailabilityBoundary(
           className={css['toolsSection']}
           role={health.kind === 'partial' ? 'status' : 'alert'}
           data-kind={health.kind}
-          data-testid="agent-sidecar-timeline-degraded"
+          data-testid="agents-sidecar-timeline-degraded"
         >
           <span>{t(messageKey)}</span>
           {health.summary !== null && (
-            <span data-testid="agent-sidecar-timeline-source-summary">
+            <span data-testid="agents-sidecar-timeline-source-summary">
               {t('detail.sources.healthSummary', { ...health.summary })}
             </span>
           )}
-          <span data-testid="agent-sidecar-timeline-degraded-hint">
+          <span data-testid="agents-sidecar-timeline-degraded-hint">
             {daemonDown
               ? t(
                   props.daemonState === 'defer'
@@ -383,7 +383,7 @@ export function TimelineAvailabilityBoundary(
                 disabled={props.refreshing}
                 title={t('detail.header.refreshHint')}
                 onClick={props.onRefresh}
-                data-testid="agent-sidecar-timeline-retry"
+                data-testid="agents-sidecar-timeline-retry"
               >
                 {props.refreshing
                   ? t('detail.header.refreshing')
@@ -397,7 +397,7 @@ export function TimelineAvailabilityBoundary(
         <div
           className={css['toolsSection']}
           role="status"
-          data-testid="agent-sidecar-timeline-volatile"
+          data-testid="agents-sidecar-timeline-volatile"
         >
           <span>{t('detail.timeline.volatileOnly')}</span>
           <span>{t('detail.timeline.volatileOnlyHint')}</span>
@@ -458,7 +458,7 @@ export function SidecarDetailView(props: SidecarDetailViewProps): ReactElement {
       // control when onClose is supplied. Keep focus off the outer dialog
       // and detail body while avoiding a raw-session-derived DOM id.
       const back = root.querySelector<HTMLElement>(
-        '[data-testid="agent-sidecar-detail"] header button:not([disabled])',
+        '[data-testid="agents-sidecar-detail"] header button:not([disabled])',
       )
       const heading = root.querySelector<HTMLElement>('h1,[role="heading"]')
       ;(back ?? heading)?.focus({ preventScroll: true })
@@ -524,7 +524,7 @@ export function SidecarDetailView(props: SidecarDetailViewProps): ReactElement {
     <div
       {...surfaceProps('detail', css['detailRoot'])}
       ref={detailRootRef}
-      data-testid="agent-sidecar-detail-view"
+      data-testid="agents-sidecar-detail-view"
     >
       <div className={css['actionsRow']}>
         {injectIntegration !== undefined && (
@@ -543,7 +543,7 @@ export function SidecarDetailView(props: SidecarDetailViewProps): ReactElement {
           onClick={() => {
             props.onAnalyze({ targetKind: 'session', targetId: sessionId })
           }}
-          data-testid="agent-sidecar-detail-analyze"
+          data-testid="agents-sidecar-detail-analyze"
         >
           {t('detail.actions.analyze')}
         </Button>
@@ -573,7 +573,7 @@ export function SidecarDetailView(props: SidecarDetailViewProps): ReactElement {
 
       <div
         {...surfaceProps('dsh-tools', css['toolsSection'])}
-        data-testid="agent-sidecar-detail-tools"
+        data-testid="agents-sidecar-detail-tools"
       >
         <Button
           size="sm"

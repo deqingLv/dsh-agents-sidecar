@@ -4,7 +4,7 @@ import type { SurfaceProps } from '../theme/parts.ts'
 
 const DIALOG_SELECTOR = '[role="dialog"][aria-modal="true"]'
 const MODAL_SURFACE_OWNER = Symbol.for(
-  '@shendeguize/dsh-agent-sidecar/modal-surface-anchor-owner',
+  'dsh-agents-sidecar/modal-surface-anchor-owner',
 )
 
 type ModalSurfaceAttributes = Pick<

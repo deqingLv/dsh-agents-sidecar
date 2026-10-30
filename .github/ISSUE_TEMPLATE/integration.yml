@@ -45,8 +45,8 @@ body:
     id: versions
     attributes:
       label: Version matrix
-      description: Include Center, Sidecar, dsh-agent-sidecar plugin, and dsh-center-hub plugin versions or commits.
-      placeholder: "Center 0.2.x; Sidecar 0.7.0; dsh-agent-sidecar 0.3.0; dsh-center-hub 0.2.x"
+      description: Include Center, Sidecar, dsh-agents-sidecar plugin, and dsh-center-hub plugin versions or commits.
+      placeholder: "Center 0.2.x; Sidecar 0.7.0; dsh-agents-sidecar 0.3.0; dsh-center-hub 0.2.x"
     validations:
       required: true
 
@@ -57,7 +57,7 @@ body:
       description: Give synthetic, bounded steps. State whether the command path is dshc inventory, file fallback, remote observation, or tunneled page access.
       placeholder: |
         1. Prepare a synthetic inventory row ...
-        2. Run agent-sidecar list --remote --json ...
+        2. Run agents-sidecar list --remote --json ...
         3. Observe ...
     validations:
       required: true

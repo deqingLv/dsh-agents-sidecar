@@ -1,5 +1,5 @@
 /**
- * Module-owned lightweight locale table for the agent-sidecar client half.
+ * Module-owned lightweight locale table for the agents-sidecar client half.
  *
  * WHY MODULE-OWNED (source-audit conclusion, T2.3): the installed SDK
  * surface (`@deepseek-ai/dsh-client-runtime` 0.1.1-rc.2 +
@@ -53,7 +53,7 @@ export type SidecarLocale = HostMappedLocaleId
 export const BASE_LOCALE: SidecarLocale = 'zh'
 
 /** Host namespace owned by Agent Sidecar dictionaries. */
-export const SIDECAR_LOCALE_NAMESPACE = 'agent-sidecar'
+export const SIDECAR_LOCALE_NAMESPACE = 'dsh-agents-sidecar'
 
 /** One flat dictionary (the `ctx.locale.register(ns, locale, dict)` currency). */
 export type SidecarDict = Readonly<Record<string, string>>
@@ -161,7 +161,7 @@ interface HostLocaleArbiter {
 }
 
 const HOST_LOCALE_LEASES_SYMBOL = Symbol.for(
-  '@shendeguize/dsh-agent-sidecar/host-locale-leases',
+  'dsh-agents-sidecar/host-locale-leases',
 )
 const globalSymbols = globalThis as typeof globalThis & { [key: symbol]: unknown }
 

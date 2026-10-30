@@ -404,7 +404,7 @@ class CLITests(unittest.TestCase):
         self.assertEqual(0, raised.exception.code)
         self.assertRegex(sidecar.__version__, r"^\d+\.\d+\.\d+$")
         self.assertEqual(
-            "agent-sidecar {}\n".format(sidecar.__version__),
+            "agents-sidecar {}\n".format(sidecar.__version__),
             stdout.getvalue(),
         )
 
@@ -443,7 +443,7 @@ class CLITests(unittest.TestCase):
         )
 
         self.assertEqual(
-            Path("dist/agent-sidecar.pyz"),
+            Path("dist/agents-sidecar.pyz"),
             parsed_default.output,
         )
         self.assertEqual(
@@ -1143,7 +1143,7 @@ class CLITests(unittest.TestCase):
             "remote old-edge: python_too_old\n"
             "remote: no Python >= 3.8 found among bounded candidates on "
             "1 host(s); use --remote-python <absolute-path> or "
-            "AGENT_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
+            "AGENTS_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
             stderr.getvalue(),
         )
 
@@ -1187,7 +1187,7 @@ class CLITests(unittest.TestCase):
             "remote old-a: python_too_old\n"
             "remote old-b: python_too_old\n"
             "remote: the interpreter set via "
-            "--remote-python/AGENT_SIDECAR_REMOTE_PYTHON is missing or "
+            "--remote-python/AGENTS_SIDECAR_REMOTE_PYTHON is missing or "
             "older than 3.8 on 2 host(s)\n",
             stderr.getvalue(),
         )
@@ -2892,7 +2892,7 @@ class CLITests(unittest.TestCase):
             "events may be missed\n"
             "remote: no Python >= 3.8 found among bounded candidates on "
             "1 host(s); use --remote-python <absolute-path> or "
-            "AGENT_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
+            "AGENTS_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
             stderr.getvalue(),
         )
         self.assertEqual(
@@ -2934,7 +2934,7 @@ class CLITests(unittest.TestCase):
             "events may be missed\n"
             "remote: no Python >= 3.8 found among bounded candidates on "
             "2 host(s); use --remote-python <absolute-path> or "
-            "AGENT_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
+            "AGENTS_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
             stderr.getvalue(),
         )
         self.assertEqual(
@@ -3056,7 +3056,7 @@ class CLITests(unittest.TestCase):
             "events may be missed\n"
             "remote: no Python >= 3.8 found among bounded candidates on "
             "1 host(s); use --remote-python <absolute-path> or "
-            "AGENT_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
+            "AGENTS_SIDECAR_REMOTE_PYTHON to pin an interpreter\n",
             stderr.getvalue(),
         )
 
@@ -7145,7 +7145,7 @@ class ArchiveScopeTests(unittest.TestCase):
         self.runtime = Path(self.temporary.name)
         patch = mock.patch.dict(
             os.environ,
-            {"AGENT_SIDECAR_RUNTIME_DIR": str(self.runtime)},
+            {"AGENTS_SIDECAR_RUNTIME_DIR": str(self.runtime)},
         )
         patch.start()
         self.addCleanup(patch.stop)
@@ -7189,7 +7189,7 @@ class ArchiveScopeTests(unittest.TestCase):
         self.assertIn("archived 1 session(s) on this host", stdout)
         self.assertEqual("", stderr)
         # The registry is a plain file next to the rest of the runtime state,
-        # which is what makes `ssh pod agent-sidecar archive` sufficient.
+        # which is what makes `ssh pod agents-sidecar archive` sufficient.
         self.assertTrue((self.runtime / "archive.json").is_file())
 
         code, stdout, _ = self.run_cli(["list", "--json"], scanner)
@@ -7216,24 +7216,24 @@ class ArchiveScopeTests(unittest.TestCase):
         cases = (
             (
                 ["archive", "--idle-longer-than", "30m", "--yes", "--remote"],
-                "ssh HOST agent-sidecar archive apply "
+                "ssh HOST agents-sidecar archive apply "
                 "--idle-longer-than 30m --yes",
             ),
             (
                 ["archive", "list", "--host", "edge"],
-                "ssh HOST agent-sidecar archive list",
+                "ssh HOST agents-sidecar archive list",
             ),
             (
                 ["unarchive", "--all", "--remote"],
-                "ssh HOST agent-sidecar unarchive --all",
+                "ssh HOST agents-sidecar unarchive --all",
             ),
             (
                 ["unarchive", "pod-idle", "--host", "edge"],
-                "ssh HOST agent-sidecar unarchive pod-idle",
+                "ssh HOST agents-sidecar unarchive pod-idle",
             ),
             (
                 ["list", "--archived", "--remote"],
-                "ssh HOST agent-sidecar archive list",
+                "ssh HOST agents-sidecar archive list",
             ),
         )
         for argv, expected in cases:
@@ -7289,7 +7289,7 @@ class ArchiveScopeTests(unittest.TestCase):
             "1 session(s) archived on this host are not listed",
             stderr,
         )
-        self.assertIn("ssh HOST agent-sidecar archive list", stderr)
+        self.assertIn("ssh HOST agents-sidecar archive list", stderr)
 
     def test_a_corrupt_registry_does_not_add_a_second_complaint(self):
         (self.runtime / "archive.json").write_text("{", encoding="utf-8")

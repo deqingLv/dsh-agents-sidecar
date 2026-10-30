@@ -24,7 +24,7 @@ def make_executable(path, text="#!/bin/sh\nexit 0\n"):
 class RuntimeCommandTests(unittest.TestCase):
     def test_executable_release_zipapp_uses_absolute_entry(self):
         with tempfile.TemporaryDirectory() as temporary:
-            artifact = make_executable(Path(temporary) / "agent-sidecar.pyz")
+            artifact = make_executable(Path(temporary) / "agents-sidecar.pyz")
 
             prefix = resolve_runtime_prefix(
                 argv0=str(artifact),
@@ -37,12 +37,12 @@ class RuntimeCommandTests(unittest.TestCase):
     def test_relative_release_path_is_canonicalized_at_resolution_time(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            artifact = make_executable(root / "dist" / "agent-sidecar.pyz")
+            artifact = make_executable(root / "dist" / "agents-sidecar.pyz")
             previous = Path.cwd()
             try:
                 os.chdir(str(root))
                 prefix = resolve_runtime_prefix(
-                    argv0="dist/agent-sidecar.pyz",
+                    argv0="dist/agents-sidecar.pyz",
                     executable=sys.executable,
                     module_file=str(root / "installed" / "runtime_cmd.py"),
                 )
@@ -54,8 +54,8 @@ class RuntimeCommandTests(unittest.TestCase):
     def test_pipx_console_script_resolves_to_regular_executable(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            target = make_executable(root / "pipx" / "venv" / "bin" / "agent-sidecar")
-            entry = root / "bin" / "agent-sidecar"
+            target = make_executable(root / "pipx" / "venv" / "bin" / "agents-sidecar")
+            entry = root / "bin" / "agents-sidecar"
             entry.parent.mkdir()
             entry.symlink_to(target)
 
@@ -75,14 +75,14 @@ class RuntimeCommandTests(unittest.TestCase):
             module.write_text("# module\n", encoding="utf-8")
             (module.parent / "__init__.py").write_text("", encoding="utf-8")
             (root / "pyproject.toml").write_text("[project]\n", encoding="utf-8")
-            shim = make_executable(root / "agent-sidecar")
+            shim = make_executable(root / "agents-sidecar")
             unrelated = Path(temporary) / "elsewhere"
             unrelated.mkdir()
             previous = Path.cwd()
             try:
                 os.chdir(str(unrelated))
                 prefix = resolve_runtime_prefix(
-                    argv0="agent-sidecar",
+                    argv0="agents-sidecar",
                     executable=sys.executable,
                     module_file=str(module),
                 )
@@ -199,7 +199,7 @@ class RuntimeCommandTests(unittest.TestCase):
     def test_unrelated_ancestor_metadata_churn_is_accepted(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            executable = make_executable(root / "bin" / "agent-sidecar")
+            executable = make_executable(root / "bin" / "agents-sidecar")
 
             import sidecar.runtime_cmd as runtime_cmd
 
@@ -226,7 +226,7 @@ class RuntimeCommandTests(unittest.TestCase):
             module = root / "site-packages" / "sidecar" / "runtime_cmd.py"
             module.parent.mkdir(parents=True)
             module.write_text("# module\n", encoding="utf-8")
-            entry = make_executable(root / "agent-sidecar.pyz")
+            entry = make_executable(root / "agents-sidecar.pyz")
             entry.chmod(0o777)
             interpreter = make_executable(root / "python")
             interpreter.chmod(0o777)
@@ -243,7 +243,7 @@ class RuntimeCommandTests(unittest.TestCase):
             root = Path(temporary)
             first = make_executable(root / "first")
             second = make_executable(root / "second")
-            entry = root / "agent-sidecar"
+            entry = root / "agents-sidecar"
             entry.symlink_to(first)
             original_resolve = Path.resolve
             swapped = False

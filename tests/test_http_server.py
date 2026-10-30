@@ -802,7 +802,7 @@ class PanelAndLifecycleTests(HttpServerTestCase):
         self.assertFalse(
             any(
                 thread.is_alive()
-                and thread.name == "agent-sidecar-http-disconnect"
+                and thread.name == "agents-sidecar-http-disconnect"
                 for thread in threading.enumerate()
             )
         )

@@ -14,7 +14,7 @@
 
 - [ ] `README.md` and `README.zh.md` are updated, or are not affected.
 - [ ] `CHANGELOG.md` is updated, or is not affected.
-- [ ] `skills/agent-sidecar/SKILL.md` and `skills/agent-sidecar/reference.md` are updated, or are not affected.
+- [ ] `skills/agents-sidecar/SKILL.md` and `skills/agents-sidecar/reference.md` are updated, or are not affected.
 - [ ] Site documentation is updated, or is not affected.
 
 ---

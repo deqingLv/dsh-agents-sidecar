@@ -189,7 +189,7 @@ export type DshInjectLog = (
 // ---------------------------------------------------------------------------
 
 /** Default `source.plugin` attribution value. */
-export const DEFAULT_PLUGIN_NAME = 'agent-sidecar'
+export const DEFAULT_PLUGIN_NAME = 'dsh-agents-sidecar'
 /**
  * Bounded wait for `agents.resume`: persistence prepare retries unboundedly
  * under concurrent external writers, so an unloaded-session resume is the

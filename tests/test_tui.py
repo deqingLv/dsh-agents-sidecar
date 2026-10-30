@@ -490,7 +490,7 @@ class TUIRenderTests(unittest.TestCase):
 
         self.assertIn("source: daemon/connected", daemon)
         self.assertIn("source: direct/offline", direct)
-        self.assertIn("agent-sidecar daemon start", direct)
+        self.assertIn("agents-sidecar daemon start", direct)
         self.assertNotIn("pwned", untrusted)
         self.assertNotIn("\x1b", untrusted)
         self.assertNotIn("\nsource", untrusted)
@@ -619,7 +619,7 @@ class TUIRunTests(unittest.TestCase):
         self.assertEqual(0, code)
         self.assertIn("direct-id", output.getvalue())
         self.assertIn("source: direct/offline", output.getvalue())
-        self.assertIn("agent-sidecar daemon start", output.getvalue())
+        self.assertIn("agents-sidecar daemon start", output.getvalue())
         self.assertNotIn("q quit", output.getvalue())
         self.assertEqual(1, scanner.calls)
 

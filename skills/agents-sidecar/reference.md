@@ -20,9 +20,9 @@ idempotent/refuse-unrelated-path safety behavior.
 Build a deterministic standalone artifact with:
 
 ```text
-agent-sidecar package build --output dist/agent-sidecar.pyz
-./dist/agent-sidecar.pyz --version
-python3 -I dist/agent-sidecar.pyz --version
+agents-sidecar package build --output dist/agents-sidecar.pyz
+./dist/agents-sidecar.pyz --version
+python3 -I dist/agents-sidecar.pyz --version
 ```
 
 The build is atomic, bounded, mode `0755`, and reports the artifact path,
@@ -200,9 +200,9 @@ transcript.
 ## Opt-in loopback HTTP
 
 ```text
-agent-sidecar daemon start --http
-agent-sidecar daemon start --http --http-port 43123
-agent-sidecar daemon run --http
+agents-sidecar daemon start --http
+agents-sidecar daemon start --http --http-port 43123
+agents-sidecar daemon run --http
 ```
 
 HTTP is disabled by default. `--http-port` requires `--http` and accepts `0`
@@ -252,13 +252,13 @@ streams.
 ## Explicit persistent user service
 
 ```text
-agent-sidecar service install [--http [--http-port PORT]] [--force]
-agent-sidecar service install
-agent-sidecar service install --http
-agent-sidecar service install --http --http-port 43123
-agent-sidecar service install --http --http-port 43123 --force
-agent-sidecar service status
-agent-sidecar service uninstall
+agents-sidecar service install [--http [--http-port PORT]] [--force]
+agents-sidecar service install
+agents-sidecar service install --http
+agents-sidecar service install --http --http-port 43123
+agents-sidecar service install --http --http-port 43123 --force
+agents-sidecar service status
+agents-sidecar service uninstall
 ```
 
 Service control is supported on macOS with `/bin/launchctl` and on Linux with
@@ -268,17 +268,17 @@ without installing anything. Installation is explicit and never triggered by
 
 The service is a current-user LaunchAgent:
 
-- label: `com.agent-sidecar.daemon`.
+- label: `com.agents-sidecar.daemon`.
 - domain: `gui/<effective-uid>`.
 - definition:
-  `~/Library/LaunchAgents/com.agent-sidecar.daemon.plist`.
+  `~/Library/LaunchAgents/com.agents-sidecar.daemon.plist`.
 - lifecycle: `RunAtLoad=true`, `KeepAlive=true`, background process with a
   bounded launchd throttle.
 - command: the cwd-independent pipx console script, executable zipapp, or
   checkout shim resolved at installation time, followed by `daemon run`.
 
 On Linux the service is the current-user unit
-`~/.config/systemd/user/agent-sidecar.service`. It uses `Restart=on-failure`,
+`~/.config/systemd/user/agents-sidecar.service`. It uses `Restart=on-failure`,
 `KillMode=control-group`, `NoNewPrivileges`, `ProtectSystem=strict`,
 `ProtectHome=read-only`, an explicit writable runtime directory, and journald
 for supervisor output. The daemon's private `daemon.jsonl` rotation remains
@@ -312,8 +312,8 @@ persisted session.
 ## Remote snapshots
 
 ```text
-agent-sidecar list --remote --remote-python /usr/bin/python3.11 --json
-agent-sidecar status --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar list --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar status --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 `list --remote` and `status --remote` merge local sessions with snapshots from
@@ -324,7 +324,7 @@ default as local `list`; `--all` requests the full available history.
 
 `--remote-python <absolute-path>` requires `--remote` and pins the same path on
 every selected host for the invocation. It is fleet-wide; no per-host
-interpreter configuration exists. `AGENT_SIDECAR_REMOTE_PYTHON` supplies the
+interpreter configuration exists. `AGENTS_SIDECAR_REMOTE_PYTHON` supplies the
 same fleet-wide value only when the option is absent. Strict selection
 precedence is CLI option, environment variable, then bounded default
 candidates. The environment variable is read only for remote-enabled `list`,
@@ -385,10 +385,10 @@ Successful and local rows remain available during partial failure.
 After all per-host `python_too_old` lines, the CLI emits at most one aggregate
 hint generated locally. Default-candidate exhaustion uses
 `remote: no Python >= 3.8 found among bounded candidates on {n} host(s); use
---remote-python <absolute-path> or AGENT_SIDECAR_REMOTE_PYTHON to pin an
+--remote-python <absolute-path> or AGENTS_SIDECAR_REMOTE_PYTHON to pin an
 interpreter`. An unsatisfied explicit option or environment pin uses
 `remote: the interpreter set via
---remote-python/AGENT_SIDECAR_REMOTE_PYTHON is missing or older than 3.8 on {n}
+--remote-python/AGENTS_SIDECAR_REMOTE_PYTHON is missing or older than 3.8 on {n}
 host(s)`.
 
 - Exit `0`: at least one requested remote host succeeded, including a partial
@@ -406,18 +406,18 @@ Every host applies its own archive registry before answering, so a merged view
 is the union of per-host visible sets and archived rows appear in neither half.
 When the local registry is nonempty, remote snapshots emit one stderr note:
 `remote: {n} session(s) archived on this host are not listed; each remote host
-applies its own registry (ssh HOST agent-sidecar archive list)`. See
+applies its own registry (ssh HOST agents-sidecar archive list)`. See
 [Session archive](#session-archive).
 
 ## Session archive
 
 ```text
-agent-sidecar archive --idle-longer-than 2h --json
-agent-sidecar archive --idle-longer-than 24h --yes --json
-agent-sidecar archive list --json
-agent-sidecar list --archived --json
-agent-sidecar unarchive <session-prefix> --json
-agent-sidecar unarchive --all --json
+agents-sidecar archive --idle-longer-than 2h --json
+agents-sidecar archive --idle-longer-than 24h --yes --json
+agents-sidecar archive list --json
+agents-sidecar list --archived --json
+agents-sidecar unarchive <session-prefix> --json
+agents-sidecar unarchive --all --json
 ```
 
 Archiving is observation-level and reversible: it writes only Agent Sidecar's
@@ -443,7 +443,7 @@ than silently ignored.
 
 Archiving is per host. There is no fleet-wide archive, and `archive` /
 `unarchive` refuse `--remote` / `--host` with exit `2`, printing the equivalent
-`ssh HOST agent-sidecar …` invocation; `list --archived --remote` is refused the
+`ssh HOST agents-sidecar …` invocation; `list --archived --remote` is refused the
 same way. To act on a remote host's registry, run the command on that host over
 ssh. Archiving mutates only sidecar-owned state, but it changes what every
 listing shows, so run it only on an explicit user request.
@@ -451,10 +451,10 @@ listing shows, so run it only on an explicit user request.
 ## Remote watch
 
 ```text
-agent-sidecar watch --all --remote
-agent-sidecar watch --all --remote --host <host-alias>
-agent-sidecar watch --all --remote --from-start --json
-agent-sidecar watch --all --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar watch --all --remote
+agents-sidecar watch --all --remote --host <host-alias>
+agents-sidecar watch --all --remote --from-start --json
+agents-sidecar watch --all --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 Remote watch requires `--all` and follows local sessions and eligible remote
@@ -521,8 +521,8 @@ remote `send` are unsupported.
 ## DSH plugin injection and timeline contract
 
 Inside DSH, injection is owned by
-`@shendeguize/dsh-agent-sidecar` at
-`/plugins/agent-sidecar/api/action`, not by a direct CLI send to a `dsh`
+`dsh-agents-sidecar` at
+`/plugins/agents-sidecar/api/action`, not by a direct CLI send to a `dsh`
 session. `inject.enabled` is off by default. Every enabled injection uses
 `inject.prepare`, a user confirmation over the returned one-time token, and
 then exactly one `inject.execute`; there is no bulk or scheduled injection.
@@ -640,8 +640,8 @@ unknown enum must fail closed as unverified instead of being guessed.
 `send` is an experimental mutation, not an observation command:
 
 ```text
-agent-sidecar send <session-prefix> "<message>" --allow-write
-printf '%s' '<exact-message>' | agent-sidecar send '<full-session-id>' --agent '<agent-name>' --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
+agents-sidecar send <session-prefix> "<message>" --allow-write
+printf '%s' '<exact-message>' | agents-sidecar send '<full-session-id>' --agent '<agent-name>' --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
 ```
 
 The resolver prefers a sole exact session ID; otherwise the prefix must match
@@ -671,7 +671,7 @@ Kimi support is exact-version and manual. Use the full composite binding and
 stdin message transport:
 
 ```sh
-printf '%s' '<exact-message>' | agent-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
+printf '%s' '<exact-message>' | agents-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
 ```
 
 The plan binds the selected session and project to Kimi's owner-safe,
@@ -725,8 +725,8 @@ revalidates the exact identity, eligibility, executable, project, and source
 signature. It rejects a concurrent Sidecar send or a target that changed or
 disappeared, and holds the lock until the native process exits.
 
-The lock files live under `send-locks` in `AGENT_SIDECAR_RUNTIME_DIR`, or under
-`~/.agent_sidecar/send-locks` by default. The runtime and lock directories are
+The lock files live under `send-locks` in `AGENTS_SIDECAR_RUNTIME_DIR`, or under
+`~/.agents_sidecar/send-locks` by default. The runtime and lock directories are
 mode `0700`, lock files are mode `0600`, and lock filenames do not expose
 session IDs.
 
@@ -829,7 +829,7 @@ directory-descriptor and file-lock primitives. Send is unsupported and fails
 closed where they are unavailable.
 
 The runtime binding and marker are persistent security state. Never delete,
-move, recreate, or replace `AGENT_SIDECAR_RUNTIME_DIR`, `audit.key`, retained
+move, recreate, or replace `AGENTS_SIDECAR_RUNTIME_DIR`, `audit.key`, retained
 logs, or the home-anchor marker to bypass `unsafe_lock`. The code means the
 old namespace identity or history cannot be proved; deleting the marker cannot
 make its request retry-safe. Preserve the evidence and fail closed. A new
@@ -890,14 +890,14 @@ For a moved namespace with a valid marker, matching key fingerprint, and
 strictly valid retained logs, repair the inode binding without losing history:
 
 ```text
-agent-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
+agents-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
 ```
 
 Rebind never reconstructs a missing or corrupt marker. When strict proof is not
 available, the supported fallback is an archive reset:
 
 ```text
-agent-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
+agents-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
 ```
 
 Reset takes exclusive nonblocking audit locks and refuses to run while a send
@@ -908,7 +908,7 @@ the following stronger confirmation only to irreversibly delete active state
 and all archives:
 
 ```text
-agent-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
+agents-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
 ```
 
 Both operations require an explicit user request; skills and callers must
@@ -919,46 +919,46 @@ hint to use `audit rebind`.
 ## Command quick reference
 
 ```text
-agent-sidecar status --json
-agent-sidecar status --remote --json
-agent-sidecar status --remote --host <host-alias> --json
-agent-sidecar list --json
-agent-sidecar list --all --json
-agent-sidecar list --remote --json
-agent-sidecar list --remote --host <host-alias> --json
-agent-sidecar ps --json
-agent-sidecar archive --idle-longer-than 2h --json
-agent-sidecar archive --idle-longer-than 24h --yes --json
-agent-sidecar archive list --json
-agent-sidecar list --archived --json
-agent-sidecar unarchive <session-prefix> --json
-agent-sidecar unarchive --all --json
-agent-sidecar watch <session-prefix> --json
-agent-sidecar watch <session-prefix> --from-start --json
-agent-sidecar watch --all --json
-agent-sidecar watch --all --remote --json
-agent-sidecar watch --all --remote --host <host-alias> --json
-agent-sidecar watch --all --remote --from-start --json
-agent-sidecar send <session-prefix> "<message>" --allow-write
-printf '%s' '<exact-message>' | agent-sidecar send '<full-session-id>' --agent '<agent-name>' --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
-agent-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
-agent-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
-agent-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
-agent-sidecar package build --output dist/agent-sidecar.pyz
-agent-sidecar tui
-agent-sidecar tui --once
-agent-sidecar daemon start
-agent-sidecar daemon start --http
-agent-sidecar daemon start --http --http-port 43123
-agent-sidecar daemon status
-agent-sidecar daemon stop
-agent-sidecar daemon run
-agent-sidecar daemon run --http
-agent-sidecar service install
-agent-sidecar service install --http
-agent-sidecar service install --http --http-port 43123
-agent-sidecar service status
-agent-sidecar service uninstall
+agents-sidecar status --json
+agents-sidecar status --remote --json
+agents-sidecar status --remote --host <host-alias> --json
+agents-sidecar list --json
+agents-sidecar list --all --json
+agents-sidecar list --remote --json
+agents-sidecar list --remote --host <host-alias> --json
+agents-sidecar ps --json
+agents-sidecar archive --idle-longer-than 2h --json
+agents-sidecar archive --idle-longer-than 24h --yes --json
+agents-sidecar archive list --json
+agents-sidecar list --archived --json
+agents-sidecar unarchive <session-prefix> --json
+agents-sidecar unarchive --all --json
+agents-sidecar watch <session-prefix> --json
+agents-sidecar watch <session-prefix> --from-start --json
+agents-sidecar watch --all --json
+agents-sidecar watch --all --remote --json
+agents-sidecar watch --all --remote --host <host-alias> --json
+agents-sidecar watch --all --remote --from-start --json
+agents-sidecar send <session-prefix> "<message>" --allow-write
+printf '%s' '<exact-message>' | agents-sidecar send '<full-session-id>' --agent '<agent-name>' --exact-session --message-stdin --allow-write --request-id '<unique-request-id>' --json
+agents-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
+agents-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
+agents-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
+agents-sidecar package build --output dist/agents-sidecar.pyz
+agents-sidecar tui
+agents-sidecar tui --once
+agents-sidecar daemon start
+agents-sidecar daemon start --http
+agents-sidecar daemon start --http --http-port 43123
+agents-sidecar daemon status
+agents-sidecar daemon stop
+agents-sidecar daemon run
+agents-sidecar daemon run --http
+agents-sidecar service install
+agents-sidecar service install --http
+agents-sidecar service install --http --http-port 43123
+agents-sidecar service status
+agents-sidecar service uninstall
 ```
 
 Start the daemon only for a user-requested continuous monitor or TUI, or on an

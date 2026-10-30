@@ -28,7 +28,7 @@ export {
 export type { SidebarMiniVM } from './sidebar/model.ts'
 
 /** Registered tab type id (design §5.2 names it verbatim). */
-export const SIDEBAR_TAB_ID = 'agent-sidecar:monitor'
+export const SIDEBAR_TAB_ID = 'dsh-agents-sidecar:monitor'
 
 /** `+`-menu order: after the built-ins (explorer=10 … browser=50). */
 export const SIDEBAR_TAB_ORDER = 60
@@ -185,7 +185,7 @@ export function mountSidebarTab(ctx: ClientContext, controller: SidecarStateSour
   const mount = ctx as unknown as SidebarMountContext
   if (probeBetterSidebar(mount.get('betterSidebar')) === null) {
     console.debug(
-      'agent-sidecar: better-sidebar not detected; the optional sidebar tab stays idle',
+      'dsh-agents-sidecar: better-sidebar not detected; the optional sidebar tab stays idle',
     )
   }
   mount.inject(['betterSidebar'], (injected) => {
@@ -193,7 +193,7 @@ export function mountSidebarTab(ctx: ClientContext, controller: SidecarStateSour
     const service = probeBetterSidebar(bctx.get('betterSidebar'))
     if (service === null) {
       // Provided but not duck-compatible (e.g. a future breaking rewrite).
-      console.debug('agent-sidecar: betterSidebar service lacks registerTab; skipping tab')
+      console.debug('dsh-agents-sidecar: betterSidebar service lacks registerTab; skipping tab')
       return
     }
     const component = createSidebarTabComponent(controller)
@@ -209,12 +209,12 @@ export function mountSidebarTab(ctx: ClientContext, controller: SidecarStateSour
       {
         isCollision: isRegistrationCollision,
         onError: (error) => {
-          console.error('agent-sidecar: better-sidebar tab registration failed', error)
+          console.error('dsh-agents-sidecar: better-sidebar tab registration failed', error)
         },
         onTimeout: () => {
-          console.error('agent-sidecar: better-sidebar tab handoff timed out')
+          console.error('dsh-agents-sidecar: better-sidebar tab handoff timed out')
         },
       },
-    ), 'agent-sidecar: better-sidebar tab')
+    ), 'dsh-agents-sidecar: better-sidebar tab')
   })
 }

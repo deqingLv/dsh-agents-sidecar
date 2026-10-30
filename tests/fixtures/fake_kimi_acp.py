@@ -63,7 +63,7 @@ def initialize():
     request = require_request(1, "initialize")
     assert request["params"]["protocolVersion"] == 1
     assert request["params"]["clientCapabilities"] == {}
-    assert request["params"]["clientInfo"]["name"] == "agent-sidecar"
+    assert request["params"]["clientInfo"]["name"] == "agents-sidecar"
     result = {
         "protocolVersion": 1,
         "agentCapabilities": {

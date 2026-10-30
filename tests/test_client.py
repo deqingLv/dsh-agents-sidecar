@@ -18,7 +18,7 @@ from sidecar.client import (
 
 class StubClient(SidecarClient):
     def __init__(self, response):
-        super().__init__(socket_path="/tmp/unused-agent-sidecar.sock")
+        super().__init__(socket_path="/tmp/unused-agents-sidecar.sock")
         self.response = response
 
     def _request(self, operation):
@@ -162,7 +162,7 @@ class SidecarClientTests(unittest.TestCase):
         )
         self.assertGreater(len(frame), 2 * 1024 * 1024)
         self.assertLessEqual(len(frame), MAX_RESPONSE_BYTES)
-        client = SidecarClient(socket_path="/tmp/unused-agent-sidecar.sock")
+        client = SidecarClient(socket_path="/tmp/unused-agents-sidecar.sock")
 
         self.assertEqual(
             payload,
@@ -172,12 +172,12 @@ class SidecarClientTests(unittest.TestCase):
     def test_response_capacity_is_bounded_and_rejects_oversize_frame(self):
         with self.assertRaises(ValueError):
             SidecarClient(
-                socket_path="/tmp/unused-agent-sidecar.sock",
+                socket_path="/tmp/unused-agents-sidecar.sock",
                 max_response_bytes=MAX_RESPONSE_BYTES + 1,
             )
 
         client = SidecarClient(
-            socket_path="/tmp/unused-agent-sidecar.sock",
+            socket_path="/tmp/unused-agents-sidecar.sock",
             max_response_bytes=32,
         )
         stream = io.BytesIO(b"x" * 33 + b"\n")
@@ -203,7 +203,7 @@ class SidecarClientTests(unittest.TestCase):
         class RecordingClient(SidecarClient):
             def __init__(self):
                 super().__init__(
-                    socket_path="/tmp/unused-agent-sidecar.sock"
+                    socket_path="/tmp/unused-agents-sidecar.sock"
                 )
                 self.requests = []
 
@@ -231,7 +231,7 @@ class SidecarClientTests(unittest.TestCase):
         )
 
     def test_replay_rejects_invalid_arguments_before_connecting(self):
-        client = SidecarClient(socket_path="/tmp/unused-agent-sidecar.sock")
+        client = SidecarClient(socket_path="/tmp/unused-agents-sidecar.sock")
         invalid = (
             {"session_id": ""},
             {"session_id": 5},
@@ -262,7 +262,7 @@ class SidecarClientTests(unittest.TestCase):
         class StubReplayClient(SidecarClient):
             def __init__(self, response):
                 super().__init__(
-                    socket_path="/tmp/unused-agent-sidecar.sock"
+                    socket_path="/tmp/unused-agents-sidecar.sock"
                 )
                 self.response = response
 
@@ -288,7 +288,7 @@ class SidecarClientTests(unittest.TestCase):
     def test_subscribe_with_agents_sends_allowlist_and_accepts_extended_ack(self):
         client_socket, daemon_socket = socket.socketpair()
         client = SidecarClient(
-            socket_path="/tmp/unused-agent-sidecar.sock",
+            socket_path="/tmp/unused-agents-sidecar.sock",
             timeout=0.2,
         )
         received = []
@@ -327,7 +327,7 @@ class SidecarClientTests(unittest.TestCase):
         )
 
     def test_subscribe_rejects_invalid_agents_before_connecting(self):
-        client = SidecarClient(socket_path="/tmp/unused-agent-sidecar.sock")
+        client = SidecarClient(socket_path="/tmp/unused-agents-sidecar.sock")
         with mock.patch.object(client, "_connect") as connect:
             for agents in ([], [""], [1], ["dsh", ""]):
                 with self.subTest(agents=agents):
@@ -353,18 +353,18 @@ class SidecarClientTests(unittest.TestCase):
                     after_seq=2,
                     limit=3,
                     timeout=None,
-                    socket_path="/tmp/unused-agent-sidecar.sock",
+                    socket_path="/tmp/unused-agents-sidecar.sock",
                 ),
             )
             list(
                 client_module.subscribe(
                     agents=["dsh"],
-                    socket_path="/tmp/unused-agent-sidecar.sock",
+                    socket_path="/tmp/unused-agents-sidecar.sock",
                 )
             )
 
         factory.assert_any_call(
-            socket_path="/tmp/unused-agent-sidecar.sock"
+            socket_path="/tmp/unused-agents-sidecar.sock"
         )
         instance.replay.assert_called_once_with(
             "one",
@@ -381,7 +381,7 @@ class SidecarClientTests(unittest.TestCase):
     def test_cancelable_subscribe_stops_idle_socket_within_one_second(self):
         client_socket, daemon_socket = socket.socketpair()
         client = SidecarClient(
-            socket_path="/tmp/unused-agent-sidecar.sock",
+            socket_path="/tmp/unused-agents-sidecar.sock",
             timeout=0.05,
         )
         cancel = threading.Event()
@@ -429,7 +429,7 @@ class SidecarClientTests(unittest.TestCase):
         self.assertEqual([True], ready)
 
     def test_pre_cancelled_subscribe_does_not_connect(self):
-        client = SidecarClient(socket_path="/tmp/unused-agent-sidecar.sock")
+        client = SidecarClient(socket_path="/tmp/unused-agents-sidecar.sock")
         cancel = threading.Event()
         cancel.set()
         ready = []
@@ -449,7 +449,7 @@ class SidecarClientTests(unittest.TestCase):
     def test_subscribe_ack_failure_does_not_signal_ready(self):
         client_socket, daemon_socket = socket.socketpair()
         client = SidecarClient(
-            socket_path="/tmp/unused-agent-sidecar.sock",
+            socket_path="/tmp/unused-agents-sidecar.sock",
             timeout=0.2,
         )
         ready = []
@@ -496,7 +496,7 @@ class SidecarClientTests(unittest.TestCase):
                 ):
                     client_socket, daemon_socket = socket.socketpair()
                     client = SidecarClient(
-                        socket_path="/tmp/unused-agent-sidecar.sock",
+                        socket_path="/tmp/unused-agents-sidecar.sock",
                         timeout=0.2,
                     )
                     ready = []
@@ -543,7 +543,7 @@ class SidecarClientTests(unittest.TestCase):
         client_socket, daemon_socket = socket.socketpair()
         daemon_socket.settimeout(1.0)
         client = SidecarClient(
-            socket_path="/tmp/unused-agent-sidecar.sock",
+            socket_path="/tmp/unused-agents-sidecar.sock",
             timeout=0.2,
         )
         closed = []

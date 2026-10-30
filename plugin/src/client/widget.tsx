@@ -68,7 +68,7 @@ export function SidecarWidget(props: SidecarWidgetProps): ReactElement {
         }}
       />
       {props.workingCount > 0 && (
-        <span style={countStyle} data-testid="agent-sidecar-widget-count">
+        <span style={countStyle} data-testid="agents-sidecar-widget-count">
           {`▸${props.workingCount}`}
         </span>
       )}
@@ -82,7 +82,7 @@ export function SidecarWidget(props: SidecarWidgetProps): ReactElement {
         title={title}
         aria-label={title}
         role="status"
-        data-testid="agent-sidecar-widget"
+        data-testid="agents-sidecar-widget"
         data-connection={props.connection}
       >
         {body}
@@ -97,7 +97,7 @@ export function SidecarWidget(props: SidecarWidgetProps): ReactElement {
       title={title}
       aria-label={title}
       onClick={props.onOpen}
-      data-testid="agent-sidecar-widget"
+      data-testid="agents-sidecar-widget"
       data-connection={props.connection}
     >
       {body}

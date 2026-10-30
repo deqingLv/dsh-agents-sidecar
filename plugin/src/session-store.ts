@@ -101,7 +101,7 @@ interface StoredSession {
 }
 
 const INVALID_PROPERTY = Symbol('invalid-property')
-const ANALYSIS_SESSION_PREFIX = 'agent-sidecar-analysis-'
+const ANALYSIS_SESSION_PREFIX = 'agents-sidecar-analysis-'
 
 function ownValue(record: object, key: string): unknown | typeof INVALID_PROPERTY {
   try {

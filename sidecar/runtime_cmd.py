@@ -264,7 +264,7 @@ def _checkout_shim(module_file: object) -> Optional[Path]:
             return None
     except OSError:
         return None
-    return _trusted_executable(root / "agent-sidecar", preserve_lexical=False)
+    return _trusted_executable(root / "agents-sidecar", preserve_lexical=False)
 
 
 def _validate_prefix(prefix: Sequence[str]) -> Tuple[str, ...]:
@@ -312,8 +312,8 @@ def resolve_runtime_prefix(
     if entry is not None:
         original_name = Path(str(invoked_as)).name
         if entry.suffix.casefold() == ".pyz" or original_name in (
-            "agent-sidecar",
-            "agent-sidecar.exe",
+            "agents-sidecar",
+            "agents-sidecar.exe",
         ):
             return _validate_prefix((str(entry),))
 

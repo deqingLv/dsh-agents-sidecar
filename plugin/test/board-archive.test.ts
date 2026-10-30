@@ -138,27 +138,27 @@ describe('archive threshold resolution', () => {
 
 describe('board archive entry point', () => {
   it('stays hidden when the host advertises no archive api', () => {
-    expect(renderBoard()).not.toContain('agent-sidecar-archive-open')
+    expect(renderBoard()).not.toContain('agents-sidecar-archive-open')
   })
 
   it('appears once an archive api is bound', () => {
     const html = renderBoard({ archive: INERT_API })
-    expect(html).toContain('agent-sidecar-archive-open')
+    expect(html).toContain('agents-sidecar-archive-open')
     expect(html).toContain(BOARD_STRINGS.archive.open)
   })
 
   it('renders the archived drawer collapsed with its count', () => {
     const html = renderBoard({ archive: INERT_API, archived: [archivedCard()] })
-    expect(html).toContain('agent-sidecar-archived-toggle')
+    expect(html).toContain('agents-sidecar-archived-toggle')
     expect(html).toContain('1')
     // Collapsed: the row itself and the bulk restore stay out of the DOM.
-    expect(html).not.toContain('agent-sidecar-archived-restore-all')
+    expect(html).not.toContain('agents-sidecar-archived-restore-all')
     expect(html).not.toContain('refactor the scanner')
   })
 
   it('omits the drawer entirely when nothing is archived', () => {
     expect(renderBoard({ archive: INERT_API, archived: [] }))
-      .not.toContain('agent-sidecar-archived')
+      .not.toContain('agents-sidecar-archived')
   })
 })
 
@@ -180,7 +180,7 @@ describe('archived section', () => {
       onRestored: () => {},
       nowMs: NOW_MS,
     }))
-    expect(html).toContain('agent-sidecar-archived-toggle')
+    expect(html).toContain('agents-sidecar-archived-toggle')
     expect(html).toContain('2')
   })
 })

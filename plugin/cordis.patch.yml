@@ -1,13 +1,13 @@
-# @shendeguize/dsh-agent-sidecar bundle patch: insert the plugin row into the
+# dsh-agents-sidecar bundle patch: insert the plugin row into the
 # profile composition. The row's `name` is the module specifier Node resolves
-# from the profile's node_modules, so it must be the real (scoped) package name.
+# from the profile's node_modules, so it must be the real package name.
 # Deliberately no `config:` block: every default comes from the schemastery
 # schema, so the plugin mounts with zero configuration and a user profile row
 # overriding this id never silently drops packaged defaults (layering replaces
 # the whole config value instead of deep-merging).
 - insert:
-    - id: agent-sidecar
-      name: '@shendeguize/dsh-agent-sidecar'
+    - id: dsh-agents-sidecar
+      name: 'dsh-agents-sidecar'
       config:
         inject:
           enabled: true

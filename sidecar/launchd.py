@@ -38,7 +38,7 @@ from sidecar.runtime_cmd import (
 )
 
 
-LABEL = "com.agent-sidecar.daemon"
+LABEL = "com.agents-sidecar.daemon"
 PLIST_NAME = LABEL + ".plist"
 LOCK_NAME = "." + LABEL + ".lock"
 LAUNCHCTL_PATH = Path("/bin/launchctl")

@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 INSTALLER = REPO_ROOT / "install.sh"
 VERSION = "1.2.3"
 TAG = "v{}".format(VERSION)
-ARTIFACT_NAME = "agent-sidecar-{}.pyz".format(VERSION)
+ARTIFACT_NAME = "agents-sidecar-{}.pyz".format(VERSION)
 SHEBANG = b"#!/usr/bin/env python3\n"
 
 
@@ -35,7 +35,7 @@ def make_zipapp(version):
                 "import sys\n"
                 "from sidecar import __version__\n"
                 'if sys.argv[1:] == ["--version"]:\n'
-                '    print("agent-sidecar {}".format(__version__))\n'
+                '    print("agents-sidecar {}".format(__version__))\n'
             ),
         )
         bundle.writestr("sidecar/cli.py", "def main():\n    return 0\n")
@@ -45,7 +45,7 @@ def make_zipapp(version):
                 "import sys\n"
                 "from sidecar import __version__\n"
                 'if sys.argv[1:] == ["--version"]:\n'
-                '    print("agent-sidecar {}".format(__version__))\n'
+                '    print("agents-sidecar {}".format(__version__))\n'
             ),
         )
     return SHEBANG + archive.getvalue()
@@ -64,7 +64,7 @@ class ReleaseFixture:
         self.fake_bin.mkdir()
         self.skill.mkdir()
         self.skill.joinpath("SKILL.md").write_text(
-            "---\nname: agent-sidecar\ndescription: Offline test skill.\n---\n",
+            "---\nname: agents-sidecar\ndescription: Offline test skill.\n---\n",
             encoding="utf-8",
         )
         self.skill.joinpath("reference.md").write_text(
@@ -141,9 +141,9 @@ if url.endswith("/releases/latest") or "/releases/tags/" in url:
     source = root / "release.json"
 elif url.endswith("/SHA256SUMS"):
     source = root / "SHA256SUMS"
-elif "/skills/agent-sidecar/SKILL.md" in url:
+elif "/skills/agents-sidecar/SKILL.md" in url:
     source = root / "skill" / "SKILL.md"
-elif "/skills/agent-sidecar/reference.md" in url:
+elif "/skills/agents-sidecar/reference.md" in url:
     source = root / "skill" / "reference.md"
 else:
     source = root / Path(url).name
@@ -207,11 +207,11 @@ class ReleaseInstallerTests(unittest.TestCase):
 
     def target(self, prefix=None):
         root = self.prefix if prefix is None else prefix
-        return root / "bin" / "agent-sidecar"
+        return root / "bin" / "agents-sidecar"
 
     def operation_lock(self, prefix=None):
         root = self.prefix if prefix is None else prefix
-        return root / ".agent-sidecar-operation.lock"
+        return root / ".agents-sidecar-operation.lock"
 
     def wait_for_pipe(self, descriptor, message):
         readable, _, _ = select.select([descriptor], [], [], 5)
@@ -336,7 +336,7 @@ raise SystemExit(result.returncode)
             timeout=5,
         )
         self.assertEqual(0, version.returncode, version.stderr)
-        self.assertEqual("agent-sidecar {}\n".format(VERSION), version.stdout)
+        self.assertEqual("agents-sidecar {}\n".format(VERSION), version.stdout)
 
     def test_latest_resolution_uses_exact_assets(self):
         result = self.run_installer("--prefix", self.prefix)
@@ -425,7 +425,7 @@ raise SystemExit(result.returncode)
         )
         self.assertFalse(self.fixture.log.exists())
 
-    def test_uninstall_removes_only_recognized_agent_sidecar_zipapp(self):
+    def test_uninstall_removes_only_recognized_agents_sidecar_zipapp(self):
         install = self.run_installer("--prefix", self.prefix)
         self.assertEqual(0, install.returncode, install.stderr)
 
@@ -570,7 +570,7 @@ raise SystemExit(result.returncode)
         result = self.run_installer(
             "--prefix",
             self.prefix,
-            extra_env={"AGENT_SIDECAR_LOCK_TIMEOUT_SECONDS": "0"},
+            extra_env={"AGENTS_SIDECAR_LOCK_TIMEOUT_SECONDS": "0"},
         )
 
         self.assertNotEqual(0, result.returncode)
@@ -708,7 +708,7 @@ raise SystemExit(result.returncode)
         self.assertFalse(lock.exists())
         self.assertEqual(
             [],
-            list(self.prefix.glob(".agent-sidecar-operation.lock.recovery*")),
+            list(self.prefix.glob(".agents-sidecar-operation.lock.recovery*")),
         )
 
     def test_live_operation_lock_times_out_without_mutation(self):
@@ -719,7 +719,7 @@ raise SystemExit(result.returncode)
         result = self.run_installer(
             "--prefix",
             self.prefix,
-            extra_env={"AGENT_SIDECAR_LOCK_TIMEOUT_SECONDS": "0"},
+            extra_env={"AGENTS_SIDECAR_LOCK_TIMEOUT_SECONDS": "0"},
         )
 
         self.assertNotEqual(0, result.returncode)
@@ -812,17 +812,17 @@ raise SystemExit(result.returncode)
         result = self.run_installer("--with-skill")
 
         self.assertEqual(0, result.returncode, result.stderr)
-        target = self.home / ".local" / "bin" / "agent-sidecar"
-        cursor_skill = self.home / ".cursor" / "skills" / "agent-sidecar"
-        claude_skill = self.home / ".claude" / "skills" / "agent-sidecar"
-        dsh_skill = self.home / ".dsh" / "skills" / "agent-sidecar"
+        target = self.home / ".local" / "bin" / "agents-sidecar"
+        cursor_skill = self.home / ".cursor" / "skills" / "agents-sidecar"
+        claude_skill = self.home / ".claude" / "skills" / "agents-sidecar"
+        dsh_skill = self.home / ".dsh" / "skills" / "agents-sidecar"
         self.assertTrue(target.is_file())
         self.assertFalse(target.is_symlink())
         self.assertTrue(cursor_skill.is_symlink())
         self.assertTrue(claude_skill.is_symlink())
         self.assertTrue(dsh_skill.is_symlink())
         self.assertEqual(
-            (REPO_ROOT / "skills" / "agent-sidecar").resolve(),
+            (REPO_ROOT / "skills" / "agents-sidecar").resolve(),
             cursor_skill.resolve(),
         )
         self.assertEqual(cursor_skill.resolve(), claude_skill.resolve())
@@ -846,7 +846,7 @@ raise SystemExit(result.returncode)
 
         self.assertEqual(0, result.returncode, result.stderr)
         for root in (".cursor", ".claude"):
-            skill = self.home / root / "skills" / "agent-sidecar"
+            skill = self.home / root / "skills" / "agents-sidecar"
             self.assertTrue(skill.is_dir())
             self.assertFalse(skill.is_symlink())
             self.assertEqual(
@@ -854,24 +854,24 @@ raise SystemExit(result.returncode)
                 skill.joinpath("SKILL.md").read_bytes(),
             )
             marker = json.loads(
-                skill.joinpath(".agent-sidecar-release-skill").read_text(
+                skill.joinpath(".agents-sidecar-release-skill").read_text(
                     encoding="utf-8"
                 )
             )
-            self.assertEqual("agent-sidecar-release-skill-v1", marker["signature"])
+            self.assertEqual("agents-sidecar-release-skill-v1", marker["signature"])
             self.assertEqual(VERSION, marker["version"])
         requests = self.fixture.log.read_text(encoding="utf-8").splitlines()
         self.assertIn(
             (
                 "https://raw.githubusercontent.com/shendeguize/AgentSideCar/"
-                "{}/skills/agent-sidecar/SKILL.md".format(TAG)
+                "{}/skills/agents-sidecar/SKILL.md".format(TAG)
             ),
             requests,
         )
         self.assertIn(
             (
                 "https://raw.githubusercontent.com/shendeguize/AgentSideCar/"
-                "{}/skills/agent-sidecar/reference.md".format(TAG)
+                "{}/skills/agents-sidecar/reference.md".format(TAG)
             ),
             requests,
         )

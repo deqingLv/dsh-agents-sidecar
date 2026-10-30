@@ -20,7 +20,7 @@
 
 - Follow `CONTRIBUTING.md` for development, review, branch, and release processes.
 - Keep `README.md` and `README.zh.md` authoritative and synchronized for user-facing behavior.
-- Keep `skills/agent-sidecar/SKILL.md` and `skills/agent-sidecar/reference.md` authoritative for agent integration and protocol details.
+- Keep `skills/agents-sidecar/SKILL.md` and `skills/agents-sidecar/reference.md` authoritative for agent integration and protocol details.
 - Record user-observable changes in `CHANGELOG.md`.
 
 ## Branch and release integrity

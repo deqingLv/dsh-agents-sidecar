@@ -56,10 +56,10 @@ export const en = {
   'settings.sectionSidecar': 'Sidecar invocation',
   'settings.sidecarCommandLabel': 'Executable command',
   'settings.sidecarCommandHint':
-    'A PATH name, an absolute path, or a space-separated multi-part command (e.g. python3 /path/agent-sidecar.pyz); the plugin never installs the sidecar for you.',
+    'A PATH name, an absolute path, or a space-separated multi-part command (e.g. python3 /path/agents-sidecar.pyz); the plugin never installs the sidecar for you.',
   'settings.sidecarRuntimeDirLabel': 'Runtime directory',
   'settings.sidecarRuntimeDirHint':
-    'Empty uses the default ~/.agent_sidecar (honoring AGENT_SIDECAR_RUNTIME_DIR); a non-empty value is passed to spawned daemons via the environment.',
+    'Empty uses the default ~/.agents_sidecar (honoring AGENTS_SIDECAR_RUNTIME_DIR); a non-empty value is passed to spawned daemons via the environment.',
   'settings.sidecarProfileNote':
     'Read-only here: sidecar command and runtime directory come from the plugin row config in the profile cordis.patch. Settings changes do not drive daemon invocation; edit the profile patch and restart DSH.',
 
@@ -125,13 +125,13 @@ export const en = {
   'settings.archiveAfterHoursHint':
     'Defaults to 24h — conservative on purpose, and safe in a loop with automatic unarchiving.',
   'settings.archiveHostedOnlyNote':
-    'This setting applies only to daemons this plugin spawns, and takes effect at the next daemon start. An adopted or service-managed daemon keeps the policy it was started with; pass agent-sidecar daemon start --auto-archive there.',
+    'This setting applies only to daemons this plugin spawns, and takes effect at the next daemon start. An adopted or service-managed daemon keeps the policy it was started with; pass agents-sidecar daemon start --auto-archive there.',
 
   // ── skill mode ─────────────────────────────────────────────────────────
   'settings.sectionSkill': 'Skill mode',
   'settings.skillProvideLabel': 'Provide the skill in-process',
   'settings.skillProvideHint':
-    'Provide the agent-sidecar skill to dsh via registerProvider (enabled in M4; applies after restart).',
+    'Provide the agents-sidecar skill to dsh via registerProvider (enabled in M4; applies after restart).',
   'settings.skillRestartNote':
     'skill.provide is read from the profile cordis.patch when the plugin loads. Edit the profile patch, then reload the plugin or restart DSH; Settings changes do not re-register the skill.',
 
@@ -277,7 +277,7 @@ export const en = {
   'board.banner.streamDegraded': 'The live stream is reconnecting; data may be stale',
   'board.empty.daemonFailedTitle': 'sidecar is offline',
   'board.empty.daemonFailedHint':
-    'Repeated daemon start failures tripped the circuit breaker. Retry from Settings, or run agent-sidecar daemon start and wait for automatic adoption.',
+    'Repeated daemon start failures tripped the circuit breaker. Retry from Settings, or run agents-sidecar daemon start and wait for automatic adoption.',
   'board.empty.daemonDeferTitle': 'Waiting for the system service to start the daemon',
   'board.empty.daemonDeferHint':
     'A LaunchAgent manages the daemon, so the plugin will not start it. The board populates automatically once the service starts it.',
@@ -358,7 +358,7 @@ export const en = {
   'board.archive.done': 'Archived {n} sessions',
   'board.archive.failed': 'Archive failed: {reason}',
   'board.archive.previewFailed': 'Preview failed: {reason}',
-  'board.archive.unavailable': 'This daemon has no archive support; upgrade agent-sidecar',
+  'board.archive.unavailable': 'This daemon has no archive support; upgrade agents-sidecar',
   'board.archive.dispose': 'Also end the {n} DSH session(s)',
   'board.archive.disposeHint':
     'dsh sessions only; this really ends the session and cannot be undone',
@@ -457,7 +457,7 @@ export const en = {
   'detail.timeline.volatileOnlyHint':
     'If this session should have readable history, check that the sidecar daemon is running and current, then press Refresh.',
   'detail.timeline.daemonDownHint':
-    'The sidecar daemon is not running, so nothing can answer for history. Retry from the settings card, or run agent-sidecar daemon start and press Refresh.',
+    'The sidecar daemon is not running, so nothing can answer for history. Retry from the settings card, or run agents-sidecar daemon start and press Refresh.',
   'detail.timeline.daemonDeferHint':
     'The plugin defers to a service-managed daemon; once the service is up, press Refresh to load history.',
   'detail.states.loadingTitle': 'Loading the timeline…',
@@ -635,10 +635,10 @@ export const en = {
   'command.boardHint': 'Open Agent Center',
   'command.unreachable': 'sidecar is not connected',
   'command.unreachableHint':
-    'The state snapshot could not be fetched; check that the agent-sidecar plugin is enabled and the daemon is available, then retry.',
+    'The state snapshot could not be fetched; check that the dsh-agents-sidecar plugin is enabled and the daemon is available, then retry.',
   'command.offlineFailed': 'sidecar is offline (daemon start failures tripped the breaker)',
   'command.offlineFailedHint':
-    'Showing the last snapshot. Retry from the settings card, or run agent-sidecar daemon start manually and wait for adoption.',
+    'Showing the last snapshot. Retry from the settings card, or run agents-sidecar daemon start manually and wait for adoption.',
   'command.offlineDefer': 'Waiting for the system service to start the daemon',
   'command.offlineDeferHint':
     'A LaunchAgent manages the daemon; the plugin only probes and waits. The overview recovers automatically once the service brings it up.',

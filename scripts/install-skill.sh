@@ -3,7 +3,7 @@
 set -eu
 
 die() {
-    printf '%s\n' "agent-sidecar installer: $*" >&2
+    printf '%s\n' "agents-sidecar installer: $*" >&2
     exit 1
 }
 
@@ -128,18 +128,18 @@ SCRIPT_DIR=$(CDPATH= cd -P "$(dirname "$SCRIPT_PATH")" && pwd -P) ||
 REPO_ROOT=$(CDPATH= cd -P "$SCRIPT_DIR/.." && pwd -P) ||
     die "cannot locate repository root"
 
-SKILL_SOURCE=$(canonical_path "$REPO_ROOT/skills/agent-sidecar") ||
+SKILL_SOURCE=$(canonical_path "$REPO_ROOT/skills/agents-sidecar") ||
     die "cannot locate skill bundle"
-CLI_SOURCE=$(canonical_path "$REPO_ROOT/agent-sidecar") ||
+CLI_SOURCE=$(canonical_path "$REPO_ROOT/agents-sidecar") ||
     die "cannot locate CLI entry point"
 
 [ -d "$SKILL_SOURCE" ] || die "missing skill bundle: $SKILL_SOURCE"
 [ -f "$CLI_SOURCE" ] || die "missing CLI entry point: $CLI_SOURCE"
 
-CURSOR_DESTINATION=$HOME/.cursor/skills/agent-sidecar
-CLAUDE_DESTINATION=$HOME/.claude/skills/agent-sidecar
-DSH_DESTINATION=$HOME/.dsh/skills/agent-sidecar
-CLI_DESTINATION=$HOME/.local/bin/agent-sidecar
+CURSOR_DESTINATION=$HOME/.cursor/skills/agents-sidecar
+CLAUDE_DESTINATION=$HOME/.claude/skills/agents-sidecar
+DSH_DESTINATION=$HOME/.dsh/skills/agents-sidecar
+CLI_DESTINATION=$HOME/.local/bin/agents-sidecar
 
 if [ "$action" = "uninstall" ]; then
     uninstall_link "$CURSOR_DESTINATION"
@@ -163,4 +163,4 @@ install_link "$SKILL_SOURCE" "$DSH_DESTINATION"
 install_link "$CLI_SOURCE" "$CLI_DESTINATION"
 
 printf '%s\n' \
-    "alternative CLI installs: pipx install \"$REPO_ROOT\" or build dist/agent-sidecar.pyz with ./agent-sidecar package build"
+    "alternative CLI installs: pipx install \"$REPO_ROOT\" or build dist/agents-sidecar.pyz with ./agents-sidecar package build"

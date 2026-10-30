@@ -429,7 +429,7 @@ export function InjectPanel(props: InjectPanelProps): ReactNode {
             id={blockedReasonId}
             className={css['capabilityOff']}
             role="status"
-            data-testid="agent-sidecar-inject-blocked-reason"
+            data-testid="agents-sidecar-inject-blocked-reason"
           >
             {isKimi && blockReason === 'working_session'
               ? t('inject.kimiErrWorkingSession')
@@ -493,7 +493,7 @@ export function InjectPanel(props: InjectPanelProps): ReactNode {
                   ? css['resultOk']
                   : css['resultDetail']}
                 role="status"
-                data-testid="agent-sidecar-inject-verify"
+                data-testid="agents-sidecar-inject-verify"
               >
                 {t(verifyCopy)}
               </p>
@@ -508,7 +508,7 @@ export function InjectPanel(props: InjectPanelProps): ReactNode {
                   size="sm"
                   variant="outline"
                   onClick={() => { props.onOpenTarget?.(jumpTarget) }}
-                  data-testid="agent-sidecar-inject-open-target"
+                  data-testid="agents-sidecar-inject-open-target"
                 >
                   {t('inject.openTarget')}
                 </Button>
@@ -521,7 +521,7 @@ export function InjectPanel(props: InjectPanelProps): ReactNode {
                   size="sm"
                   variant="primary"
                   onClick={props.onObserve}
-                  data-testid="agent-sidecar-inject-observe"
+                  data-testid="agents-sidecar-inject-observe"
                 >
                   {t('inject.observeListen')}
                 </Button>

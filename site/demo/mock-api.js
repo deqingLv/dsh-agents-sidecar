@@ -10,14 +10,14 @@
     {
       agent: "cursor-ide",
       session_id: "demo-landing-42",
-      project: "~/Projects/agent-sidecar",
+      project: "~/Projects/agents-sidecar",
       status: "working",
       title: "Build a local-first landing page"
     },
     {
       agent: "claude",
       session_id: "demo-review-17",
-      project: "~/Projects/agent-sidecar",
+      project: "~/Projects/agents-sidecar",
       status: "waiting",
       title: "Review the HTTP security boundary"
     },

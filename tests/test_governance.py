@@ -13,8 +13,8 @@ RULESETS = ROOT / ".github" / "rulesets"
 DOCUMENTATION = (
     ROOT / "README.md",
     ROOT / "README.zh.md",
-    ROOT / "skills" / "agent-sidecar" / "SKILL.md",
-    ROOT / "skills" / "agent-sidecar" / "reference.md",
+    ROOT / "skills" / "agents-sidecar" / "SKILL.md",
+    ROOT / "skills" / "agents-sidecar" / "reference.md",
 )
 CANONICAL_COMMAND_INVENTORY = (
     ("status",),
@@ -279,8 +279,8 @@ class GovernanceContractTests(unittest.TestCase):
             "CONTRIBUTING.md",
             "README.md",
             "README.zh.md",
-            "skills/agent-sidecar/SKILL.md",
-            "skills/agent-sidecar/reference.md",
+            "skills/agents-sidecar/SKILL.md",
+            "skills/agents-sidecar/reference.md",
             "CHANGELOG.md",
         ):
             with self.subTest(pointer=pointer):
@@ -453,7 +453,7 @@ class GovernanceContractTests(unittest.TestCase):
         for path in DOCUMENTATION:
             document = path.read_text(encoding="utf-8")
             for command in CANONICAL_COMMAND_INVENTORY:
-                documented = "agent-sidecar " + " ".join(command)
+                documented = "agents-sidecar " + " ".join(command)
                 with self.subTest(document=path.name, command=documented):
                     self.assertIn(documented, document)
 
@@ -516,7 +516,7 @@ class GovernanceContractTests(unittest.TestCase):
                 self.assertTrue((ROOT / relative_path).is_file())
 
         for command in CANONICAL_COMMAND_INVENTORY:
-            documented = "agent-sidecar " + " ".join(command)
+            documented = "agents-sidecar " + " ".join(command)
             with self.subTest(command=documented):
                 self.assertIn(documented, english)
                 self.assertIn(documented, translated)

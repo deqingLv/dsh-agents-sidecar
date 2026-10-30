@@ -35,7 +35,7 @@ from sidecar.runtime_cmd import (
 
 from sidecar.launchd import ServiceResult
 
-UNIT_NAME = "agent-sidecar.service"
+UNIT_NAME = "agents-sidecar.service"
 SYSTEMCTL_PATH = Path("/usr/bin/systemctl")
 PATH_VALUE = "/usr/local/bin:/usr/bin:/bin"
 CONTROL_TIMEOUT = 10.0
@@ -46,7 +46,7 @@ STOP_TIMEOUT = 10.0
 POLL_INTERVAL = 0.1
 MAX_CONTROL_OUTPUT = 64 * 1024
 MAX_UNIT_BYTES = 64 * 1024
-LOCK_NAME = ".agent-sidecar.service.lock"
+LOCK_NAME = ".agents-sidecar.service.lock"
 
 
 class SystemdError(RuntimeError):

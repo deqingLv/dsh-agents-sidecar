@@ -75,7 +75,7 @@ function Message(props: { message: AnalysisMessage; progressStep: number }): Rea
       }`}
       data-role={message.role}
       data-pending={message.pending || undefined}
-      data-testid="agent-sidecar-analysis-message"
+      data-testid="agents-sidecar-analysis-message"
       aria-busy={message.pending || undefined}
     >
       <span className={css['messageLabel']}>
@@ -111,7 +111,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
   }
 
   return (
-    <section {...surfaceProps('analysis-panel', css['panel'])} data-testid="agent-sidecar-analysis">
+    <section {...surfaceProps('analysis-panel', css['panel'])} data-testid="agents-sidecar-analysis">
       <div className={css['head']}>
         <span className={css['title']}>{t('analysis.title')}</span>
         <span className={css['spacer']} />
@@ -121,7 +121,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
             size="sm"
             variant="ghost"
             onClick={props.onStop}
-            data-testid="agent-sidecar-analysis-stop"
+            data-testid="agents-sidecar-analysis-stop"
           >
             {t('analysis.stop')}
           </Button>
@@ -133,9 +133,9 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
         )}
       </div>
 
-      <div className={css['messages']} data-testid="agent-sidecar-analysis-messages">
+      <div className={css['messages']} data-testid="agents-sidecar-analysis-messages">
         {!enabled && (
-          <div className={css['noteCard']} data-testid="agent-sidecar-analysis-disabled">
+          <div className={css['noteCard']} data-testid="agents-sidecar-analysis-disabled">
             {t('analysis.disabledNote')}
           </div>
         )}
@@ -149,7 +149,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
         ))}
 
         {state.phase === 'failed' && state.errorCode !== null && (
-          <div className={css['errorCard']} data-testid="agent-sidecar-analysis-error">
+          <div className={css['errorCard']} data-testid="agents-sidecar-analysis-error">
             {errorText(state)}
           </div>
         )}
@@ -157,7 +157,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
           <div className={css['noteCard']}>{t('analysis.stopped')}</div>
         )}
         {state.noticeCode !== null && (
-          <div className={css['noticeBar']} data-testid="agent-sidecar-analysis-notice">
+          <div className={css['noticeBar']} data-testid="agents-sidecar-analysis-notice">
             {noticeText(state.noticeCode)}
           </div>
         )}
@@ -173,7 +173,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
               variant="primary"
               className={css['startButton']}
               onClick={props.onStart}
-              data-testid="agent-sidecar-analysis-start"
+              data-testid="agents-sidecar-analysis-start"
             >
               {state.phase === 'idle' ? t('analysis.start') : t('analysis.restart')}
             </Button>
@@ -201,7 +201,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
             onKeyDown={(event) => {
               if (event.key === 'Enter') submitFollowup()
             }}
-            data-testid="agent-sidecar-analysis-question"
+            data-testid="agents-sidecar-analysis-question"
           />
           <Button
             type="button"
@@ -209,7 +209,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
             variant="ghost"
             disabled={!enabled || state.phase !== 'ready' || question.trim() === ''}
             onClick={submitFollowup}
-            data-testid="agent-sidecar-analysis-followup"
+            data-testid="agents-sidecar-analysis-followup"
           >
             {t('analysis.followupSubmit')}
           </Button>
@@ -217,7 +217,7 @@ export function AnalysisPanel(props: AnalysisPanelProps): ReactElement {
       )}
 
       {(conversationLive || state.exchanges.length > 0) && (
-        <div className={css['disclaimer']} data-testid="agent-sidecar-analysis-disclaimer">
+        <div className={css['disclaimer']} data-testid="agents-sidecar-analysis-disclaimer">
           {state.disclaimer ?? t('analysis.disclaimerFallback')}
         </div>
       )}

@@ -1,6 +1,6 @@
 /**
  * Simplified-Chinese dictionary — the key-set source of truth for the
- * agent-sidecar client locale table (the en dictionary is checked complete
+ * agents-sidecar client locale table (the en dictionary is checked complete
  * against this key union; see ./en.ts).
  *
  * Key-space convention (compile-enforced by the `satisfies` clause): every
@@ -83,10 +83,10 @@ export const zh = {
   'settings.sectionSidecar': 'sidecar 调用',
   'settings.sidecarCommandLabel': '可执行命令',
   'settings.sidecarCommandHint':
-    'PATH 名、绝对路径或空格分隔的多段命令(如 python3 /path/agent-sidecar.pyz);插件绝不代装 sidecar。',
+    'PATH 名、绝对路径或空格分隔的多段命令(如 python3 /path/agents-sidecar.pyz);插件绝不代装 sidecar。',
   'settings.sidecarRuntimeDirLabel': '运行时目录',
   'settings.sidecarRuntimeDirHint':
-    '留空使用默认 ~/.agent_sidecar(尊重 AGENT_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon。',
+    '留空使用默认 ~/.agents_sidecar(尊重 AGENTS_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon。',
   'settings.sidecarProfileNote':
     '此处只读:sidecar 命令与运行时目录以 profile 的 cordis.patch 插件行 config 为准。Settings 修改不会驱动 daemon 调用;请编辑 profile patch 并重启 DSH。',
 
@@ -149,13 +149,13 @@ export const zh = {
   'settings.archiveAfterHoursLabel': '无活动阈值(小时)',
   'settings.archiveAfterHoursHint': '默认 24 小时;保守取值,配合自动解档形成安全回路。',
   'settings.archiveHostedOnlyNote':
-    '该设置只作用于本插件拉起的 daemon,且在下次 daemon 启动时生效。领养的或由系统服务托管的 daemon 保持其启动时的策略,请用 agent-sidecar daemon start --auto-archive 指定。',
+    '该设置只作用于本插件拉起的 daemon,且在下次 daemon 启动时生效。领养的或由系统服务托管的 daemon 保持其启动时的策略,请用 agents-sidecar daemon start --auto-archive 指定。',
 
   // ── skill mode ─────────────────────────────────────────────────────────
   'settings.sectionSkill': 'skill 模式',
   'settings.skillProvideLabel': '内嵌提供 skill',
   'settings.skillProvideHint':
-    '经 registerProvider 向 dsh 提供 agent-sidecar skill(M4 启用;重启后生效)。',
+    '经 registerProvider 向 dsh 提供 agents-sidecar skill(M4 启用;重启后生效)。',
   'settings.skillRestartNote':
     'skill.provide 在插件加载时从 profile 的 cordis.patch 读取。请编辑 profile patch,然后重载插件或重启 DSH;Settings 修改不会重新注册 skill。',
 
@@ -283,7 +283,7 @@ export const zh = {
   'board.banner.streamDegraded': '实时流重连中,数据可能滞后',
   'board.empty.daemonFailedTitle': 'sidecar 已离线',
   'board.empty.daemonFailedHint':
-    'daemon 连续启动失败已熔断。可在设置卡重试,或手动运行 agent-sidecar daemon start 后等待自动领养。',
+    'daemon 连续启动失败已熔断。可在设置卡重试,或手动运行 agents-sidecar daemon start 后等待自动领养。',
   'board.empty.daemonDeferTitle': '等待系统服务拉起 daemon',
   'board.empty.daemonDeferHint':
     '检测到 LaunchAgent 托管,插件不会自行启动 daemon;服务拉起后看板会自动出数。',
@@ -362,7 +362,7 @@ export const zh = {
   'board.archive.done': '已归档 {n} 个会话',
   'board.archive.failed': '归档失败:{reason}',
   'board.archive.previewFailed': '预览失败:{reason}',
-  'board.archive.unavailable': '当前 daemon 不支持归档,请升级 agent-sidecar',
+  'board.archive.unavailable': '当前 daemon 不支持归档,请升级 agents-sidecar',
   'board.archive.dispose': '同时关停这 {n} 个 DSH 会话',
   'board.archive.disposeHint': '仅对 dsh 会话生效,会真正结束该会话,不可撤销',
   'board.archive.doneDisposed': ',其中 {n} 个 DSH 会话已关停',
@@ -458,7 +458,7 @@ export const zh = {
   'detail.timeline.volatileOnlyHint':
     '若该会话本应有可读取的历史,请确认 sidecar daemon 正在运行且版本为最新,然后点击「刷新」。',
   'detail.timeline.daemonDownHint':
-    'sidecar daemon 未在运行,历史时间线无人应答。可在设置卡重试,或手动运行 agent-sidecar daemon start 后点击「刷新」。',
+    'sidecar daemon 未在运行,历史时间线无人应答。可在设置卡重试,或手动运行 agents-sidecar daemon start 后点击「刷新」。',
   'detail.timeline.daemonDeferHint':
     '插件让位于系统服务托管的 daemon,服务拉起后点击「刷新」即可加载历史。',
   'detail.states.loadingTitle': '正在加载时间线…',
@@ -623,10 +623,10 @@ export const zh = {
   'command.boardHint': '打开 Agent Center',
   'command.unreachable': 'sidecar 未连接',
   'command.unreachableHint':
-    '无法获取状态快照;请确认 agent-sidecar 插件已启用、daemon 可用后重试。',
+    '无法获取状态快照;请确认 dsh-agents-sidecar 插件已启用、daemon 可用后重试。',
   'command.offlineFailed': 'sidecar 已离线(daemon 连续启动失败已熔断)',
   'command.offlineFailedHint':
-    '以下为最后一次快照。可在设置卡重试,或手动运行 agent-sidecar daemon start 后等待自动领养。',
+    '以下为最后一次快照。可在设置卡重试,或手动运行 agents-sidecar daemon start 后等待自动领养。',
   'command.offlineDefer': '等待系统服务拉起 daemon',
   'command.offlineDeferHint':
     '检测到 LaunchAgent 托管,插件只探测等待;服务拉起后速览会自动恢复。',

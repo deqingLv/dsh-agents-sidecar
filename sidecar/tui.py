@@ -430,7 +430,7 @@ def render_snapshot(
         source_text = "source: daemon/connected"
     elif source == SOURCE_DIRECT:
         source_text = (
-            "source: direct/offline; run: agent-sidecar daemon start"
+            "source: direct/offline; run: agents-sidecar daemon start"
         )
     else:
         source_text = "source: {}".format(sanitize_terminal_text(source))

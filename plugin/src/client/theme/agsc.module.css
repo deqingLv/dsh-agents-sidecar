@@ -6,7 +6,7 @@
  * plugin follows the host theme and Skin Center without owning a parallel
  * palette. Users, skins, or other plugins can override one surface:
  *
- *   [data-dsh-plugin='agent-sidecar'] { --agsc-accent: var(--skin-accent); }
+ *   [data-dsh-plugin='dsh-agents-sidecar'] { --agsc-accent: var(--skin-accent); }
  */
 
 .root {

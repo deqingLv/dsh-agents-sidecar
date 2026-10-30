@@ -143,7 +143,7 @@ agents from being listed.
 ## Installation
 
 Choose one CLI installation method. Agent Sidecar is not documented as
-published on PyPI, so do not assume that `pipx install agent-sidecar` resolves
+published on PyPI, so do not assume that `pipx install agents-sidecar` resolves
 to this project.
 
 The recommended release channel is the root installer. Download it from the
@@ -163,7 +163,7 @@ Omit `--version v0.11.4` to resolve the latest stable GitHub Release. The script
 parses release metadata with Python, requires the exact versioned zipapp and
 `SHA256SUMS` assets, verifies the checksum with `shasum -a 256` on macOS or
 `sha256sum` on Linux, and only then atomically replaces
-`~/.local/bin/agent-sidecar`. Use `--prefix <path>` for another prefix and
+`~/.local/bin/agents-sidecar`. Use `--prefix <path>` for another prefix and
 `--with-skill` to install both agent skill files. It never reads or sends
 credentials.
 
@@ -196,7 +196,7 @@ pipx install 'git+https://github.com/shendeguize/AgentSideCar.git'
 
 For a released, immutable revision, append its tag, for example `@v0.11.4`, to
 the Git URL after that tag is available. Both forms create an isolated
-environment and install `agent-sidecar`; the package has no runtime Python
+environment and install `agents-sidecar`; the package has no runtime Python
 dependencies.
 
 ### Install a GitHub Release zipapp
@@ -206,20 +206,20 @@ checksum file. For version 0.11.4:
 
 ```sh
 version=0.11.4
-curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/agent-sidecar-${version}.pyz"
+curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/agents-sidecar-${version}.pyz"
 curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/SHA256SUMS"
 shasum -a 256 -c SHA256SUMS
-chmod +x "agent-sidecar-${version}.pyz"
-./agent-sidecar-${version}.pyz --version
+chmod +x "agents-sidecar-${version}.pyz"
+./agents-sidecar-${version}.pyz --version
 ```
 
 Use the matching checksum file from the same release. To expose the verified
-artifact as `agent-sidecar` without a package installation:
+artifact as `agents-sidecar` without a package installation:
 
 ```sh
 mkdir -p "$HOME/.local/bin"
-install -m 0755 "agent-sidecar-${version}.pyz" "$HOME/.local/bin/agent-sidecar"
-agent-sidecar --version
+install -m 0755 "agents-sidecar-${version}.pyz" "$HOME/.local/bin/agents-sidecar"
+agents-sidecar --version
 ```
 
 Ensure `~/.local/bin` is on `PATH`. The release workflow verifies the zipapp on
@@ -231,11 +231,11 @@ not represent a PyPI publication.
 Build through the active Agent Sidecar command:
 
 ```sh
-agent-sidecar package build --output dist/agent-sidecar.pyz
+agents-sidecar package build --output dist/agents-sidecar.pyz
 ```
 
-From a checkout, `./agent-sidecar package build --output
-dist/agent-sidecar.pyz` is equivalent.
+From a checkout, `./agents-sidecar package build --output
+dist/agents-sidecar.pyz` is equivalent.
 
 The command atomically creates a mode-`0755` executable and prints its path,
 SHA-256 digest, and size. It packages the active installed `sidecar` package:
@@ -246,12 +246,12 @@ directory. Repeated builds from identical active package content are
 deterministic. Run it directly or through isolated Python:
 
 ```sh
-./dist/agent-sidecar.pyz --version
-python3 -I dist/agent-sidecar.pyz --version
+./dist/agents-sidecar.pyz --version
+python3 -I dist/agents-sidecar.pyz --version
 ```
 
 If an artifact lost its executable bit during transfer, restore it with
-`chmod +x agent-sidecar.pyz` before using it to start a background daemon or
+`chmod +x agents-sidecar.pyz` before using it to start a background daemon or
 install a service.
 
 ### Use a repository checkout
@@ -264,10 +264,10 @@ sh scripts/install-skill.sh
 
 The installer creates symlinks at:
 
-- `~/.local/bin/agent-sidecar`
-- `~/.cursor/skills/agent-sidecar`
-- `~/.claude/skills/agent-sidecar`
-- `~/.dsh/skills/agent-sidecar`
+- `~/.local/bin/agents-sidecar`
+- `~/.cursor/skills/agents-sidecar`
+- `~/.claude/skills/agents-sidecar`
+- `~/.dsh/skills/agents-sidecar`
 
 Ensure `~/.local/bin` is on `PATH`. The links point into this checkout, so keep
 the repository in place or rerun the installer after moving it. Reinstalling is
@@ -277,17 +277,17 @@ remove only links owned by this checkout.
 
 This checkout installer is retained for users who want the CLI and the agent
 skill links to follow a working tree. It is an alternative to a `pipx` CLI
-install because both normally use `~/.local/bin/agent-sidecar`.
+install because both normally use `~/.local/bin/agents-sidecar`.
 
 Installation is optional. Run directly from the repository instead:
 
 ```sh
-./agent-sidecar --version
-./agent-sidecar status
+./agents-sidecar --version
+./agents-sidecar status
 ```
 
-Every example below also works by replacing `agent-sidecar` with
-`./agent-sidecar`.
+Every example below also works by replacing `agents-sidecar` with
+`./agents-sidecar`.
 
 `daemon start` resolves the active pipx console script, executable `.pyz`, or
 checkout shim to a stable absolute command before detaching. The daemon
@@ -329,8 +329,8 @@ Use only the steps that match how Agent Sidecar was installed. Stop persistent
 processes before removing the executable they use:
 
 ```sh
-agent-sidecar service uninstall
-agent-sidecar daemon stop
+agents-sidecar service uninstall
+agents-sidecar daemon stop
 ```
 
 `service uninstall` applies only to the macOS LaunchAgent. It retains the
@@ -348,7 +348,7 @@ valid embedded version metadata, and refuses an unrelated file or symlink. Add
 skill links. For a `pipx` installation:
 
 ```sh
-pipx uninstall agent-sidecar
+pipx uninstall agents-sidecar
 ```
 
 For links created by the checkout installer, run this from that checkout:
@@ -361,10 +361,10 @@ For a release zipapp copied manually to the exact path shown above, remove that
 file only after verifying it is the Agent Sidecar artifact you installed:
 
 ```sh
-rm "$HOME/.local/bin/agent-sidecar"
+rm "$HOME/.local/bin/agents-sidecar"
 ```
 
-Deleting `~/.agent_sidecar` is not part of normal uninstall. It can destroy
+Deleting `~/.agents_sidecar` is not part of normal uninstall. It can destroy
 diagnostics, the HTTP token, send-audit records, and request-ID idempotency
 history. Do not use `audit reset` as an uninstall command.
 
@@ -373,14 +373,14 @@ history. Do not use `audit reset` as an uninstall command.
 Version and session discovery:
 
 ```sh
-agent-sidecar --version
-agent-sidecar list
-agent-sidecar list --all
-agent-sidecar list --agent cursor-ide --agent claude
-agent-sidecar list --all --json
-agent-sidecar list --remote
-agent-sidecar list --remote --host <host-alias> --json
-agent-sidecar list --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar --version
+agents-sidecar list
+agents-sidecar list --all
+agents-sidecar list --agent cursor-ide --agent claude
+agents-sidecar list --all --json
+agents-sidecar list --remote
+agents-sidecar list --remote --host <host-alias> --json
+agents-sidecar list --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 `list` shows sessions updated in the last 48 hours by default. `--all` removes
@@ -390,13 +390,13 @@ that age filter. `--agent NAME` is repeatable, exact, and case-insensitive.
 Process and active-status views:
 
 ```sh
-agent-sidecar ps
-agent-sidecar ps --json
-agent-sidecar status
-agent-sidecar status --json
-agent-sidecar status --remote
-agent-sidecar status --remote --host <host-alias> --json
-agent-sidecar status --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar ps
+agents-sidecar ps --json
+agents-sidecar status
+agents-sidecar status --json
+agents-sidecar status --remote
+agents-sidecar status --remote --host <host-alias> --json
+agents-sidecar status --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 `ps` reports supported local agent executables; process presence is supporting
@@ -414,14 +414,14 @@ registry at `archive.json` in the runtime directory. A session that becomes
 active again is released automatically, so archiving cannot lose work.
 
 ```sh
-agent-sidecar archive --idle-longer-than 2h
-agent-sidecar archive --idle-longer-than 2h --dry-run
-agent-sidecar archive --idle-longer-than 24h --yes
-agent-sidecar archive --idle-longer-than 2h --status dead --yes
-agent-sidecar archive list
-agent-sidecar list --archived
-agent-sidecar unarchive <session-prefix>
-agent-sidecar unarchive --all
+agents-sidecar archive --idle-longer-than 2h
+agents-sidecar archive --idle-longer-than 2h --dry-run
+agents-sidecar archive --idle-longer-than 24h --yes
+agents-sidecar archive --idle-longer-than 2h --status dead --yes
+agents-sidecar archive list
+agents-sidecar list --archived
+agents-sidecar unarchive <session-prefix>
+agents-sidecar unarchive --all
 ```
 
 `archive` selects sessions with no activity for at least `--idle-longer-than`
@@ -437,9 +437,9 @@ pod. `archive` and `unarchive` therefore refuse `--remote`/`--host` and print
 the invocation that works instead:
 
 ```sh
-ssh <host> agent-sidecar archive --idle-longer-than 24h --yes
-ssh <host> agent-sidecar archive list
-ssh <host> agent-sidecar unarchive --all
+ssh <host> agents-sidecar archive --idle-longer-than 24h --yes
+ssh <host> agents-sidecar archive list
+ssh <host> agents-sidecar unarchive --all
 ```
 
 Because every host applies its own registry before answering, a merged
@@ -492,7 +492,7 @@ running Python 3.8 or newer is used. Candidate names are resolved with the
 an interactive login's `PATH`.
 
 Interpreter selection has strict precedence: `--remote-python`, then
-`AGENT_SIDECAR_REMOTE_PYTHON`, then the bounded default candidates. The
+`AGENTS_SIDECAR_REMOTE_PYTHON`, then the bounded default candidates. The
 environment variable has the same fleet-wide scope and is read only by
 remote-enabled `list`, `status`, and `watch`; non-remote calls ignore it. An
 explicit value must be a nonempty absolute path no longer than 1024 characters,
@@ -522,7 +522,7 @@ missing, non-executable, or older than Python 3.8 on a host, that host reports
 candidates or `python3`. After the per-host failures, one local aggregate hint
 distinguishes an unsatisfied explicit pin from exhaustion of the bounded
 defaults and points to `--remote-python` and
-`AGENT_SIDECAR_REMOTE_PYTHON` when appropriate.
+`AGENTS_SIDECAR_REMOTE_PYTHON` when appropriate.
 
 Remote failures are isolated by host and reported on stderr with stable codes,
 including `resource_limit` for bounded-data violations. Rows from local and
@@ -536,14 +536,14 @@ snapshot commands do not provide remote message delivery.
 Follow one session by a unique ID prefix, or follow all watchable sessions:
 
 ```sh
-agent-sidecar watch <session-prefix>
-agent-sidecar watch <session-prefix> --from-start --json
-agent-sidecar watch --all
-agent-sidecar watch --all --from-start --json
-agent-sidecar watch --all --remote
-agent-sidecar watch --all --remote --host <host-alias>
-agent-sidecar watch --all --remote --from-start --json
-agent-sidecar watch --all --remote --remote-python /usr/bin/python3.11 --json
+agents-sidecar watch <session-prefix>
+agents-sidecar watch <session-prefix> --from-start --json
+agents-sidecar watch --all
+agents-sidecar watch --all --from-start --json
+agents-sidecar watch --all --remote
+agents-sidecar watch --all --remote --host <host-alias>
+agents-sidecar watch --all --remote --from-start --json
+agents-sidecar watch --all --remote --remote-python /usr/bin/python3.11 --json
 ```
 
 A session prefix and `--all` are mutually exclusive. Without `--from-start`,
@@ -623,13 +623,13 @@ local source it exits `1`. Remote message delivery remains unsupported.
 and resolves an exact session ID or unique prefix:
 
 ```sh
-agent-sidecar send <session-prefix> "Please review the latest test failure." --allow-write
-agent-sidecar send <session-prefix> "Summarize your result." --allow-write --timeout 120 --json
-agent-sidecar send <session-prefix> "Retry-safe request." --allow-write --request-id <stable-unique-id> --json
-agent-sidecar send <session-prefix> --allow-write -- "-message beginning with a hyphen"
-agent-sidecar send <full-session-id> "Use this exact target." --agent claude --exact-session --allow-write
-printf '%s' "Keep this out of the agent-sidecar argv." | agent-sidecar send <session-prefix> --message-stdin --allow-write
-printf '%s' '<exact-message>' | agent-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<stable-unique-id>' --json
+agents-sidecar send <session-prefix> "Please review the latest test failure." --allow-write
+agents-sidecar send <session-prefix> "Summarize your result." --allow-write --timeout 120 --json
+agents-sidecar send <session-prefix> "Retry-safe request." --allow-write --request-id <stable-unique-id> --json
+agents-sidecar send <session-prefix> --allow-write -- "-message beginning with a hyphen"
+agents-sidecar send <full-session-id> "Use this exact target." --agent claude --exact-session --allow-write
+printf '%s' "Keep this out of the agents-sidecar argv." | agents-sidecar send <session-prefix> --message-stdin --allow-write
+printf '%s' '<exact-message>' | agents-sidecar send '<full-kimi-session-id>' --agent kimi --exact-session --message-stdin --allow-write --request-id '<stable-unique-id>' --json
 ```
 
 Use it only when the user explicitly requests that message or action.
@@ -643,7 +643,7 @@ exact composite agent/session binding for callers that already hold both
 identity fields. The DSH plugin always uses both for external-agent injection.
 
 `--message-stdin` reads the message from standard input instead of the
-positional argument, so the message does not appear in the `agent-sidecar`
+positional argument, so the message does not appear in the `agents-sidecar`
 argv, shell history, or process listings. The two message sources are mutually
 exclusive: provide exactly one. Standard input is read as bytes with the same
 byte limit and then must decode as strict UTF-8; the message passes the same
@@ -689,7 +689,7 @@ no-follow, and file-lock support; it is unsupported and fails closed when
 those primitives are unavailable.
 
 That binding is persistent security state. Do not delete, move, recreate, or
-replace `AGENT_SIDECAR_RUNTIME_DIR`, its audit files, or its home-anchor marker
+replace `AGENTS_SIDECAR_RUNTIME_DIR`, its audit files, or its home-anchor marker
 to work around `unsafe_lock`. That error means retained history or namespace
 identity cannot be proved; removing the marker does not make a retry safe. The
 default is to fail closed and preserve the evidence. If the operator explicitly
@@ -810,7 +810,7 @@ overflow, and every Kimi completed-but-delivery-unknown result; exit `2` is a
 preflight or usage rejection before a valid resume result; interruption exits
 `130` and delivery is unknown.
 
-A positional message is present in the `agent-sidecar` command argv and may be
+A positional message is present in the `agents-sidecar` command argv and may be
 stored in shell history or visible in process listings; `--message-stdin`
 keeps the message out of the Sidecar command line. For Cursor CLI the prompt
 is still present in the native child argv whichever source is used, because
@@ -821,7 +821,7 @@ For a moved namespace whose marker, key fingerprint, and retained logs remain
 strictly verifiable, repair the inode binding without losing request-ID history:
 
 ```sh
-agent-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
+agents-sidecar audit rebind --allow-write --confirm REBIND-SEND-AUDIT
 ```
 
 When rebind is not provable, reset is the supported fallback. By default reset
@@ -830,7 +830,7 @@ archives the active audit key, marker, and retained logs under
 exist and never silently deletes one:
 
 ```sh
-agent-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
+agents-sidecar audit reset --allow-write --confirm CLEAR-SEND-AUDIT
 ```
 
 Reset refuses to run while a send is using the audit namespace. To
@@ -838,7 +838,7 @@ irreversibly delete the active state and all archives, use the stronger
 confirmation:
 
 ```sh
-agent-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
+agents-sidecar audit reset --purge --allow-write --confirm PURGE-SEND-AUDIT
 ```
 
 These commands are explicit recovery operations, never automatic error
@@ -849,8 +849,8 @@ with reset rather than manually altered.
 Open the live terminal dashboard, or render one ANSI-free snapshot:
 
 ```sh
-agent-sidecar tui
-agent-sidecar tui --once
+agents-sidecar tui
+agents-sidecar tui --once
 ```
 
 Press `q` to leave the interactive dashboard.
@@ -858,13 +858,13 @@ Press `q` to leave the interactive dashboard.
 Manage the optional per-user daemon:
 
 ```sh
-agent-sidecar daemon start
-agent-sidecar daemon start --http
-agent-sidecar daemon start --http --http-port 43123
-agent-sidecar daemon status
-agent-sidecar daemon stop
-agent-sidecar daemon run
-agent-sidecar daemon run --http
+agents-sidecar daemon start
+agents-sidecar daemon start --http
+agents-sidecar daemon start --http --http-port 43123
+agents-sidecar daemon status
+agents-sidecar daemon stop
+agents-sidecar daemon run
+agents-sidecar daemon run --http
 ```
 
 `start` launches a detached daemon and is idempotent. `run` runs the same
@@ -883,19 +883,19 @@ already running daemon fails instead of silently changing its configuration.
 Explicitly install the daemon as a service owned by the current user:
 
 ```sh
-agent-sidecar service install [--http [--http-port PORT]] [--force]
-agent-sidecar service install
-agent-sidecar service install --http
-agent-sidecar service install --http --http-port 43123
-agent-sidecar service status
-agent-sidecar service uninstall
+agents-sidecar service install [--http [--http-port PORT]] [--force]
+agents-sidecar service install
+agents-sidecar service install --http
+agents-sidecar service install --http --http-port 43123
+agents-sidecar service status
+agents-sidecar service uninstall
 ```
 
 Service installation is never automatic. On macOS it writes the validated user
-plist at `~/Library/LaunchAgents/com.agent-sidecar.daemon.plist`, loads label
-`com.agent-sidecar.daemon` in the `gui/<uid>` domain, and configures both
+plist at `~/Library/LaunchAgents/com.agents-sidecar.daemon.plist`, loads label
+`com.agents-sidecar.daemon` in the `gui/<uid>` domain, and configures both
 `RunAtLoad` and `KeepAlive`. On Linux it writes
-`~/.config/systemd/user/agent-sidecar.service` and uses only
+`~/.config/systemd/user/agents-sidecar.service` and uses only
 `systemctl --user`; it never writes `/etc`, invokes `sudo`, or changes user
 lingering. The Linux unit runs `daemon run` in the foreground with
 `Restart=on-failure`, `KillMode=control-group`, `NoNewPrivileges`, a read-only
@@ -910,7 +910,7 @@ An identical install is idempotent. Changing a validated definition, including
 HTTP mode, port, or runtime directory, is refused unless `--force` is supplied:
 
 ```sh
-agent-sidecar service install --http --http-port 43123 --force
+agents-sidecar service install --http --http-port 43123 --force
 ```
 
 `--force` deliberately unloads and replaces the definition, causing an
@@ -947,12 +947,12 @@ appear `working` for several minutes before a completed turn becomes
 The daemon keeps a session snapshot, scans adaptively, and fans out normalized
 events. By default it uses:
 
-- runtime directory: `~/.agent_sidecar` (override with
-  `AGENT_SIDECAR_RUNTIME_DIR`);
-- Unix socket: `~/.agent_sidecar/daemon.sock`;
-- PID file: `~/.agent_sidecar/daemon.pid`.
+- runtime directory: `~/.agents_sidecar` (override with
+  `AGENTS_SIDECAR_RUNTIME_DIR`);
+- Unix socket: `~/.agents_sidecar/daemon.sock`;
+- PID file: `~/.agents_sidecar/daemon.pid`.
 
-Separately, `AGENT_SIDECAR_REMOTE_PYTHON` supplies the fleet-wide absolute
+Separately, `AGENTS_SIDECAR_REMOTE_PYTHON` supplies the fleet-wide absolute
 remote interpreter path when `--remote-python` is absent. It is read only for
 remote-enabled `list`, `status`, and `watch`; precedence is CLI option,
 environment variable, then bounded default candidates.
@@ -1056,8 +1056,8 @@ event streams.
 ## Agent skill integration
 
 The installed Cursor, Claude, and dsh skill links expose the same
-`skills/agent-sidecar` bundle. The skill instructs agents to query
-`agent-sidecar status --json` first for local observation, use remote monitoring
+`skills/agents-sidecar` bundle. The skill instructs agents to query
+`agents-sidecar status --json` first for local observation, use remote monitoring
 only on request, never hide remote watch failures or gap warnings, never
 auto-retry a remote watch, and start or stop the daemon only when requested.
 It may read `service status` when useful, but may install, force-replace, or
@@ -1073,11 +1073,11 @@ invokes audit reset automatically.
 
 ## DSH plugin
 
-The `plugin/` directory ships `@shendeguize/dsh-agent-sidecar`, a native DSH
+The `plugin/` directory ships `dsh-agents-sidecar`, a native DSH
 plugin that brings Agent Sidecar into the dsh web interface: a cross-agent
 monitoring board, session-detail timelines with dsh lineage and search, opt-in
 message injection into observed sessions, opt-in AI bypass analysis, and an
-embedded agent-sidecar skill provider. The plugin consumes the sidecar daemon
+embedded agents-sidecar skill provider. The plugin consumes the sidecar daemon
 over its Unix socket and manages the daemon lifecycle with a
 probe-adopt-else-host strategy; it never installs the sidecar CLI itself.
 
@@ -1165,7 +1165,7 @@ inbox accepted or queued the message. It does not prove that the model turn
 started or succeeded; observe the target timeline or terminal turn for the
 actual result.
 
-The plugin is the only DSH injection surface: direct `agent-sidecar send` does
+The plugin is the only DSH injection surface: direct `agents-sidecar send` does
 not support a `dsh` target. A preset-bearing DSH cold target remains a `409`
 conflict, while an inbox-accepted result still requires timeline observation.
 Kimi has no live inbox or steer exception in the plugin; its protected resume
@@ -1190,7 +1190,7 @@ Install it into a dsh profile; the command delegates package resolution to
 pnpm:
 
 ```sh
-dsh plugin --profile web add @shendeguize/dsh-agent-sidecar
+dsh plugin --profile web add dsh-agents-sidecar
 ```
 
 Every configuration key has a default, so a bare plugin row mounts with zero
@@ -1198,7 +1198,7 @@ configuration. To override defaults, add a `config:` block to the plugin's row
 in the profile's `cordis.patch.yml`:
 
 ```yaml
-- id: agent-sidecar
+- id: agents-sidecar
   config:
     daemon:
       policy: adopt-only
@@ -1218,7 +1218,7 @@ Key configuration, summarized:
   both blank reuse the host default, and both nonblank select an explicit
   route. The Settings card reports the resolved route and blocks saving a
   partial pair.
-- `skill.provide` (default on) embeds the agent-sidecar skill through the dsh
+- `skill.provide` (default on) embeds the agents-sidecar skill through the dsh
   skill registry; a filesystem-installed skill of the same name automatically
   takes precedence.
 
@@ -1229,7 +1229,7 @@ read-only there: change those values in the profile plugin row's
 
 The browser UI follows the host's DSH `--dsw-*` tokens and Skin Center by
 default. Skins and plugins can customize it through stable
-`data-dsh-plugin="agent-sidecar"` / `data-dsh-part` anchors and the documented
+`data-dsh-plugin="agents-sidecar"` / `data-dsh-part` anchors and the documented
 `--agsc-*` variables; generated class names are internal implementation
 details. See the plugin manual's [theming contract](plugin/README.md#theming)
 for the public parts, variables, defaults, and a minimal override.
@@ -1260,11 +1260,11 @@ for branch, pull-request, review, changelog, and release governance.
    references that describe the current release; retain explicitly historical
    references.
 2. Run `python3 scripts/check.py` and all release-specific checks.
-3. Build `dist/agent-sidecar.pyz` twice from the same source and verify the
+3. Build `dist/agents-sidecar.pyz` twice from the same source and verify the
    reported SHA-256 values match.
 4. Smoke-test both executable and `python3 -I` zipapp invocation from a
    directory outside the checkout, and verify a wheel exposes the
-   `agent-sidecar` console script with no `Requires-Dist` metadata.
+   `agents-sidecar` console script with no `Requires-Dist` metadata.
 5. Follow the authoritative
    [release procedure](CONTRIBUTING.md#release-procedure): release from a
    CI-green `main` commit, fast-forward the `release` branch for a final
@@ -1333,7 +1333,7 @@ the sessions.
 
 ### Where does Agent Sidecar store its own state?
 
-The default runtime directory is `~/.agent_sidecar`. It can contain the Unix
+The default runtime directory is `~/.agents_sidecar`. It can contain the Unix
 socket, PID file, bounded diagnostics, HTTP token and transient port record,
 the `archive.json` registry of [archived sessions](#archive-idle-sessions),
 and, only after mutating send operations, private audit state. See

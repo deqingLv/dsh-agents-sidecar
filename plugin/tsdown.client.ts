@@ -1,5 +1,5 @@
 /**
- * Browser client bundle for @shendeguize/dsh-agent-sidecar, replicating the
+ * Browser client bundle for dsh-agents-sidecar, replicating the
  * DeepSeek Harness lazy-CJS `clientBundle` preset (the official preset is
  * unpublished; blueprint: dsh-web-ui `shared/tsdown.client.ts`, cross-checked
  * against dsh-agent-teams' standalone replica):
@@ -47,9 +47,9 @@ const GENERATED_REMOTE = /^@deepseek-ai\/dsh-[a-z0-9]+(?:-[a-z0-9]+)*\/remote$/
 /** Virtual-id wrapper keeping module CSS away from tsdown's own css pipeline. */
 const CSS_VIRTUAL_PREFIX = '\0dsh-css:'
 const CSS_VIRTUAL_SUFFIX = '.mjs'
-const STYLE_MANIFEST_KEY = '@shendeguize/dsh-agent-sidecar/style-manifest'
-const STYLE_OWNER_KEY = '@shendeguize/dsh-agent-sidecar/style-owner'
-const STYLE_GENERATION_KEY = '@shendeguize/dsh-agent-sidecar/style-generation'
+const STYLE_MANIFEST_KEY = 'dsh-agents-sidecar/style-manifest'
+const STYLE_OWNER_KEY = 'dsh-agents-sidecar/style-owner'
+const STYLE_GENERATION_KEY = 'dsh-agents-sidecar/style-generation'
 const PROJECT_ROOT = fileURLToPath(new URL('.', import.meta.url))
 const CSS_REAL_PATHS = new Map<string, string>()
 

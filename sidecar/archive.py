@@ -236,12 +236,12 @@ class ArchiveView:
 def default_archive_dir() -> Path:
     """Resolve the runtime directory without importing the daemon module."""
 
-    configured = os.environ.get("AGENT_SIDECAR_RUNTIME_DIR") or os.environ.get(
+    configured = os.environ.get("AGENTS_SIDECAR_RUNTIME_DIR") or os.environ.get(
         "AGENT_SIDECAR_HOME"
     )
     if configured:
         return Path(os.path.expandvars(os.path.expanduser(configured)))
-    return Path.home() / ".agent_sidecar"
+    return Path.home() / ".agents_sidecar"
 
 
 class ArchiveStore:

@@ -92,7 +92,7 @@ class SystemdTests(unittest.TestCase):
         self.home.mkdir(mode=0o700)
         self.config = self.home / ".config"
         self.systemctl = executable(root / "systemctl")
-        self.entry = executable(root / "agent-sidecar")
+        self.entry = executable(root / "agents-sidecar")
         self.runtime = root / "runtime"
         self.prefix = (str(self.entry.resolve()),)
 

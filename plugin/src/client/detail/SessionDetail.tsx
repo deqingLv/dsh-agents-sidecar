@@ -126,7 +126,7 @@ function EventRow(props: {
       className={styles['event']}
       data-kind={entry.kind}
       data-new={row.isNew || undefined}
-      data-testid="agent-sidecar-detail-event"
+      data-testid="agents-sidecar-detail-event"
     >
       <div className={styles['eventHead']} title={row.hoverTitle}>
         <span className={styles['eventGlyph']} aria-hidden>
@@ -177,7 +177,7 @@ function ChunkRunRow(props: {
         className={styles['chunkRun']}
         data-new={row.isNew || undefined}
         title={row.hoverTitle}
-        data-testid="agent-sidecar-detail-chunks"
+        data-testid="agents-sidecar-detail-chunks"
       >
         <span className={styles['chunkRunLabel']}>{row.label}</span>
         <Button
@@ -338,7 +338,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
         : null
 
   return (
-    <div {...surfaceProps('timeline', styles['root'])} data-testid="agent-sidecar-detail">
+    <div {...surfaceProps('timeline', styles['root'])} data-testid="agents-sidecar-detail">
       <header className={styles['header']}>
         <div className={styles['headerTop']}>
           {props.onClose !== undefined && (
@@ -347,7 +347,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
               size="sm"
               variant="outline"
               onClick={props.onClose}
-              data-testid="agent-sidecar-detail-back"
+              data-testid="agents-sidecar-detail-back"
             >
               {DETAIL_STRINGS.header.close}
             </Button>
@@ -373,7 +373,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
               disabled={props.refreshing === true}
               title={DETAIL_STRINGS.header.refreshHint}
               onClick={props.onRefresh}
-              data-testid="agent-sidecar-detail-refresh"
+              data-testid="agents-sidecar-detail-refresh"
             >
               {props.refreshing === true
                 ? DETAIL_STRINGS.header.refreshing
@@ -406,7 +406,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
               className={styles['project']}
               title={`${props.header.project} · ${DETAIL_STRINGS.header.copyProjectTitle}`}
               onClick={() => { void copyValue('project', props.header.project) }}
-              data-testid="agent-sidecar-detail-copy-project"
+              data-testid="agents-sidecar-detail-copy-project"
             >
               {props.header.project}
             </Button>
@@ -418,7 +418,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
             className={styles['sessionId']}
             title={`${props.sessionId} · ${DETAIL_STRINGS.header.copyIdTitle}`}
             onClick={() => { void copyValue('id', props.sessionId) }}
-            data-testid="agent-sidecar-detail-copy-id"
+            data-testid="agents-sidecar-detail-copy-id"
           >
             {props.sessionId}
           </Button>
@@ -428,7 +428,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
             </StaticPill>
           )}
         </div>
-        <div className={styles['metaRow']} data-testid="agent-sidecar-detail-facts">
+        <div className={styles['metaRow']} data-testid="agents-sidecar-detail-facts">
           {lastActivity !== null && (
             <span className={styles['fact']}>{lastActivity}</span>
           )}
@@ -448,7 +448,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
               className={styles['transcriptPath']}
               title={`${props.header.transcript} · ${DETAIL_STRINGS.header.copyPathTitle}`}
               onClick={() => { void copyValue('transcript', props.header.transcript ?? '') }}
-              data-testid="agent-sidecar-detail-copy-transcript"
+              data-testid="agents-sidecar-detail-copy-transcript"
             >
               {props.header.transcript}
             </Button>
@@ -491,7 +491,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
         </div>
       ) : (
         <>
-          <div className={styles['filterRow']} data-testid="agent-sidecar-detail-filter">
+          <div className={styles['filterRow']} data-testid="agents-sidecar-detail-filter">
             {(['conversation', 'all'] as const).map((mode) => (
               <Pill
                 key={mode}
@@ -550,7 +550,7 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
                   key={row.key}
                   className={styles['gap']}
                   role="note"
-                  data-testid="agent-sidecar-detail-gap"
+                  data-testid="agents-sidecar-detail-gap"
                 >
                   {row.label}
                 </li>

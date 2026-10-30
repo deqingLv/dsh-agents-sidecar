@@ -94,7 +94,7 @@ SSH configuration, pre-trusted host keys, and noninteractive authentication;
 it does not enroll host keys, manage credentials, or establish an additional
 application-layer encryption boundary.
 
-`--remote-python` and `AGENT_SIDECAR_REMOTE_PYTHON` are operator-controlled
+`--remote-python` and `AGENTS_SIDECAR_REMOTE_PYTHON` are operator-controlled
 inputs at the local-to-remote execution boundary. The value must be a nonempty
 absolute path of at most 1024 characters, contain only
 `[A-Za-z0-9._+/-]`, and have no `..` path segment; invalid values are rejected
@@ -126,7 +126,7 @@ support message delivery.
 
 ### Experimental message injection and `send`
 
-The experimental message-injection path is exposed as `agent-sidecar send` and
+The experimental message-injection path is exposed as `agents-sidecar send` and
 is separate from observation. It requires an explicit request and
 `--allow-write`, starts a native headless-resume process, and may cause that
 agent to contact its provider, run tools, modify its session, or change
@@ -148,7 +148,7 @@ automatically because the agent may already have acted.
 
 The send-audit namespace is persistently bound to its canonical runtime inode,
 home-anchor marker, key identity, and retained history. Do not manually delete,
-move, recreate, or replace `AGENT_SIDECAR_RUNTIME_DIR`, the marker, or audit
+move, recreate, or replace `AGENTS_SIDECAR_RUNTIME_DIR`, the marker, or audit
 files to clear `unsafe_lock`: that result means the previous namespace history
 or identity cannot be proved. Preserve it and fail closed; deleting evidence
 does not authorize a retry. The only supported recovery operations are the
@@ -223,14 +223,14 @@ the selected request; an identity mismatch is delivery-unknown
 Agent Sidecar makes no general claim of sandboxing, process isolation, data-at-
 rest encryption, or end-to-end encryption. Platform permissions, SSH, and
 provider transports retain their own independent security properties. See the
-[product reference](skills/agent-sidecar/reference.md) for the exact command,
+[product reference](skills/agents-sidecar/reference.md) for the exact command,
 protocol, and compatibility boundaries.
 
 ### DSH plugin routes and trust posture
 
 The optional DSH plugin (`plugin/`, published as
-`@shendeguize/dsh-agent-sidecar`) registers its own routes on the dsh web
-server under `/plugins/agent-sidecar/api`. The dsh web server has no
+`dsh-agents-sidecar`) registers its own routes on the dsh web
+server under `/plugins/agents-sidecar/api`. The dsh web server has no
 authentication layer and its `/api` fence does not cover plugin routes, so
 the plugin carries its own guard: it refuses non-loopback peers even when dsh
 binds a wider address and requires exactly one loopback `Host` authority. A

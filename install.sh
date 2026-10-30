@@ -5,10 +5,10 @@ set -eu
 REPOSITORY=shendeguize/AgentSideCar
 API_ROOT=https://api.github.com/repos/$REPOSITORY
 RAW_ROOT=https://raw.githubusercontent.com/$REPOSITORY
-SKILL_MARKER=.agent-sidecar-release-skill
+SKILL_MARKER=.agents-sidecar-release-skill
 
 die() {
-    printf '%s\n' "agent-sidecar installer: $*" >&2
+    printf '%s\n' "agents-sidecar installer: $*" >&2
     exit 1
 }
 
@@ -25,7 +25,7 @@ Options:
   --uninstall                Remove a recognized release installation
   --help                     Show this help
 
-The executable is installed at <prefix>/bin/agent-sidecar. A checkout skill
+The executable is installed at <prefix>/bin/agents-sidecar. A checkout skill
 install uses scripts/install-skill.sh when that can be done without replacing
 the release executable. Otherwise the two skill files are copied from the
 checkout or fetched from the resolved immutable release tag.
@@ -206,10 +206,10 @@ from pathlib import Path
 
 home = Path(sys.argv[1])
 marker_name = sys.argv[2]
-signature = "agent-sidecar-release-skill-v1"
+signature = "agents-sidecar-release-skill-v1"
 for destination in (
-    home / ".cursor" / "skills" / "agent-sidecar",
-    home / ".claude" / "skills" / "agent-sidecar",
+    home / ".cursor" / "skills" / "agents-sidecar",
+    home / ".claude" / "skills" / "agents-sidecar",
 ):
     if destination.is_symlink():
         print("left checkout or unrelated skill link unchanged: {}".format(destination))
@@ -303,8 +303,8 @@ if [ "$prefix_set" -eq 0 ]; then
     prefix=$HOME/.local
 fi
 prefix=$(normalize_path "$prefix") || die "invalid installation prefix"
-target=$prefix/bin/agent-sidecar
-operation_lock=$prefix/.agent-sidecar-operation.lock
+target=$prefix/bin/agents-sidecar
+operation_lock=$prefix/.agents-sidecar-operation.lock
 operation_lock_recovery=$operation_lock.recovery
 operation_lock_recovery_claim=$operation_lock.recovery-claim
 operation_lock_grace_seconds=2
@@ -882,12 +882,12 @@ recover_stale_operation_lock() {
 }
 
 acquire_operation_lock() {
-    operation_lock_timeout=${AGENT_SIDECAR_LOCK_TIMEOUT_SECONDS-30}
+    operation_lock_timeout=${AGENTS_SIDECAR_LOCK_TIMEOUT_SECONDS-30}
     case $operation_lock_timeout in
         0|[1-9]|[1-9][0-9]|[12][0-9][0-9]|300)
             ;;
         *)
-            die "AGENT_SIDECAR_LOCK_TIMEOUT_SECONDS must be 0 through 300"
+            die "AGENTS_SIDECAR_LOCK_TIMEOUT_SECONDS must be 0 through 300"
             ;;
     esac
 
@@ -996,12 +996,12 @@ checkout_skill=
 checkout_cli=
 if [ -n "$script_dir" ] &&
     [ -f "$script_dir/scripts/install-skill.sh" ] &&
-    [ -f "$script_dir/skills/agent-sidecar/SKILL.md" ] &&
-    [ -f "$script_dir/skills/agent-sidecar/reference.md" ] &&
-    [ -f "$script_dir/agent-sidecar" ]; then
+    [ -f "$script_dir/skills/agents-sidecar/SKILL.md" ] &&
+    [ -f "$script_dir/skills/agents-sidecar/reference.md" ] &&
+    [ -f "$script_dir/agents-sidecar" ]; then
     checkout_helper=$script_dir/scripts/install-skill.sh
-    checkout_skill=$script_dir/skills/agent-sidecar
-    checkout_cli=$script_dir/agent-sidecar
+    checkout_skill=$script_dir/skills/agents-sidecar
+    checkout_cli=$script_dir/agents-sidecar
 fi
 
 if [ "$uninstall" -eq 1 ]; then
@@ -1069,7 +1069,7 @@ esac
 
 temporary=$(python3 - <<'PY'
 import tempfile
-print(tempfile.mkdtemp(prefix="agent-sidecar-install-"))
+print(tempfile.mkdtemp(prefix="agents-sidecar-install-"))
 PY
 ) || die "cannot create temporary directory"
 
@@ -1120,7 +1120,7 @@ if requested != "latest" and requested != tag:
 if release.get("draft") is not False or release.get("prerelease") is not False:
     raise SystemExit("release is draft or prerelease")
 version = tag[1:]
-artifact_name = "agent-sidecar-{}.pyz".format(version)
+artifact_name = "agents-sidecar-{}.pyz".format(version)
 checksum_name = "SHA256SUMS"
 expected_urls = {
     artifact_name: (
@@ -1266,11 +1266,11 @@ PY
         else
             download \
                 "$skill_stage/SKILL.md" \
-                "$RAW_ROOT/$tag/skills/agent-sidecar/SKILL.md" ||
+                "$RAW_ROOT/$tag/skills/agents-sidecar/SKILL.md" ||
                 die "cannot download SKILL.md from immutable tag $tag"
             download \
                 "$skill_stage/reference.md" \
-                "$RAW_ROOT/$tag/skills/agent-sidecar/reference.md" ||
+                "$RAW_ROOT/$tag/skills/agents-sidecar/reference.md" ||
                 die "cannot download reference.md from immutable tag $tag"
         fi
 
@@ -1293,7 +1293,7 @@ home = Path(sys.argv[2])
 version = sys.argv[3]
 marker_name = sys.argv[4]
 checkout_skill = sys.argv[5]
-signature = "agent-sidecar-release-skill-v1"
+signature = "agents-sidecar-release-skill-v1"
 if re.fullmatch(
     r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", version
 ) is None:
@@ -1320,8 +1320,8 @@ marker_payload = (
 ).encode("utf-8")
 
 destinations = (
-    home / ".cursor" / "skills" / "agent-sidecar",
-    home / ".claude" / "skills" / "agent-sidecar",
+    home / ".cursor" / "skills" / "agents-sidecar",
+    home / ".claude" / "skills" / "agents-sidecar",
 )
 for destination in destinations:
     parent = destination.parent
@@ -1405,7 +1405,7 @@ for destination in destinations:
                     pass
     else:
         temporary_dir = Path(
-            tempfile.mkdtemp(prefix=".agent-sidecar.", dir=str(parent))
+            tempfile.mkdtemp(prefix=".agents-sidecar.", dir=str(parent))
         )
         try:
             for name, payload in (
@@ -1500,7 +1500,7 @@ if os.path.lexists(target):
         raise SystemExit("refusing to replace unrecognized target")
 
 descriptor, temporary_name = tempfile.mkstemp(
-    prefix=".agent-sidecar.",
+    prefix=".agents-sidecar.",
     dir=parent,
 )
 try:

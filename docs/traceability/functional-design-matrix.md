@@ -35,14 +35,14 @@ test ID is not a completed mapping.
 | Source | Role |
 |---|---|
 | `README.md`, `README.zh.md` | User-facing behavior, commands, support promises |
-| `skills/agent-sidecar/reference.md` | CLI, JSON, socket, remote, and agent integration contracts |
+| `skills/agents-sidecar/reference.md` | CLI, JSON, socket, remote, and agent integration contracts |
 | `CONTRIBUTING.md` | Development, review, CI, version, and release governance |
 | `SECURITY.md` | Trust boundaries, privacy, remote and injection posture |
 | `.local/tasks/make_dsh_mode/design/dsh_plugin_design.md` | DSH architecture and ADR-1 through ADR-8 |
 | `.local/tasks/make_dsh_mode/acceptance/m1_acceptance.md` through `m4_acceptance.md` | Milestone acceptance evidence |
 | `.local/tasks/make_dsh_mode/acceptance/s0_smoke.md` | Historical real-environment smoke evidence |
 | `.local/tasks/make_dsh_mode/review/ux_review.md` | UX-01 through UX-20 findings |
-| `.local/tasks/design_agent_sidecar/build_github_interface/checklist.md` | META, GOV, CI, SEC, REL, DOC, WEB, and AGT checks |
+| `.local/tasks/design_agents_sidecar/build_github_interface/checklist.md` | META, GOV, CI, SEC, REL, DOC, WEB, and AGT checks |
 | `.local/tasks/env_elimition/checklist.md` and `design/env_elimination_design.md` | C1-C7 and N1-N6 remote-environment requirements |
 | `.local/feedbacks/TRACKER.md` and archived feedback sources | IN-01 through IN-08 regressions |
 

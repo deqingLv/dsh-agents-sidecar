@@ -284,7 +284,7 @@ describe('request', () => {
     expect(driver.received).toHaveLength(1)
     const prompt = driver.received[0]!
     expect(prompt.role).toBe('user')
-    expect(prompt.source).toEqual({ kind: 'plugin', plugin: 'agent-sidecar' })
+    expect(prompt.source).toEqual({ kind: 'plugin', plugin: 'dsh-agents-sidecar' })
     expect(prompt.content).toHaveLength(1)
     const promptText = prompt.content[0]!.text!
     expect(promptText).toContain(ANALYSIS_GUIDANCE)

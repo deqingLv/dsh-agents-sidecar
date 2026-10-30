@@ -12,7 +12,7 @@ import {
 } from '../src/client/navigation/sidebar-entry.ts'
 import { PLUGIN_DOM_ID } from '../src/client/theme/parts.ts'
 
-const ENTRY_DISPATCHER = Symbol.for('@shendeguize/dsh-agent-sidecar/sidebar-entry-dispatcher')
+const ENTRY_DISPATCHER = Symbol.for('dsh-agents-sidecar/sidebar-entry-dispatcher')
 const SIDEBAR_SOURCE = readFileSync(
   new URL('../src/client/navigation/sidebar-entry.ts', import.meta.url),
   'utf8',
@@ -51,7 +51,7 @@ class FakeButton {
   }
 
   querySelector(selector: string): { textContent: string | null } | null {
-    return selector === '[data-agent-sidecar-sidebar-entry-label]' ? this.label : null
+    return selector === '[data-agents-sidecar-sidebar-entry-label]' ? this.label : null
   }
 
   addEventListener(type: string, listener: () => void): void {
@@ -85,7 +85,7 @@ class FakeButton {
 
 function legacyButton(): FakeButton {
   return new FakeButton(new Map([
-    ['data-agent-sidecar-sidebar-entry', ''],
+    ['data-agents-sidecar-sidebar-entry', ''],
     ['data-dsh-plugin', PLUGIN_DOM_ID],
     ['data-dsh-part', 'sidebar-entry'],
     ['aria-label', 'Legacy label'],
@@ -123,7 +123,7 @@ describe('sidebar entry', () => {
   })
 
   it('uses one plugin-specific DOM idempotency key', () => {
-    expect(SIDEBAR_ENTRY_SELECTOR).toBe('[data-agent-sidecar-sidebar-entry]')
+    expect(SIDEBAR_ENTRY_SELECTOR).toBe('[data-agents-sidecar-sidebar-entry]')
     expect(hasSidebarEntry({
       querySelector: (selector) => selector === SIDEBAR_ENTRY_SELECTOR ? {} : null,
     })).toBe(true)
@@ -131,7 +131,7 @@ describe('sidebar entry', () => {
   })
 
   it('does not treat the idempotency attribute alone as ownership', () => {
-    const attributes = new Map([['data-agent-sidecar-sidebar-entry', '']])
+    const attributes = new Map([['data-agents-sidecar-sidebar-entry', '']])
     expect(isOwnedSidebarEntry({
       tagName: 'BUTTON',
       getAttribute: (name: string) => attributes.get(name) ?? null,
@@ -263,7 +263,7 @@ describe('sidebar entry', () => {
   it('leaves a foreign collision entirely untouched and warns only once', () => {
     const label = { textContent: 'Foreign Center' }
     const attributes = new Map([
-      ['data-agent-sidecar-sidebar-entry', ''],
+      ['data-agents-sidecar-sidebar-entry', ''],
       ['aria-label', 'Foreign label'],
       ['data-owner', 'another-plugin'],
     ])

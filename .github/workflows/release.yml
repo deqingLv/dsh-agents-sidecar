@@ -171,7 +171,7 @@ jobs:
       - name: Build deterministic release artifact
         id: package
         run: |
-          artifact_name="agent-sidecar-${{ steps.guard.outputs.version }}.pyz"
+          artifact_name="agents-sidecar-${{ steps.guard.outputs.version }}.pyz"
           python -m sidecar package build --output "dist/${artifact_name}"
           (
             cd dist
@@ -292,20 +292,20 @@ jobs:
             shasum -a 256 -c SHA256SUMS
           )
           actual="$(python3 "dist/${{ needs.build.outputs.artifact_name }}" --version)"
-          test "${actual}" = "agent-sidecar ${{ needs.build.outputs.version }}"
+          test "${actual}" = "agents-sidecar ${{ needs.build.outputs.version }}"
 
       - name: Probe skill installer in temporary home
         run: |
           probe_home="$(mktemp -d)"
           trap 'rm -rf "${probe_home}"' EXIT
           HOME="${probe_home}" sh scripts/install-skill.sh
-          test -L "${probe_home}/.cursor/skills/agent-sidecar"
-          test -L "${probe_home}/.claude/skills/agent-sidecar"
-          test -L "${probe_home}/.local/bin/agent-sidecar"
+          test -L "${probe_home}/.cursor/skills/agents-sidecar"
+          test -L "${probe_home}/.claude/skills/agents-sidecar"
+          test -L "${probe_home}/.local/bin/agents-sidecar"
           HOME="${probe_home}" sh scripts/install-skill.sh --uninstall
-          test ! -e "${probe_home}/.cursor/skills/agent-sidecar"
-          test ! -e "${probe_home}/.claude/skills/agent-sidecar"
-          test ! -e "${probe_home}/.local/bin/agent-sidecar"
+          test ! -e "${probe_home}/.cursor/skills/agents-sidecar"
+          test ! -e "${probe_home}/.claude/skills/agents-sidecar"
+          test ! -e "${probe_home}/.local/bin/agents-sidecar"
 
   release:
     name: 3. Attest and publish

@@ -230,7 +230,7 @@ describe('fetchState', () => {
     const result = await fetchState({ fetch, createAbortController: () => controller })
     expect(result).toEqual(snapshot)
     expect(seen).toHaveLength(1)
-    expect(seen[0]!.url).toBe('/plugins/agent-sidecar/api/state')
+    expect(seen[0]!.url).toBe('/plugins/dsh-agents-sidecar/api/state')
     expect(seen[0]!.init.method).toBe('GET')
     expect(seen[0]!.init.signal).toBe(controller.signal)
     expect(vi.getTimerCount()).toBe(0) // deadline timer cleaned up

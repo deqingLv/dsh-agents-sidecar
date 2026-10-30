@@ -1,5 +1,5 @@
 /**
- * Skill path two (design §7): register the `agent-sidecar` skill on dsh's
+ * Skill path two (design §7): register the `agents-sidecar` skill on dsh's
  * `ctx.skills` registry via `registerProvider`, so installing the plugin
  * yields the skill without running `scripts/install-skill.sh`.
  *
@@ -16,7 +16,7 @@
  * operative rule in dsh-web compositions, where skill-filesystem is
  * host-disabled and mounted per agent-preset scope while this provider
  * sits in the global layer (live-verified: with `~/.dsh/skills/
- * agent-sidecar` present the RPC catalog showed exactly one entry, the
+ * agents-sidecar` present the RPC catalog showed exactly one entry, the
  * filesystem one; removing it flipped the same entry to this provider's
  * without a restart). The yield rule therefore needs no filesystem
  * probing: registering at BUNDLED_SKILL_RANK (600, the sanctioned rank for
@@ -24,7 +24,7 @@
  * yield marker in every topology.
  *
  * The skill body is a dsh-scene condensation of the canonical
- * `skills/agent-sidecar/SKILL.md` (same repo): observation flows through
+ * `skills/agents-sidecar/SKILL.md` (same repo): observation flows through
  * the CLI and this plugin's web board, while injection uses either the
  * plugin's in-process DSH path or the sidecar send boundary for supported
  * external agents. Direct sidecar `send` remains `unsupported_dsh`; that
@@ -125,10 +125,10 @@ export type SkillsProviderLog = (
 ) => void
 
 /** Registry name of this provider (distinct from the skill it serves). */
-export const SKILL_PROVIDER_NAME = 'agent-sidecar-plugin'
+export const SKILL_PROVIDER_NAME = 'dsh-agents-sidecar-plugin'
 
 /** The one skill this provider serves (same name as the filesystem copy). */
-export const SIDECAR_SKILL_NAME = 'agent-sidecar'
+export const SIDECAR_SKILL_NAME = 'agents-sidecar'
 
 /**
  * BUNDLED_SKILL_RANK, pinned from @deepseek-ai/dsh-skill 0.1.1-rc.2
@@ -139,30 +139,30 @@ export const SIDECAR_SKILL_NAME = 'agent-sidecar'
  */
 export const SIDECAR_SKILL_RANK = 600
 
-/** Routing description; aligned with skills/agent-sidecar/SKILL.md frontmatter. */
+/** Routing description; aligned with skills/agents-sidecar/SKILL.md frontmatter. */
 export const SIDECAR_SKILL_DESCRIPTION =
   'Monitors readonly local AI agent sessions (claude/codex/cursor/dsh/kimi/copilot) and reports ' +
-  'their state and progress via the agent-sidecar CLI and the Sidecar board in dsh web. Use when ' +
+  'their state and progress via the agents-sidecar CLI and the Sidecar board in dsh web. Use when ' +
   'the user asks for agent status, session progress, to monitor agents, which agent is waiting or ' +
   'working, or explicitly asks to send a message or feedback to an agent.'
 
 /**
  * dsh-scene skill body: semantically consistent with the canonical
- * `skills/agent-sidecar/SKILL.md`, condensed for the plugin context —
+ * `skills/agents-sidecar/SKILL.md`, condensed for the plugin context —
  * observation goes CLI/board, while mutation distinguishes protected Kimi
  * spawn-resume, in-process DSH injection, and the external send CLI path.
  */
 export const SIDECAR_SKILL_CONTENT = `# Agent Sidecar (dsh plugin edition)
 
-This dsh composition runs the \`dsh-agent-sidecar\` plugin. Observation is
+This dsh composition runs the \`dsh-agents-sidecar\` plugin. Observation is
 the default; every mutation needs an explicit user request in the same turn.
 
 ## Observe
 
-1. Check \`command -v agent-sidecar\`. If missing, do not install anything
-   unless the user explicitly asks; point them at the agent_sidecar repo
+1. Check \`command -v agents-sidecar\`. If missing, do not install anything
+   unless the user explicitly asks; point them at the agents_sidecar repo
    install options instead.
-2. Run \`agent-sidecar status --json\` first; summarize sessions by agent,
+2. Run \`agents-sidecar status --json\` first; summarize sessions by agent,
    status, title, project, and age from \`updated_at\`.
 3. Other observation commands, only when they match the request:
    \`list --json\` (48h window), \`list --all --json\`, \`ps --json\`,
@@ -200,7 +200,7 @@ the default; every mutation needs an explicit user request in the same turn.
   current default provider/model pair (\`dsh_model_unconfigured\` otherwise)
   and rejects any proven explicit or implicit preset
   (\`dsh_preset_unsupported\`); unknown persistence, preset, or host-service
-  state fails closed. Direct \`agent-sidecar send\` still returns
+  state fails closed. Direct \`agents-sidecar send\` still returns
   \`unsupported_dsh\`; only that CLI path is unsupported, not DSH injection
   through this plugin.
 - For **claude / codex / cursor-cli / copilot** sessions in \`waiting\`/\`idle\`, use
@@ -211,10 +211,10 @@ the default; every mutation needs an explicit user request in the same turn.
   otherwise:
 
   \`\`\`sh
-  agent-sidecar send <session-prefix> "<exact-message>" --allow-write --request-id "<stable-unique-id>" --json
+  agents-sidecar send <session-prefix> "<exact-message>" --allow-write --request-id "<stable-unique-id>" --json
   \`\`\`
 
-- On the external \`agent-sidecar send\` path, preserve the returned
+- On the external \`agents-sidecar send\` path, preserve the returned
   \`request_id\` and \`replayed\` fields. It rejects remote, \`working\`,
   \`dead\`, child, and unsupported-agent sessions. \`cursor-ide\` and
   \`cursor-ide\` has no mutation path; Copilot uses its authenticated
@@ -224,21 +224,21 @@ the default; every mutation needs an explicit user request in the same turn.
   \`audit_error\`, \`cleanup_incomplete\`, or any result with
   \`delivery: "unknown"\` — the agent may already have received the
   message. Report the unknown state plainly and ask the user what to do.
-- The audit store is fail-closed; never run \`agent-sidecar audit reset\`
+- The audit store is fail-closed; never run \`agents-sidecar audit reset\`
   automatically.
 
 ## Reference
 
-Full schemas, exit codes, and boundaries: \`skills/agent-sidecar/SKILL.md\`
-and \`reference.md\` in the agent_sidecar repository (also installable as a
+Full schemas, exit codes, and boundaries: \`skills/agents-sidecar/SKILL.md\`
+and \`reference.md\` in the agents_sidecar repository (also installable as a
 filesystem skill via \`scripts/install-skill.sh\`; a user-managed filesystem
 copy automatically shadows this plugin-provided one).`
 
 const RESOURCE_BASE: SkillResourceBaseFace = {
   kind: 'opaque',
   description:
-    'Self-contained skill provided by the dsh-agent-sidecar plugin; the canonical long-form ' +
-    'reference (SKILL.md + reference.md) lives in the agent_sidecar repository under skills/agent-sidecar/.',
+    'Self-contained skill provided by the dsh-agents-sidecar plugin; the canonical long-form ' +
+    'reference (SKILL.md + reference.md) lives in the agents_sidecar repository under skills/agents-sidecar/.',
 }
 
 const INVOCATION: SkillInvocationFace = { modelInvocable: true, userInvocable: true }
@@ -285,7 +285,7 @@ const provider: SkillProviderFace = {
 }
 
 /**
- * Register the agent-sidecar skill provider on `ctx.skills`.
+ * Register the agents-sidecar skill provider on `ctx.skills`.
  *
  * Yield rule (per live test, env_facts.md): none needed beyond the rank —
  * dsh's registry dedupes same-name skills natively, and this provider's

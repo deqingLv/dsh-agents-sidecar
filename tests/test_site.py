@@ -239,11 +239,11 @@ class SiteVerificationTests(unittest.TestCase):
     @staticmethod
     def help_runner(command):
         help_by_command = {
-            ("daemon", "start"): "usage: agent-sidecar daemon start [--http]\n",
-            ("status",): "usage: agent-sidecar status [--json]\n",
-            ("tui",): "usage: agent-sidecar tui [--once]\n",
+            ("daemon", "start"): "usage: agents-sidecar daemon start [--http]\n",
+            ("status",): "usage: agents-sidecar status [--json]\n",
+            ("tui",): "usage: agents-sidecar tui [--once]\n",
         }
-        return 0, help_by_command.get(command, "usage: agent-sidecar\n"), ""
+        return 0, help_by_command.get(command, "usage: agents-sidecar\n"), ""
 
     def test_site_verifier_accepts_complete_generated_tree(self):
         summary = inspect_site(
@@ -288,8 +288,8 @@ class SiteVerificationTests(unittest.TestCase):
         landing = landing_path.read_text(encoding="utf-8")
         landing_path.write_text(
             landing.replace(
-                "agent-sidecar status",
-                "agent-sidecar status --not-a-real-option",
+                "agents-sidecar status",
+                "agents-sidecar status --not-a-real-option",
             ),
             encoding="utf-8",
         )

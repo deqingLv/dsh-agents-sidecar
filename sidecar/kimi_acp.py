@@ -1353,7 +1353,7 @@ def run_kimi_acp(
                 "protocolVersion": 1,
                 "clientCapabilities": {},
                 "clientInfo": {
-                    "name": "agent-sidecar",
+                    "name": "agents-sidecar",
                     "version": __version__,
                 },
             },

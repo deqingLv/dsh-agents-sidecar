@@ -93,7 +93,7 @@ export interface SettingsCardValues {
    * settings documents still round-trip without loss.
    */
   sidecarCommand: string
-  /** sidecar.runtimeDir ('' = default ~/.agent_sidecar) */
+  /** sidecar.runtimeDir ('' = default ~/.agents_sidecar) */
   sidecarRuntimeDir: string
   /** stream.reconcileActiveMs (integer ≥ 100) */
   streamReconcileActiveMs: number
@@ -498,7 +498,7 @@ export function SettingsCard(props: SettingsCardProps): ReactNode {
               <p className={css['note']}>{t('settings.archiveExplain')}</p>
               <div className={css['field']}>
                 <span className={css['label']}>{t('settings.archiveLiveLabel')}</span>
-                <span className={css['statusText']} data-testid="agent-sidecar-settings-archive-live">
+                <span className={css['statusText']} data-testid="agents-sidecar-settings-archive-live">
                   {archiveLive}
                 </span>
               </div>

@@ -82,7 +82,7 @@ def _run_stage(stage: str, full_tests_ran: bool) -> int:
             (python, "-m", "unittest", "discover", "-s", "tests", "-v")
         )
     if stage == "coverage":
-        with _scratch_directory("agent-sidecar-coverage-") as temporary:
+        with _scratch_directory("agents-sidecar-coverage-") as temporary:
             data_file = Path(temporary) / ".coverage"
             report_file = Path(temporary) / "coverage.json"
             environment = dict(os.environ)
@@ -139,8 +139,8 @@ def _run_stage(stage: str, full_tests_ran: bool) -> int:
                 )
             )
     if stage == "pack":
-        with tempfile.TemporaryDirectory(prefix="agent-sidecar-check-") as temporary:
-            artifact = Path(temporary) / "agent-sidecar.pyz"
+        with tempfile.TemporaryDirectory(prefix="agents-sidecar-check-") as temporary:
+            artifact = Path(temporary) / "agents-sidecar.pyz"
             build_code = _run_command(
                 (
                     python,

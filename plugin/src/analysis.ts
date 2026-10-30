@@ -272,9 +272,9 @@ export const ANALYSIS_REQUEST_BUDGET_MS =
 /** Concurrent dedicated analysis sessions tracked by one engine. */
 export const DEFAULT_MAX_ACTIVE_ANALYSES = 4
 /** `source.plugin` attribution and analysis session id prefix. */
-export const DEFAULT_PLUGIN_NAME = 'agent-sidecar'
+export const DEFAULT_PLUGIN_NAME = 'dsh-agents-sidecar'
 /** Prefix marker used to keep dedicated analysis sessions off the board. */
-export const ANALYSIS_SESSION_PREFIX = 'agent-sidecar-analysis-'
+export const ANALYSIS_SESSION_PREFIX = 'agents-sidecar-analysis-'
 
 /** Title chars kept in prompts and logs (titles are untrusted input too). */
 const MAX_TITLE_CHARS = 200

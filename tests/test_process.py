@@ -60,8 +60,8 @@ class ParsePsOutputTests(unittest.TestCase):
 202 00:02 /bin/zsh -lc 'codex exec'
 203 00:03 /bin/bash /tmp/cursor-agent-wrapper
 204 00:04 /usr/bin/env copilot --headless
-205 00:05 /usr/bin/python3 /repo/agent_sidecar.py ps kimi dsh
-206 00:06 agent-sidecar ps --fixture claude
+205 00:05 /usr/bin/python3 /repo/agents_sidecar.py ps kimi dsh
+206 00:06 agents-sidecar ps --fixture claude
 207 00:07 /Applications/Cursor.app/Contents/MacOS/Cursor
 not-a-pid 00:08 claude
 208 only-two-columns

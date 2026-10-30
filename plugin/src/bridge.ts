@@ -232,7 +232,7 @@ export interface SubscribeOptions {
 }
 
 export interface SidecarSocketClientOptions {
-  /** Absolute path to `daemon.sock` (default runtime dir is `~/.agent_sidecar`, redirectable via AGENT_SIDECAR_RUNTIME_DIR — resolved by the caller). */
+  /** Absolute path to `daemon.sock` (default runtime dir is `~/.agents_sidecar`, redirectable via AGENTS_SIDECAR_RUNTIME_DIR — resolved by the caller). */
   socketPath: string
   /** Connect/handshake/response bound; the stream idles unbounded after the subscribe ack, matching sidecar/client.py. */
   timeoutMs?: number

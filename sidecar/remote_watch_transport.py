@@ -351,7 +351,7 @@ try:
         if not data or len(data) > MAX_ARTIFACT:
             terminal = "protocol"
         else:
-            fd, path = tempfile.mkstemp(prefix="agent-sidecar-watch-", suffix=".pyz")
+            fd, path = tempfile.mkstemp(prefix="agents-sidecar-watch-", suffix=".pyz")
             os.fchmod(fd, 0o600)
             with os.fdopen(fd, "wb") as stream:
                 fd = None

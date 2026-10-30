@@ -43,7 +43,7 @@ from sidecar.remote_types import (
 
 
 _ROOT_MAIN = (
-    '"""Zipapp entry point for agent-sidecar."""\n'
+    '"""Zipapp entry point for agents-sidecar."""\n'
     "from sidecar.cli import main\n\n"
     'if __name__ == "__main__":\n'
     "    raise SystemExit(main())\n"

@@ -1287,7 +1287,7 @@ class DaemonHttpIntegrationTests(unittest.TestCase):
             self.assertFalse(
                 any(
                     worker.is_alive()
-                    and worker.name.startswith("agent-sidecar-http-")
+                    and worker.name.startswith("agents-sidecar-http-")
                     for worker in threading.enumerate()
                 )
             )

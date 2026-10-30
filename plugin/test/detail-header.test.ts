@@ -96,12 +96,12 @@ function renderDetail(
 describe('detail header survives timeline degradation', () => {
   it('keeps the header and back button when the boundary replaces the body', () => {
     const replaced = (_body: ReactElement): ReactElement =>
-      createElement('div', { 'data-testid': 'agent-sidecar-timeline-degraded' }, 'all sources failed')
+      createElement('div', { 'data-testid': 'agents-sidecar-timeline-degraded' }, 'all sources failed')
     const html = renderDetail(HEADER, timeline([]), { timelineBoundary: replaced })
 
-    expect(html).toContain('agent-sidecar-timeline-degraded')
-    expect(html).toContain('agent-sidecar-detail-back')
-    expect(html).toContain('agent-sidecar-detail-copy-id')
+    expect(html).toContain('agents-sidecar-timeline-degraded')
+    expect(html).toContain('agents-sidecar-detail-back')
+    expect(html).toContain('agents-sidecar-detail-copy-id')
     expect(html).toContain('refactor the scanner')
   })
 
@@ -114,9 +114,9 @@ describe('detail header survives timeline degradation', () => {
       },
     })
 
-    expect(received).not.toContain('agent-sidecar-detail-back')
-    expect(received).not.toContain('agent-sidecar-detail-copy-id')
-    expect(received).toContain('agent-sidecar-detail-filter')
+    expect(received).not.toContain('agents-sidecar-detail-back')
+    expect(received).not.toContain('agents-sidecar-detail-copy-id')
+    expect(received).toContain('agents-sidecar-detail-filter')
   })
 })
 
@@ -140,7 +140,7 @@ describe('header facts render only what the adapter reported', () => {
     // The by-kind breakdown rides the hover title, not the row itself: the
     // header states one number and keeps the detail one gesture away.
     expect(html).toContain('title="用户消息 1 · 助手回复 2"')
-    expect(html).toContain('agent-sidecar-detail-copy-transcript')
+    expect(html).toContain('agents-sidecar-detail-copy-transcript')
     expect(html).toContain('/Users/me/.claude/projects/p/s1.jsonl')
   })
 
@@ -153,7 +153,7 @@ describe('header facts render only what the adapter reported', () => {
     expect(html).toContain('5 分钟前')
     expect(html).not.toContain('会话时长')
     expect(html).not.toContain('模型')
-    expect(html).not.toContain('agent-sidecar-detail-copy-transcript')
+    expect(html).not.toContain('agents-sidecar-detail-copy-transcript')
   })
 
   it('marks the event count as partial while older history is unpaged', () => {
@@ -178,10 +178,10 @@ describe('header facts render only what the adapter reported', () => {
 
   it('makes the project path copyable, and leaves the unknown placeholder inert', () => {
     const withProject = renderDetail(HEADER, timeline([]))
-    expect(withProject).toContain('agent-sidecar-detail-copy-project')
+    expect(withProject).toContain('agents-sidecar-detail-copy-project')
 
     const withoutProject = renderDetail({ ...HEADER, project: '' }, timeline([]))
-    expect(withoutProject).not.toContain('agent-sidecar-detail-copy-project')
+    expect(withoutProject).not.toContain('agents-sidecar-detail-copy-project')
   })
 })
 

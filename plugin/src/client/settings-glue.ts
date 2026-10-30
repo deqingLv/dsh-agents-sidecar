@@ -37,7 +37,7 @@ export interface SidecarConfigView {
 /** Schema defaults of src/config.ts (fallback while the scope is not ready). */
 export const DEFAULT_CONFIG_VIEW: SidecarConfigView = {
   daemon: { policy: 'adopt-or-host', backoffLimit: 5 },
-  sidecar: { command: ['agent-sidecar'], runtimeDir: '' },
+  sidecar: { command: ['agents-sidecar'], runtimeDir: '' },
   stream: { reconcileActiveMs: 2000, reconcileIdleMs: 10000 },
   inject: { enabled: false, defaultMode: 'queue' },
   analysis: { enabled: false, provider: '', model: '' },

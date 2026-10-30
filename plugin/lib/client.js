@@ -1,10 +1,10 @@
 window.__ModuleLoader__.load({
-	id: "@shendeguize/dsh-agent-sidecar",
+	id: "dsh-agents-sidecar",
 	factory: (require) => {
 		var module = { exports: {} };
 		var exports = module.exports;
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")] = {};
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")] = /* @__PURE__ */ new Map();
+		globalThis[Symbol.for("dsh-agents-sidecar/style-generation")] = {};
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")] = /* @__PURE__ */ new Map();
 		Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 		let _deepseek_ai_dsh_client_ui_primitives = require("@deepseek-ai/dsh-client-ui-primitives");
 		let react = require("react");
@@ -29,7 +29,7 @@ window.__ModuleLoader__.load({
 		* @module
 		*/
 		/** Route namespace; must mirror routes.ts `API_PREFIX` (pinned by test). */
-		const API_PREFIX = "/plugins/agent-sidecar/api";
+		const API_PREFIX = "/plugins/dsh-agents-sidecar/api";
 		const INJECT_INELIGIBILITY_REASONS = /* @__PURE__ */ new Set([
 			"unsupported_agent",
 			"working_session",
@@ -400,9 +400,9 @@ window.__ModuleLoader__.load({
 			"settings.daemonProfileNote": "此处只读:daemon 生命周期参数以 profile 的 cordis.patch 插件行 config 为准。Settings 修改不会驱动 supervisor;请编辑 profile patch 并重启 DSH。",
 			"settings.sectionSidecar": "sidecar 调用",
 			"settings.sidecarCommandLabel": "可执行命令",
-			"settings.sidecarCommandHint": "PATH 名、绝对路径或空格分隔的多段命令(如 python3 /path/agent-sidecar.pyz);插件绝不代装 sidecar。",
+			"settings.sidecarCommandHint": "PATH 名、绝对路径或空格分隔的多段命令(如 python3 /path/agents-sidecar.pyz);插件绝不代装 sidecar。",
 			"settings.sidecarRuntimeDirLabel": "运行时目录",
-			"settings.sidecarRuntimeDirHint": "留空使用默认 ~/.agent_sidecar(尊重 AGENT_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon。",
+			"settings.sidecarRuntimeDirHint": "留空使用默认 ~/.agents_sidecar(尊重 AGENTS_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon。",
 			"settings.sidecarProfileNote": "此处只读:sidecar 命令与运行时目录以 profile 的 cordis.patch 插件行 config 为准。Settings 修改不会驱动 daemon 调用;请编辑 profile patch 并重启 DSH。",
 			"settings.sectionStream": "数据流对账",
 			"settings.streamActiveMsLabel": "活跃对账周期(毫秒)",
@@ -445,10 +445,10 @@ window.__ModuleLoader__.load({
 			"settings.archiveAutoHint": "把空闲超过阈值的 idle / dead 会话从看板隐藏(默认关闭)。",
 			"settings.archiveAfterHoursLabel": "无活动阈值(小时)",
 			"settings.archiveAfterHoursHint": "默认 24 小时;保守取值,配合自动解档形成安全回路。",
-			"settings.archiveHostedOnlyNote": "该设置只作用于本插件拉起的 daemon,且在下次 daemon 启动时生效。领养的或由系统服务托管的 daemon 保持其启动时的策略,请用 agent-sidecar daemon start --auto-archive 指定。",
+			"settings.archiveHostedOnlyNote": "该设置只作用于本插件拉起的 daemon,且在下次 daemon 启动时生效。领养的或由系统服务托管的 daemon 保持其启动时的策略,请用 agents-sidecar daemon start --auto-archive 指定。",
 			"settings.sectionSkill": "skill 模式",
 			"settings.skillProvideLabel": "内嵌提供 skill",
-			"settings.skillProvideHint": "经 registerProvider 向 dsh 提供 agent-sidecar skill(M4 启用;重启后生效)。",
+			"settings.skillProvideHint": "经 registerProvider 向 dsh 提供 agents-sidecar skill(M4 启用;重启后生效)。",
 			"settings.skillRestartNote": "skill.provide 在插件加载时从 profile 的 cordis.patch 读取。请编辑 profile patch,然后重载插件或重启 DSH;Settings 修改不会重新注册 skill。",
 			"inject.title": "注入消息",
 			"inject.confirmTitle": "确认注入",
@@ -553,7 +553,7 @@ window.__ModuleLoader__.load({
 			"board.banner.daemonStaleCode": "daemon 启动后代码已被改动(版本号仍是 v{running});本页数据来自启动时那份代码,重启 daemon 后才会生效",
 			"board.banner.streamDegraded": "实时流重连中,数据可能滞后",
 			"board.empty.daemonFailedTitle": "sidecar 已离线",
-			"board.empty.daemonFailedHint": "daemon 连续启动失败已熔断。可在设置卡重试,或手动运行 agent-sidecar daemon start 后等待自动领养。",
+			"board.empty.daemonFailedHint": "daemon 连续启动失败已熔断。可在设置卡重试,或手动运行 agents-sidecar daemon start 后等待自动领养。",
 			"board.empty.daemonDeferTitle": "等待系统服务拉起 daemon",
 			"board.empty.daemonDeferHint": "检测到 LaunchAgent 托管,插件不会自行启动 daemon;服务拉起后看板会自动出数。",
 			"board.empty.filteredTitle": "当前过滤条件下没有会话",
@@ -629,7 +629,7 @@ window.__ModuleLoader__.load({
 			"board.archive.done": "已归档 {n} 个会话",
 			"board.archive.failed": "归档失败:{reason}",
 			"board.archive.previewFailed": "预览失败:{reason}",
-			"board.archive.unavailable": "当前 daemon 不支持归档,请升级 agent-sidecar",
+			"board.archive.unavailable": "当前 daemon 不支持归档,请升级 agents-sidecar",
 			"board.archive.dispose": "同时关停这 {n} 个 DSH 会话",
 			"board.archive.disposeHint": "仅对 dsh 会话生效,会真正结束该会话,不可撤销",
 			"board.archive.doneDisposed": ",其中 {n} 个 DSH 会话已关停",
@@ -716,7 +716,7 @@ window.__ModuleLoader__.load({
 			"detail.timeline.degradedRetry": "可点击「刷新」重试时间线来源。",
 			"detail.timeline.volatileOnly": "当前事件仅来自实时缓冲,没有持久来源应答,更早的历史可能已不在其中。",
 			"detail.timeline.volatileOnlyHint": "若该会话本应有可读取的历史,请确认 sidecar daemon 正在运行且版本为最新,然后点击「刷新」。",
-			"detail.timeline.daemonDownHint": "sidecar daemon 未在运行,历史时间线无人应答。可在设置卡重试,或手动运行 agent-sidecar daemon start 后点击「刷新」。",
+			"detail.timeline.daemonDownHint": "sidecar daemon 未在运行,历史时间线无人应答。可在设置卡重试,或手动运行 agents-sidecar daemon start 后点击「刷新」。",
 			"detail.timeline.daemonDeferHint": "插件让位于系统服务托管的 daemon,服务拉起后点击「刷新」即可加载历史。",
 			"detail.states.loadingTitle": "正在加载时间线…",
 			"detail.states.emptyTitle": "暂无事件",
@@ -863,9 +863,9 @@ window.__ModuleLoader__.load({
 			"command.truncated": "还有 {n} 个会话未列出",
 			"command.boardHint": "打开 Agent Center",
 			"command.unreachable": "sidecar 未连接",
-			"command.unreachableHint": "无法获取状态快照;请确认 agent-sidecar 插件已启用、daemon 可用后重试。",
+			"command.unreachableHint": "无法获取状态快照;请确认 dsh-agents-sidecar 插件已启用、daemon 可用后重试。",
 			"command.offlineFailed": "sidecar 已离线(daemon 连续启动失败已熔断)",
-			"command.offlineFailedHint": "以下为最后一次快照。可在设置卡重试,或手动运行 agent-sidecar daemon start 后等待自动领养。",
+			"command.offlineFailedHint": "以下为最后一次快照。可在设置卡重试,或手动运行 agents-sidecar daemon start 后等待自动领养。",
 			"command.offlineDefer": "等待系统服务拉起 daemon",
 			"command.offlineDeferHint": "检测到 LaunchAgent 托管,插件只探测等待;服务拉起后速览会自动恢复。",
 			"command.time.justNow": "刚刚",
@@ -923,9 +923,9 @@ window.__ModuleLoader__.load({
 			"settings.daemonProfileNote": "Read-only here: daemon lifecycle values come from the plugin row config in the profile cordis.patch. Settings changes do not drive the supervisor; edit the profile patch and restart DSH.",
 			"settings.sectionSidecar": "Sidecar invocation",
 			"settings.sidecarCommandLabel": "Executable command",
-			"settings.sidecarCommandHint": "A PATH name, an absolute path, or a space-separated multi-part command (e.g. python3 /path/agent-sidecar.pyz); the plugin never installs the sidecar for you.",
+			"settings.sidecarCommandHint": "A PATH name, an absolute path, or a space-separated multi-part command (e.g. python3 /path/agents-sidecar.pyz); the plugin never installs the sidecar for you.",
 			"settings.sidecarRuntimeDirLabel": "Runtime directory",
-			"settings.sidecarRuntimeDirHint": "Empty uses the default ~/.agent_sidecar (honoring AGENT_SIDECAR_RUNTIME_DIR); a non-empty value is passed to spawned daemons via the environment.",
+			"settings.sidecarRuntimeDirHint": "Empty uses the default ~/.agents_sidecar (honoring AGENTS_SIDECAR_RUNTIME_DIR); a non-empty value is passed to spawned daemons via the environment.",
 			"settings.sidecarProfileNote": "Read-only here: sidecar command and runtime directory come from the plugin row config in the profile cordis.patch. Settings changes do not drive daemon invocation; edit the profile patch and restart DSH.",
 			"settings.sectionStream": "Stream reconciliation",
 			"settings.streamActiveMsLabel": "Active cadence (ms)",
@@ -968,10 +968,10 @@ window.__ModuleLoader__.load({
 			"settings.archiveAutoHint": "Hide idle / dead sessions past the threshold from the board (off by default).",
 			"settings.archiveAfterHoursLabel": "Inactivity threshold (hours)",
 			"settings.archiveAfterHoursHint": "Defaults to 24h — conservative on purpose, and safe in a loop with automatic unarchiving.",
-			"settings.archiveHostedOnlyNote": "This setting applies only to daemons this plugin spawns, and takes effect at the next daemon start. An adopted or service-managed daemon keeps the policy it was started with; pass agent-sidecar daemon start --auto-archive there.",
+			"settings.archiveHostedOnlyNote": "This setting applies only to daemons this plugin spawns, and takes effect at the next daemon start. An adopted or service-managed daemon keeps the policy it was started with; pass agents-sidecar daemon start --auto-archive there.",
 			"settings.sectionSkill": "Skill mode",
 			"settings.skillProvideLabel": "Provide the skill in-process",
-			"settings.skillProvideHint": "Provide the agent-sidecar skill to dsh via registerProvider (enabled in M4; applies after restart).",
+			"settings.skillProvideHint": "Provide the agents-sidecar skill to dsh via registerProvider (enabled in M4; applies after restart).",
 			"settings.skillRestartNote": "skill.provide is read from the profile cordis.patch when the plugin loads. Edit the profile patch, then reload the plugin or restart DSH; Settings changes do not re-register the skill.",
 			"inject.title": "Inject message",
 			"inject.confirmTitle": "Confirm injection",
@@ -1076,7 +1076,7 @@ window.__ModuleLoader__.load({
 			"board.banner.daemonStaleCode": "The installed code changed after the daemon started (still v{running}); this page reflects the code it loaded until the daemon restarts",
 			"board.banner.streamDegraded": "The live stream is reconnecting; data may be stale",
 			"board.empty.daemonFailedTitle": "sidecar is offline",
-			"board.empty.daemonFailedHint": "Repeated daemon start failures tripped the circuit breaker. Retry from Settings, or run agent-sidecar daemon start and wait for automatic adoption.",
+			"board.empty.daemonFailedHint": "Repeated daemon start failures tripped the circuit breaker. Retry from Settings, or run agents-sidecar daemon start and wait for automatic adoption.",
 			"board.empty.daemonDeferTitle": "Waiting for the system service to start the daemon",
 			"board.empty.daemonDeferHint": "A LaunchAgent manages the daemon, so the plugin will not start it. The board populates automatically once the service starts it.",
 			"board.empty.filteredTitle": "No sessions match these filters",
@@ -1152,7 +1152,7 @@ window.__ModuleLoader__.load({
 			"board.archive.done": "Archived {n} sessions",
 			"board.archive.failed": "Archive failed: {reason}",
 			"board.archive.previewFailed": "Preview failed: {reason}",
-			"board.archive.unavailable": "This daemon has no archive support; upgrade agent-sidecar",
+			"board.archive.unavailable": "This daemon has no archive support; upgrade agents-sidecar",
 			"board.archive.dispose": "Also end the {n} DSH session(s)",
 			"board.archive.disposeHint": "dsh sessions only; this really ends the session and cannot be undone",
 			"board.archive.doneDisposed": ", {n} DSH session(s) ended",
@@ -1239,7 +1239,7 @@ window.__ModuleLoader__.load({
 			"detail.timeline.degradedRetry": "Use Refresh to try the timeline sources again.",
 			"detail.timeline.volatileOnly": "These events come only from the live buffer. No durable source answered, so older history may not be among them.",
 			"detail.timeline.volatileOnlyHint": "If this session should have readable history, check that the sidecar daemon is running and current, then press Refresh.",
-			"detail.timeline.daemonDownHint": "The sidecar daemon is not running, so nothing can answer for history. Retry from the settings card, or run agent-sidecar daemon start and press Refresh.",
+			"detail.timeline.daemonDownHint": "The sidecar daemon is not running, so nothing can answer for history. Retry from the settings card, or run agents-sidecar daemon start and press Refresh.",
 			"detail.timeline.daemonDeferHint": "The plugin defers to a service-managed daemon; once the service is up, press Refresh to load history.",
 			"detail.states.loadingTitle": "Loading the timeline…",
 			"detail.states.emptyTitle": "No events yet",
@@ -1386,9 +1386,9 @@ window.__ModuleLoader__.load({
 			"command.truncated": "{n} more sessions not listed",
 			"command.boardHint": "Open Agent Center",
 			"command.unreachable": "sidecar is not connected",
-			"command.unreachableHint": "The state snapshot could not be fetched; check that the agent-sidecar plugin is enabled and the daemon is available, then retry.",
+			"command.unreachableHint": "The state snapshot could not be fetched; check that the dsh-agents-sidecar plugin is enabled and the daemon is available, then retry.",
 			"command.offlineFailed": "sidecar is offline (daemon start failures tripped the breaker)",
-			"command.offlineFailedHint": "Showing the last snapshot. Retry from the settings card, or run agent-sidecar daemon start manually and wait for adoption.",
+			"command.offlineFailedHint": "Showing the last snapshot. Retry from the settings card, or run agents-sidecar daemon start manually and wait for adoption.",
 			"command.offlineDefer": "Waiting for the system service to start the daemon",
 			"command.offlineDeferHint": "A LaunchAgent manages the daemon; the plugin only probes and waits. The overview recovers automatically once the service brings it up.",
 			"command.time.justNow": "just now",
@@ -1459,7 +1459,7 @@ window.__ModuleLoader__.load({
 			};
 		}
 		/** Host namespace owned by Agent Sidecar dictionaries. */
-		const SIDECAR_LOCALE_NAMESPACE = "agent-sidecar";
+		const SIDECAR_LOCALE_NAMESPACE = "dsh-agents-sidecar";
 		/** Complete shipped dictionaries keyed by locale id. */
 		const dictionaries = {
 			zh,
@@ -1515,7 +1515,7 @@ window.__ModuleLoader__.load({
 				localeListeners.delete(fn);
 			};
 		}
-		const HOST_LOCALE_LEASES_SYMBOL = Symbol.for("@shendeguize/dsh-agent-sidecar/host-locale-leases");
+		const HOST_LOCALE_LEASES_SYMBOL = Symbol.for("dsh-agents-sidecar/host-locale-leases");
 		const globalSymbols = globalThis;
 		function hasMethod(value, key) {
 			return typeof value === "object" && value !== null && typeof value[key] === "function";
@@ -2682,7 +2682,7 @@ window.__ModuleLoader__.load({
 							snapshot = await doFetch({ signal });
 						} catch (err) {
 							if (isApiError(err) && err.kind === "aborted") throw err;
-							console.error("agent-sidecar: /sidecar state fetch failed", err);
+							console.error("dsh-agents-sidecar: /sidecar state fetch failed", err);
 						}
 						const overviewOpts = { nowMs: now() };
 						if (deps.topN !== void 0) overviewOpts.topN = deps.topN;
@@ -2710,15 +2710,15 @@ window.__ModuleLoader__.load({
 					return acquireWithHandoff(() => commandUi.register(createSidecarCommandContribution(deps)), {
 						isCollision: isRegistrationCollision,
 						onError: (error) => {
-							console.error("agent-sidecar: /sidecar command registration failed", error);
+							console.error("dsh-agents-sidecar: /sidecar command registration failed", error);
 						},
 						onTimeout: () => {
-							console.error("agent-sidecar: /sidecar command handoff timed out");
+							console.error("dsh-agents-sidecar: /sidecar command handoff timed out");
 						}
 					});
 				});
 			} catch (err) {
-				console.error("agent-sidecar: commandUi injection failed", err);
+				console.error("dsh-agents-sidecar: commandUi injection failed", err);
 			}
 		}
 		//#endregion
@@ -3010,7 +3010,7 @@ window.__ModuleLoader__.load({
 		* mark. Mirrors package.json `name` (client code cannot read package.json at
 		* runtime); pinned against it by test/client-integration.test.ts.
 		*/
-		const PLUGIN_ID = "@shendeguize/dsh-agent-sidecar";
+		const PLUGIN_ID = "dsh-agents-sidecar";
 		/** localStorage key for the persisted board filters. */
 		const FILTERS_STORAGE_KEY = `${PLUGIN_ID}:board-filters`;
 		/** Pre-first-snapshot state: probing daemon, unknown health, empty board. */
@@ -3292,7 +3292,7 @@ window.__ModuleLoader__.load({
 					return true;
 				} catch (err) {
 					if (!this.isCurrentGeneration(generation)) return false;
-					console.error("agent-sidecar: manual refresh failed", err);
+					console.error("dsh-agents-sidecar: manual refresh failed", err);
 					this.settleInitialFailure(generation);
 					return false;
 				}
@@ -3569,27 +3569,27 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/theme/agsc.module.css.mjs
 		const css$11 = ".V4kgfa_root{--agsc-accent:var(--dsw-alias-brand-primary);--agsc-bg:var(--dsw-alias-bg-layer-1);--agsc-bg-raised:var(--dsw-alias-bg-layer-3);--agsc-fg:var(--dsw-alias-label-primary);--agsc-fg-secondary:var(--dsw-alias-label-secondary);--agsc-fg-dimmed:var(--dsw-alias-label-dimmed);--agsc-border:var(--dsw-alias-border-l1);--agsc-border-strong:var(--dsw-alias-border-l2);--agsc-ok:var(--dsw-alias-state-success-primary);--agsc-warn:var(--dsw-alias-state-warn-primary);--agsc-err:var(--dsw-alias-state-error-primary);--agsc-err-fill:color-mix(in srgb, var(--dsw-alias-state-error-secondary) 15%, var(--agsc-bg));--agsc-radius-card:12px;--agsc-radius-control:8px;--agsc-shadow-card:var(--dsw-shadow-lv2);--agsc-font-mono:var(--ds-font-family-code);color:var(--agsc-fg);font-family:inherit}";
-		const tagId$11 = "@shendeguize/dsh-agent-sidecar/src/client/theme/agsc.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$11, css$11);
+		const tagId$11 = "dsh-agents-sidecar/src/client/theme/agsc.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$11, css$11);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$11) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$11) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$11;
 				created = true;
 			}
 			tag.textContent = css$11;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var agsc_module_css_default = { "root": "V4kgfa_root" };
 		//#endregion
 		//#region src/client/theme/parts.ts
 		/** Stable owner value for Agent Sidecar skin anchors. */
-		const PLUGIN_DOM_ID = "agent-sidecar";
+		const PLUGIN_DOM_ID = "dsh-agents-sidecar";
 		Object.freeze([
 			"board",
 			"board-toolbar",
@@ -3627,20 +3627,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/board/board.module.css.mjs
 		const css$10 = ".PLm6rG_root{box-sizing:border-box;height:100%;min-height:420px;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;gap:12px;padding:16px 20px;display:flex;overflow-y:auto}.PLm6rG_topbar{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.PLm6rG_title{color:var(--agsc-fg);margin-right:2px;font-size:15px;font-weight:650}.PLm6rG_dot{background:var(--dsw-alias-label-tertiary);border-radius:50%;flex:none;width:8px;height:8px}.PLm6rG_dot[data-tone=neutral]{background:var(--dsw-alias-label-tertiary)}.PLm6rG_dot[data-tone=muted]{background:var(--agsc-fg-dimmed)}.PLm6rG_countBadge{white-space:nowrap}.PLm6rG_countTotal{color:var(--agsc-fg-secondary);white-space:nowrap;font-size:12px}.PLm6rG_spacer{flex:1}.PLm6rG_control{color:var(--agsc-fg-secondary);white-space:nowrap;align-items:center;gap:5px;font-size:12px;display:inline-flex}.PLm6rG_select{height:28px;color:var(--agsc-fg);background:var(--agsc-bg-raised);border:1px solid var(--agsc-border-strong);border-radius:14px;padding:0 10px;font-family:inherit;font-size:12px}.PLm6rG_checkbox{accent-color:var(--agsc-accent);margin:0}.PLm6rG_banner{border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);padding:6px 10px;font-size:12px;line-height:18px}.PLm6rG_banner[data-tone=warn]{color:var(--agsc-warn);background:var(--dsw-alias-state-warn-tertiary);border-color:var(--dsw-alias-state-warn-secondary)}.PLm6rG_banner[data-tone=danger]{color:var(--agsc-fg);background:var(--agsc-err-fill);border-color:var(--dsw-alias-state-error-secondary)}.PLm6rG_clusterPanel{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);flex-direction:column;gap:8px;padding:10px;display:flex}.PLm6rG_clusterHead,.PLm6rG_clusterSummary{flex-wrap:wrap;align-items:baseline;gap:8px;display:flex}.PLm6rG_clusterTitle{color:var(--agsc-fg);font-size:13px;font-weight:600}.PLm6rG_clusterList{flex-direction:column;gap:6px;display:flex}.PLm6rG_clusterCard{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);padding:7px 8px}.PLm6rG_clusterSummary span{color:var(--agsc-fg-secondary);font-size:12px}.PLm6rG_clusterMeta,.PLm6rG_clusterEmpty{color:var(--agsc-fg-dimmed);overflow-wrap:anywhere;font-size:11px}.PLm6rG_bannerDismiss{color:inherit;margin-left:10px;text-decoration:underline}.PLm6rG_archiveBody{flex-direction:column;gap:10px;min-width:0;display:flex}.PLm6rG_archiveControls{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.PLm6rG_archiveNumber{width:76px;height:28px;font:inherit;color:var(--agsc-fg);background:var(--agsc-bg-raised);border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);padding:0 8px;font-size:12px}.PLm6rG_archiveSummary{color:var(--agsc-fg-secondary);align-items:center;gap:6px;font-size:12px;display:flex}.PLm6rG_archiveEmpty{color:var(--agsc-fg-dimmed);padding:8px 0;font-size:12px}.PLm6rG_archiveList{flex-direction:column;gap:4px;max-height:320px;margin:0;padding:0;list-style:none;display:flex;overflow-y:auto}.PLm6rG_archiveRow{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);align-items:center;gap:8px;min-width:0;padding:5px 8px;display:flex}.PLm6rG_archiveRowLabel{cursor:pointer;align-items:center;gap:8px;width:100%;min-width:0;display:flex}.PLm6rG_archiveRowTitle{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;font-size:12px;overflow:hidden}.PLm6rG_archiveRowMeta{color:var(--agsc-fg-secondary);white-space:nowrap;flex:none;font-size:11px}.PLm6rG_archiveActions{justify-content:flex-end;align-items:center;gap:8px;display:flex}.PLm6rG_archivedPanel{border:1px dashed var(--agsc-border-strong);border-radius:var(--agsc-radius-control);flex-direction:column;gap:6px;padding:8px 10px;display:flex}.PLm6rG_archivedHead{align-items:center;gap:8px;display:flex}.PLm6rG_empty{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;min-height:180px;padding:24px;display:flex}.PLm6rG_emptyTitle{color:var(--agsc-fg);font-size:14px;font-weight:600}.PLm6rG_emptyHint{max-width:420px;color:var(--agsc-fg-secondary);font-size:12px;line-height:20px}.PLm6rG_group{flex-direction:column;gap:8px;display:flex}.PLm6rG_groupHead{text-align:left;cursor:pointer;background:0 0;border:none;align-items:baseline;gap:8px;width:100%;min-width:0;padding:0;font-family:inherit;display:flex}.PLm6rG_chevron{color:var(--agsc-fg-dimmed);flex:none;font-size:10px}.PLm6rG_groupAttention{color:var(--agsc-warn);flex:none;font-size:11px}.PLm6rG_idleSummary{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);color:var(--agsc-fg-secondary);font:inherit;cursor:pointer;align-self:flex-start;align-items:center;gap:6px;padding:4px 8px;font-size:12px;display:flex}.PLm6rG_idleSummary:hover{color:var(--agsc-fg);background:var(--dsw-alias-interactive-bg-hover)}.PLm6rG_showMore{align-self:flex-start}.PLm6rG_groupName{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600;overflow:hidden}.PLm6rG_groupCount{color:var(--agsc-fg-secondary);background:var(--dsw-alias-bg-layer-2);border-radius:999px;flex:none;padding:0 8px;font-size:11px;line-height:18px}.PLm6rG_grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;display:grid}.PLm6rG_card{border-radius:var(--agsc-radius-card);border:1px solid var(--agsc-border-strong);background:var(--agsc-bg-raised);flex-direction:column;gap:6px;min-width:0;padding:10px 12px;display:flex}.PLm6rG_card:hover{border-color:var(--dsw-alias-label-dimmed);background:var(--dsw-alias-interactive-bg-hover)}.PLm6rG_cardOpen{border-radius:var(--agsc-radius-control);width:100%;min-width:0;color:inherit;font:inherit;text-align:left;cursor:pointer;background:0 0;border:0;flex-direction:column;gap:6px;padding:0;display:flex}.PLm6rG_cardOpen:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:2px}.PLm6rG_cardHead{justify-content:space-between;align-items:center;gap:8px;min-width:0;display:flex}.PLm6rG_agent{text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--agsc-fg);align-items:center;gap:5px;font-size:12px;font-weight:600;display:inline-flex;overflow:hidden}.PLm6rG_glyph{color:var(--agsc-accent);flex:none}.PLm6rG_statusPill{max-width:100%}.PLm6rG_attention{color:var(--agsc-warn);font-size:11px}.PLm6rG_attention[data-kind=gap]{color:var(--agsc-err)}.PLm6rG_cardTitle{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;overflow:hidden}.PLm6rG_cardId{max-width:100%;font-size:11px;font-family:var(--agsc-font-mono);color:var(--agsc-fg-secondary);text-overflow:ellipsis;white-space:nowrap;justify-content:flex-start;align-self:flex-start;overflow:hidden}.PLm6rG_copied{color:var(--agsc-ok);margin-left:6px;font-family:inherit}.PLm6rG_cardEvent{color:var(--agsc-fg-secondary);text-overflow:ellipsis;white-space:nowrap;font-size:12px;overflow:hidden}.PLm6rG_cardTime{color:var(--agsc-fg-secondary);font-size:11px}";
-		const tagId$10 = "@shendeguize/dsh-agent-sidecar/src/client/board/board.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$10, css$10);
+		const tagId$10 = "dsh-agents-sidecar/src/client/board/board.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$10, css$10);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$10) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$10) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$10;
 				created = true;
 			}
 			tag.textContent = css$10;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var board_module_css_default = {
@@ -3813,7 +3813,7 @@ window.__ModuleLoader__.load({
 				description: BOARD_STRINGS.archive.explain,
 				children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: board_module_css_default["archiveBody"],
-					"data-testid": "agent-sidecar-archive-dialog",
+					"data-testid": "agents-sidecar-archive-dialog",
 					children: [
 						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 							className: board_module_css_default["archiveControls"],
@@ -3829,7 +3829,7 @@ window.__ModuleLoader__.load({
 											setPreview(null);
 											setPhase("idle");
 										},
-										"data-testid": "agent-sidecar-archive-threshold",
+										"data-testid": "agents-sidecar-archive-threshold",
 										children: THRESHOLD_ORDER.map((token) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
 											value: token,
 											children: thresholdLabel(token)
@@ -3848,7 +3848,7 @@ window.__ModuleLoader__.load({
 											setPreview(null);
 											setPhase("idle");
 										},
-										"data-testid": "agent-sidecar-archive-custom"
+										"data-testid": "agents-sidecar-archive-custom"
 									}), BOARD_STRINGS.archive.customMinutes]
 								}),
 								/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -3856,7 +3856,7 @@ window.__ModuleLoader__.load({
 									variant: "outline",
 									disabled: idleSeconds === null || phase === "previewing" || phase === "applying",
 									onClick: runPreview,
-									"data-testid": "agent-sidecar-archive-preview",
+									"data-testid": "agents-sidecar-archive-preview",
 									children: phase === "previewing" ? BOARD_STRINGS.archive.previewing : BOARD_STRINGS.archive.preview
 								})
 							]
@@ -3875,7 +3875,7 @@ window.__ModuleLoader__.load({
 								formatTemplate$2(BOARD_STRINGS.archive.done, { n: outcome.archived }),
 								outcome.disposed > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: formatTemplate$2(BOARD_STRINGS.archive.doneDisposed, { n: outcome.disposed }) }),
 								outcome.disposeFailed > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-									"data-testid": "agent-sidecar-archive-dispose-failed",
+									"data-testid": "agents-sidecar-archive-dispose-failed",
 									children: formatTemplate$2(BOARD_STRINGS.archive.doneDisposeFailed, { n: outcome.disposeFailed })
 								})
 							]
@@ -3959,7 +3959,7 @@ window.__ModuleLoader__.load({
 									onChange: (ev) => {
 										setDispose(ev.target.checked);
 									},
-									"data-testid": "agent-sidecar-archive-dispose"
+									"data-testid": "agents-sidecar-archive-dispose"
 								}), formatTemplate$2(BOARD_STRINGS.archive.dispose, { n: disposableSelected })]
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
@@ -3974,7 +3974,7 @@ window.__ModuleLoader__.load({
 									variant: "primary",
 									disabled: selectedTargets.length === 0 || phase === "applying",
 									onClick: runApply,
-									"data-testid": "agent-sidecar-archive-confirm",
+									"data-testid": "agents-sidecar-archive-confirm",
 									children: phase === "applying" ? BOARD_STRINGS.archive.confirming : formatTemplate$2(BOARD_STRINGS.archive.confirm, { n: selectedTargets.length })
 								})]
 							})
@@ -4004,7 +4004,7 @@ window.__ModuleLoader__.load({
 			};
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 				...surfaceProps("board-card", board_module_css_default["archivedPanel"]),
-				"data-testid": "agent-sidecar-archived",
+				"data-testid": "agents-sidecar-archived",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: board_module_css_default["archivedHead"],
@@ -4016,7 +4016,7 @@ window.__ModuleLoader__.load({
 							onClick: () => {
 								setOpen((visible) => !visible);
 							},
-							"data-testid": "agent-sidecar-archived-toggle",
+							"data-testid": "agents-sidecar-archived-toggle",
 							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 								className: board_module_css_default["chevron"],
 								"aria-hidden": true,
@@ -4032,7 +4032,7 @@ window.__ModuleLoader__.load({
 							onClick: () => {
 								restore("all", "all");
 							},
-							"data-testid": "agent-sidecar-archived-restore-all",
+							"data-testid": "agents-sidecar-archived-restore-all",
 							children: busy === "all" ? BOARD_STRINGS.archived.restoring : BOARD_STRINGS.archived.restoreAll
 						})]
 					}),
@@ -4162,7 +4162,7 @@ window.__ModuleLoader__.load({
 			};
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("article", {
 				...surfaceProps("board-card", board_module_css_default["card"]),
-				"data-testid": "agent-sidecar-card",
+				"data-testid": "agents-sidecar-card",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
 						ref: openerRef,
@@ -4214,7 +4214,7 @@ window.__ModuleLoader__.load({
 						className: board_module_css_default["cardId"],
 						title: `${card.sessionId}\n${BOARD_STRINGS.card.copyId}`,
 						onClick: onCopyId,
-						"data-testid": "agent-sidecar-card-id",
+						"data-testid": "agents-sidecar-card-id",
 						children: [card.shortId, copied && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 							className: board_module_css_default["copied"],
 							role: "status",
@@ -4300,7 +4300,7 @@ window.__ModuleLoader__.load({
 						onClick: () => {
 							setIdleExpanded((open) => !open);
 						},
-						"data-testid": "agent-sidecar-idle-summary",
+						"data-testid": "agents-sidecar-idle-summary",
 						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 							className: board_module_css_default["chevron"],
 							"aria-hidden": true,
@@ -4400,7 +4400,7 @@ window.__ModuleLoader__.load({
 				onScroll: (event) => {
 					props.onScrollTopChange(event.currentTarget.scrollTop);
 				},
-				"data-testid": "agent-sidecar-board",
+				"data-testid": "agents-sidecar-board",
 				"aria-busy": !props.hasSnapshot,
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
@@ -4433,7 +4433,7 @@ window.__ModuleLoader__.load({
 								onClick: () => {
 									toggleStatusFilter("working");
 								},
-								"data-testid": "agent-sidecar-count-working",
+								"data-testid": "agents-sidecar-count-working",
 								children: [vm.workingCount > 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
 									state: "ongoing",
 									size: 8
@@ -4450,7 +4450,7 @@ window.__ModuleLoader__.load({
 								onClick: () => {
 									toggleStatusFilter("waiting");
 								},
-								"data-testid": "agent-sidecar-count-waiting",
+								"data-testid": "agents-sidecar-count-waiting",
 								children: [vm.waitingCount > 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
 									state: "warning",
 									size: 8
@@ -4461,7 +4461,7 @@ window.__ModuleLoader__.load({
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 								className: board_module_css_default["countTotal"],
-								"data-testid": "agent-sidecar-count-total",
+								"data-testid": "agents-sidecar-count-total",
 								children: formatTemplate$2(BOARD_STRINGS.topbar.countTotal, { n: vm.totalCount })
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: board_module_css_default["spacer"] }),
@@ -4471,7 +4471,7 @@ window.__ModuleLoader__.load({
 								onClick: () => {
 									props.onAnalyze?.({ targetKind: "cross-agent" });
 								},
-								"data-testid": "agent-sidecar-analyze-cross-agent",
+								"data-testid": "agents-sidecar-analyze-cross-agent",
 								children: BOARD_STRINGS.topbar.analyzeCrossAgent
 							}),
 							props.archive !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -4481,7 +4481,7 @@ window.__ModuleLoader__.load({
 								onClick: () => {
 									setArchiveOpen(true);
 								},
-								"data-testid": "agent-sidecar-archive-open",
+								"data-testid": "agents-sidecar-archive-open",
 								children: BOARD_STRINGS.archive.open
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -4491,7 +4491,7 @@ window.__ModuleLoader__.load({
 									setShowClusters((visible) => !visible);
 								},
 								"aria-pressed": showClusters,
-								"data-testid": "agent-sidecar-cluster-toggle",
+								"data-testid": "agents-sidecar-cluster-toggle",
 								children: BOARD_STRINGS.topbar.cluster
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
@@ -4503,7 +4503,7 @@ window.__ModuleLoader__.load({
 									onChange: (ev) => {
 										props.onFiltersChange(withAgentFilter(props.filters, ev.target.value));
 									},
-									"data-testid": "agent-sidecar-agent-filter",
+									"data-testid": "agents-sidecar-agent-filter",
 									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
 										value: "",
 										children: t("board.topbar.allAgents")
@@ -4551,7 +4551,7 @@ window.__ModuleLoader__.load({
 										...props.filters,
 										collapseIdle: ev.target.checked
 									}),
-									"data-testid": "agent-sidecar-collapse-idle"
+									"data-testid": "agents-sidecar-collapse-idle"
 								}), BOARD_STRINGS.topbar.collapseIdle]
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -4586,7 +4586,7 @@ window.__ModuleLoader__.load({
 					}),
 					showClusters && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 						className: board_module_css_default["clusterPanel"],
-						"data-testid": "agent-sidecar-clusters",
+						"data-testid": "agents-sidecar-clusters",
 						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
 							className: board_module_css_default["clusterHead"],
 							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
@@ -4641,7 +4641,7 @@ window.__ModuleLoader__.load({
 					!props.hasSnapshot ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: board_module_css_default["empty"],
 						role: "status",
-						"data-testid": "agent-sidecar-board-loading",
+						"data-testid": "agents-sidecar-board-loading",
 						children: t("board.states.loading")
 					}) : props.initialLoadFailed ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: board_module_css_default["empty"],
@@ -4864,20 +4864,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/board/project-view.module.css.mjs
 		const css$9 = ".Twjdya_root{box-sizing:border-box;height:100%;min-height:320px;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;gap:12px;padding:16px 20px;display:flex;overflow-y:auto}.Twjdya_topbar{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.Twjdya_title{color:var(--agsc-fg);font-size:15px;font-weight:650}.Twjdya_summary{color:var(--agsc-fg-secondary);font-size:12px}.Twjdya_banner{border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);padding:6px 10px;font-size:12px;line-height:18px}.Twjdya_banner[data-tone=danger]{color:var(--agsc-fg);background:var(--agsc-err-fill);border-color:var(--dsw-alias-state-error-secondary)}.Twjdya_empty{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;min-height:160px;padding:24px;display:flex}.Twjdya_emptyTitle{color:var(--agsc-fg);font-size:14px;font-weight:600}.Twjdya_emptyHint{max-width:420px;color:var(--agsc-fg-secondary);font-size:12px;line-height:20px}.Twjdya_group{border-radius:var(--agsc-radius-card);border:1px solid var(--agsc-border-strong);background:var(--agsc-bg-raised);flex-direction:column;gap:8px;padding:10px 12px;display:flex}.Twjdya_groupHead{flex-wrap:wrap;align-items:baseline;gap:8px;min-width:0;display:flex}.Twjdya_groupName{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600;overflow:hidden}.Twjdya_agentBadges{flex-wrap:wrap;align-items:center;gap:4px;display:inline-flex}.Twjdya_agentBadge{border:1px solid var(--agsc-border);background:var(--dsw-alias-bg-layer-2);color:var(--agsc-fg-secondary);white-space:nowrap;border-radius:999px;align-items:center;gap:4px;padding:0 7px;font-size:11px;line-height:18px;display:inline-flex}.Twjdya_crossBadge{color:var(--dsw-alias-label-primary-foreground);background:var(--agsc-accent);white-space:nowrap;border-radius:999px;padding:0 7px;font-size:11px;line-height:18px}.Twjdya_spacer{flex:1}.Twjdya_groupMeta{color:var(--agsc-fg-dimmed);white-space:nowrap;flex:none;font-size:11px}.Twjdya_lanes{flex-direction:column;gap:6px;display:flex}.Twjdya_lane{flex-direction:column;gap:4px;display:flex}.Twjdya_laneHead{color:var(--agsc-fg);align-items:center;gap:5px;font-size:12px;font-weight:600;display:inline-flex}.Twjdya_glyph{color:var(--agsc-accent);flex:none}.Twjdya_laneSessions{flex-direction:column;gap:4px;display:flex}.Twjdya_showMore{align-self:flex-start}.Twjdya_session{text-align:left;border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);background:var(--dsw-alias-bg-base);min-width:0;color:var(--agsc-fg);cursor:pointer;align-items:center;gap:8px;padding:5px 8px;font-family:inherit;font-size:12px;display:flex}.Twjdya_session:hover{border-color:var(--agsc-border-strong);background:var(--dsw-alias-interactive-bg-hover)}.Twjdya_session:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:1px}.Twjdya_statusPill{flex:none}.Twjdya_dot{background:var(--dsw-alias-label-tertiary);border-radius:50%;flex:none;width:7px;height:7px}.Twjdya_dot[data-tone=neutral]{background:var(--dsw-alias-label-tertiary)}.Twjdya_dot[data-tone=muted]{background:var(--agsc-fg-dimmed)}.Twjdya_attention{color:var(--agsc-warn);font-size:11px}.Twjdya_attention[data-kind=gap]{color:var(--agsc-err)}.Twjdya_sessionTitle{text-overflow:ellipsis;white-space:nowrap;min-width:0;overflow:hidden}.Twjdya_liveChip{color:var(--agsc-ok);flex:none}.Twjdya_sessionId{font-size:11px;font-family:var(--agsc-font-mono);color:var(--agsc-fg-dimmed);flex:none}.Twjdya_sessionTime{color:var(--agsc-fg-dimmed);flex:none;margin-left:auto;font-size:11px}";
-		const tagId$9 = "@shendeguize/dsh-agent-sidecar/src/client/board/project-view.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$9, css$9);
+		const tagId$9 = "dsh-agents-sidecar/src/client/board/project-view.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$9, css$9);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$9) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$9) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$9;
 				created = true;
 			}
 			tag.textContent = css$9;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var project_view_module_css_default = {
@@ -4957,7 +4957,7 @@ window.__ModuleLoader__.load({
 					agent: session.agent,
 					sessionId: session.sessionId
 				}),
-				"data-testid": "agent-sidecar-project-session",
+				"data-testid": "agents-sidecar-project-session",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_deepseek_ai_dsh_client_ui_primitives.Pill, {
 						className: project_view_module_css_default["statusPill"],
@@ -5051,7 +5051,7 @@ window.__ModuleLoader__.load({
 			const { group, onSelect } = props;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 				className: project_view_module_css_default["group"],
-				"data-testid": "agent-sidecar-project-group",
+				"data-testid": "agents-sidecar-project-group",
 				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: project_view_module_css_default["groupHead"],
 					children: [
@@ -5093,7 +5093,7 @@ window.__ModuleLoader__.load({
 									targetId: group.key
 								});
 							},
-							"data-testid": "agent-sidecar-analyze-project",
+							"data-testid": "agents-sidecar-analyze-project",
 							children: t("project.analyze")
 						})
 					]
@@ -5135,7 +5135,7 @@ window.__ModuleLoader__.load({
 				onScroll: (event) => {
 					props.onScrollTopChange(event.currentTarget.scrollTop);
 				},
-				"data-testid": "agent-sidecar-project-view",
+				"data-testid": "agents-sidecar-project-view",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
 						className: project_view_module_css_default["topbar"],
@@ -5210,20 +5210,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/analysis/analysis.module.css.mjs
 		const css$8 = ".WYj1Qa_panel{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg);min-width:0;min-height:0;color:var(--agsc-fg);flex-direction:column;flex:1;gap:8px;padding:10px 12px;display:flex;overflow:hidden}.WYj1Qa_view{min-width:0;height:100%;min-height:0;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;display:flex;overflow:hidden}.WYj1Qa_viewHead{border-bottom:1px solid var(--agsc-border-strong);flex:none;align-items:center;gap:10px;padding:12px 16px;display:flex}.WYj1Qa_viewTitle{color:var(--agsc-fg);font-size:15px;font-weight:650}.WYj1Qa_viewBody{flex:1;min-width:0;min-height:0;padding:12px 16px 16px;display:flex;overflow:hidden}.WYj1Qa_messages{flex-direction:column;flex:1;gap:8px;min-height:0;display:flex;overflow:auto}.WYj1Qa_head{align-items:center;gap:8px;min-width:0;display:flex}.WYj1Qa_title{color:var(--agsc-fg);font-size:13px;font-weight:600}.WYj1Qa_spacer{flex:1}.WYj1Qa_startButton{align-self:flex-start}.WYj1Qa_mutedLine{color:var(--agsc-fg-secondary);font-size:12px;line-height:18px}.WYj1Qa_noteCard,.WYj1Qa_errorCard,.WYj1Qa_noticeBar{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);color:var(--agsc-fg-secondary);padding:8px 10px;font-size:12px;line-height:18px}.WYj1Qa_errorCard{border-color:var(--agsc-err);color:var(--agsc-err)}.WYj1Qa_noticeBar{border-color:var(--agsc-warn);color:var(--agsc-warn)}.WYj1Qa_truncated{color:var(--agsc-warn);font-size:11px}.WYj1Qa_message{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);white-space:pre-wrap;word-break:break-word;flex-direction:column;gap:4px;max-width:92%;padding:8px 10px;font-size:12px;line-height:18px;display:flex}.WYj1Qa_userMessage{background:var(--agsc-bg-raised);align-self:flex-end}.WYj1Qa_assistantMessage{background:var(--agsc-bg);align-self:flex-start}.WYj1Qa_messageLabel{color:var(--agsc-fg-secondary);font-size:11px;font-weight:600}.WYj1Qa_messageBody{color:var(--agsc-fg)}.WYj1Qa_message[data-pending=true] .WYj1Qa_messageBody{color:var(--agsc-fg-secondary);font-style:italic}.WYj1Qa_disclaimer{border-top:1px solid var(--agsc-border-strong);color:var(--agsc-fg-secondary);padding-top:6px;font-size:11px;line-height:16px}.WYj1Qa_followupForm{gap:6px;display:flex}.WYj1Qa_followupInput{flex:1;min-width:0}";
-		const tagId$8 = "@shendeguize/dsh-agent-sidecar/src/client/analysis/analysis.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$8, css$8);
+		const tagId$8 = "dsh-agents-sidecar/src/client/analysis/analysis.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$8, css$8);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$8) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$8) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$8;
 				created = true;
 			}
 			tag.textContent = css$8;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var analysis_module_css_default = {
@@ -5304,7 +5304,7 @@ window.__ModuleLoader__.load({
 				className: `${analysis_module_css_default["message"]} ${message.role === "user" ? analysis_module_css_default["userMessage"] : analysis_module_css_default["assistantMessage"]}`,
 				"data-role": message.role,
 				"data-pending": message.pending || void 0,
-				"data-testid": "agent-sidecar-analysis-message",
+				"data-testid": "agents-sidecar-analysis-message",
 				"aria-busy": message.pending || void 0,
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
@@ -5337,7 +5337,7 @@ window.__ModuleLoader__.load({
 			};
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 				...surfaceProps("analysis-panel", analysis_module_css_default["panel"]),
-				"data-testid": "agent-sidecar-analysis",
+				"data-testid": "agents-sidecar-analysis",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: analysis_module_css_default["head"],
@@ -5352,7 +5352,7 @@ window.__ModuleLoader__.load({
 								size: "sm",
 								variant: "ghost",
 								onClick: props.onStop,
-								"data-testid": "agent-sidecar-analysis-stop",
+								"data-testid": "agents-sidecar-analysis-stop",
 								children: t("analysis.stop")
 							}),
 							props.onClose !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -5366,11 +5366,11 @@ window.__ModuleLoader__.load({
 					}),
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: analysis_module_css_default["messages"],
-						"data-testid": "agent-sidecar-analysis-messages",
+						"data-testid": "agents-sidecar-analysis-messages",
 						children: [
 							!enabled && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 								className: analysis_module_css_default["noteCard"],
-								"data-testid": "agent-sidecar-analysis-disabled",
+								"data-testid": "agents-sidecar-analysis-disabled",
 								children: t("analysis.disabledNote")
 							}),
 							messagesFromState(state).map((message, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Message, {
@@ -5379,7 +5379,7 @@ window.__ModuleLoader__.load({
 							}, `${message.role}:${index}`)),
 							state.phase === "failed" && state.errorCode !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 								className: analysis_module_css_default["errorCard"],
-								"data-testid": "agent-sidecar-analysis-error",
+								"data-testid": "agents-sidecar-analysis-error",
 								children: errorText(state)
 							}),
 							state.phase === "stopped" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
@@ -5388,7 +5388,7 @@ window.__ModuleLoader__.load({
 							}),
 							state.noticeCode !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 								className: analysis_module_css_default["noticeBar"],
-								"data-testid": "agent-sidecar-analysis-notice",
+								"data-testid": "agents-sidecar-analysis-notice",
 								children: noticeText(state.noticeCode)
 							}),
 							enabled && showStart && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [state.phase === "idle" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
@@ -5400,7 +5400,7 @@ window.__ModuleLoader__.load({
 								variant: "primary",
 								className: analysis_module_css_default["startButton"],
 								onClick: props.onStart,
-								"data-testid": "agent-sidecar-analysis-start",
+								"data-testid": "agents-sidecar-analysis-start",
 								children: state.phase === "idle" ? t("analysis.start") : t("analysis.restart")
 							})] }),
 							state.phase === "requesting" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
@@ -5426,20 +5426,20 @@ window.__ModuleLoader__.load({
 							onKeyDown: (event) => {
 								if (event.key === "Enter") submitFollowup();
 							},
-							"data-testid": "agent-sidecar-analysis-question"
+							"data-testid": "agents-sidecar-analysis-question"
 						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
 							type: "button",
 							size: "sm",
 							variant: "ghost",
 							disabled: !enabled || state.phase !== "ready" || question.trim() === "",
 							onClick: submitFollowup,
-							"data-testid": "agent-sidecar-analysis-followup",
+							"data-testid": "agents-sidecar-analysis-followup",
 							children: t("analysis.followupSubmit")
 						})]
 					}),
 					(conversationLive || state.exchanges.length > 0) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: analysis_module_css_default["disclaimer"],
-						"data-testid": "agent-sidecar-analysis-disclaimer",
+						"data-testid": "agents-sidecar-analysis-disclaimer",
 						children: state.disclaimer ?? t("analysis.disclaimerFallback")
 					})
 				]
@@ -5488,7 +5488,7 @@ window.__ModuleLoader__.load({
 				}
 			}), props.workingCount > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 				style: countStyle,
-				"data-testid": "agent-sidecar-widget-count",
+				"data-testid": "agents-sidecar-widget-count",
 				children: `▸${props.workingCount}`
 			})] });
 			if (props.onOpen === void 0) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
@@ -5497,7 +5497,7 @@ window.__ModuleLoader__.load({
 				title,
 				"aria-label": title,
 				role: "status",
-				"data-testid": "agent-sidecar-widget",
+				"data-testid": "agents-sidecar-widget",
 				"data-connection": props.connection,
 				children: body
 			});
@@ -5511,7 +5511,7 @@ window.__ModuleLoader__.load({
 				title,
 				"aria-label": title,
 				onClick: props.onOpen,
-				"data-testid": "agent-sidecar-widget",
+				"data-testid": "agents-sidecar-widget",
 				"data-connection": props.connection,
 				children: body
 			});
@@ -5519,20 +5519,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/settings-card.module.css.mjs
 		const css$7 = ".KApx_W_card{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--agsc-radius-card);background:var(--dsw-alias-bg-layer-3);width:100%;max-width:760px;list-style:none;transition:border-color .16s,background .16s}.KApx_W_card:hover{border-color:var(--dsw-alias-label-dimmed)}.KApx_W_cardOpen{background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-label-dimmed)}.KApx_W_header{appearance:none;width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:var(--agsc-radius-card);background:0 0;border:0;align-items:center;gap:12px;padding:14px 16px;display:flex}.KApx_W_header:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px}.KApx_W_headText{flex-direction:column;flex:1;gap:4px;min-width:0;display:flex}.KApx_W_name{color:var(--dsw-alias-label-primary);font-size:15px;font-weight:600;line-height:1.4}.KApx_W_description{color:var(--dsw-alias-label-tertiary);font-size:13px;line-height:1.5}.KApx_W_pending{white-space:nowrap;flex:none}.KApx_W_chevron{color:var(--dsw-alias-label-tertiary);flex:none;transition:transform .16s}.KApx_W_chevronOpen{transform:rotate(180deg)}.KApx_W_body{border-top:1px solid var(--dsw-alias-border-l2);margin:0 16px;padding-bottom:8px}.KApx_W_readOnly{color:var(--dsw-alias-label-tertiary);margin:12px 0 0;font-size:12px;line-height:1.5}.KApx_W_section{padding:12px 0 4px}.KApx_W_section+.KApx_W_section{border-top:1px solid var(--dsw-alias-border-l2)}.KApx_W_sectionTitle{color:var(--dsw-alias-label-primary);margin:0 0 4px;font-size:13px;font-weight:600;line-height:1.5}.KApx_W_field{flex-direction:column;gap:6px;padding:8px 0;display:flex}.KApx_W_label{color:var(--dsw-alias-label-primary);font-size:13px;line-height:1.5}.KApx_W_hint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:1.5}.KApx_W_invalidHint{color:var(--dsw-alias-state-error-primary);margin:0;font-size:12px;line-height:1.5}.KApx_W_input{box-sizing:border-box;width:100%;max-width:420px}.KApx_W_inputInvalid{border-color:var(--dsw-alias-state-error-primary)}.KApx_W_input:has(input:disabled){opacity:.5}.KApx_W_select{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--agsc-radius-control);background:var(--dsw-alias-bg-layer-1);width:100%;max-width:420px;height:32px;font:inherit;color:var(--dsw-alias-label-primary);padding:0 8px;font-size:13px;line-height:1.5}.KApx_W_select:focus-visible{border-color:var(--dsw-alias-brand-primary);outline:none}.KApx_W_select:disabled{opacity:.5;cursor:default}.KApx_W_toggleRow{cursor:pointer;align-items:center;gap:10px;display:flex}.KApx_W_toggleRow input{accent-color:var(--dsw-alias-brand-primary);cursor:pointer;width:16px;height:16px;margin:0}.KApx_W_toggleRow input:disabled{cursor:default}.KApx_W_note{background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:8px;margin:6px 0 2px;padding:8px 10px;font-size:12px;line-height:1.6}.KApx_W_statusRow{align-items:center;gap:8px;padding:4px 0;display:flex}.KApx_W_statusDot{background:var(--agsc-fg-dimmed);border-radius:50%;flex:none;width:8px;height:8px}.KApx_W_statusOk{background:var(--agsc-ok)}.KApx_W_statusError{background:var(--agsc-err)}.KApx_W_statusText{color:var(--dsw-alias-label-primary);font-size:13px;line-height:1.5}.KApx_W_statusMeta{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:1.5}.KApx_W_retry{margin-left:auto}.KApx_W_footer{border-top:1px solid var(--dsw-alias-border-l2);align-items:center;gap:8px;padding:12px 0 4px;display:flex}.KApx_W_docs{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:1.5;text-decoration:none}.KApx_W_docs:hover{color:var(--dsw-alias-label-primary);text-decoration:underline}.KApx_W_failed{text-align:right;min-width:0;color:var(--dsw-alias-state-error-primary);flex:1;margin:0;font-size:12px;line-height:1.5}.KApx_W_spacer{flex:1}";
-		const tagId$7 = "@shendeguize/dsh-agent-sidecar/src/client/settings-card.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$7, css$7);
+		const tagId$7 = "dsh-agents-sidecar/src/client/settings-card.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$7, css$7);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$7) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$7) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$7;
 				created = true;
 			}
 			tag.textContent = css$7;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var settings_card_module_css_default = {
@@ -6029,7 +6029,7 @@ window.__ModuleLoader__.load({
 										children: t$2("settings.archiveLiveLabel")
 									}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 										className: settings_card_module_css_default["statusText"],
-										"data-testid": "agent-sidecar-settings-archive-live",
+										"data-testid": "agents-sidecar-settings-archive-live",
 										children: archiveLive
 									})]
 								}),
@@ -6922,20 +6922,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/detail/detail.module.css.mjs
 		const css$6 = ".cBtswW_root{box-sizing:border-box;height:100%;min-height:420px;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;gap:10px;padding:16px 20px;display:flex}.cBtswW_header{flex-direction:column;gap:6px;display:flex}.cBtswW_headerTop{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.cBtswW_agent{color:var(--dsw-alias-label-primary);align-items:center;gap:5px;font-size:13px;font-weight:650;display:inline-flex}.cBtswW_agentGlyph{color:var(--dsw-alias-brand-primary);flex:none}.cBtswW_badge{white-space:nowrap}.cBtswW_dot{background:var(--agsc-fg-dimmed);border-radius:50%;flex:none;width:8px;height:8px}.cBtswW_dot[data-tone=success]{background:var(--agsc-ok)}.cBtswW_dot[data-tone=warn]{background:var(--agsc-warn)}.cBtswW_dot[data-tone=danger]{background:var(--agsc-err)}.cBtswW_dot[data-tone=neutral]{background:var(--agsc-fg-secondary)}.cBtswW_dot[data-tone=muted]{background:var(--agsc-fg-dimmed)}.cBtswW_spacer{flex:1}.cBtswW_title{color:var(--dsw-alias-label-primary);text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:600;overflow:hidden}.cBtswW_meta{align-items:baseline;gap:10px;min-width:0;display:flex}.cBtswW_project{color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;font-size:12px;overflow:hidden}.cBtswW_sessionId{font-size:11px;font-family:var(--ds-font-family-code);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;flex:none;max-width:40%;overflow:hidden}.cBtswW_sessionId:hover{color:var(--dsw-alias-label-primary);text-decoration:underline}.cBtswW_copiedBubble{color:var(--agsc-ok);flex:none}.cBtswW_copiedBubble>span,.cBtswW_sourceBadge>span{color:inherit}.cBtswW_metaRow{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.cBtswW_disclaimer{color:var(--dsw-alias-label-caption);font-size:11px}.cBtswW_project:hover{color:var(--dsw-alias-label-primary);text-decoration:underline}.cBtswW_fact{color:var(--dsw-alias-label-secondary);white-space:nowrap;font-size:11px}.cBtswW_factLabel{color:var(--dsw-alias-label-caption);flex:none;font-size:11px}.cBtswW_transcriptPath{font-size:11px;font-family:var(--ds-font-family-code);color:var(--dsw-alias-label-tertiary);text-overflow:ellipsis;white-space:nowrap;text-align:left;direction:rtl;min-width:0;overflow:hidden}.cBtswW_transcriptPath:hover{color:var(--dsw-alias-label-primary);text-decoration:underline}.cBtswW_sourceList{align-items:center;gap:4px;display:inline-flex}.cBtswW_sourceBadge{white-space:nowrap}.cBtswW_sourceBadge[data-tone=success]{color:var(--agsc-ok)}.cBtswW_sourceBadge[data-tone=muted]{color:var(--agsc-fg-dimmed)}.cBtswW_banner{border-radius:var(--agsc-radius-control);color:var(--agsc-warn);background:var(--dsw-alias-state-warn-tertiary);border:1px solid var(--dsw-alias-state-warn-secondary);padding:6px 10px;font-size:12px;line-height:18px}.cBtswW_bodyState{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;min-height:160px;padding:24px;display:flex}.cBtswW_bodyStateTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:600}.cBtswW_bodyState[data-kind=error] .cBtswW_bodyStateTitle{color:var(--agsc-err)}.cBtswW_bodyStateHint{max-width:420px;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:20px}.cBtswW_filterRow{flex-wrap:wrap;align-items:center;gap:6px;display:flex}.cBtswW_filterHiddenNote{color:var(--dsw-alias-label-tertiary);font-size:11px}.cBtswW_pager{justify-content:center;display:flex}.cBtswW_pagerNote{color:var(--dsw-alias-label-tertiary);font-size:11px}.cBtswW_hiddenNotice{color:var(--dsw-alias-label-tertiary);justify-content:center;align-items:center;gap:8px;font-size:11px;display:flex}.cBtswW_timeline{flex-direction:column;flex:1;gap:6px;margin:0;padding:0 2px 8px 0;list-style:none;display:flex;overflow-y:auto}.cBtswW_event{border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);background:var(--agsc-bg-raised);flex-direction:column;gap:4px;padding:6px 10px;display:flex}.cBtswW_event[data-new]{border-color:var(--agsc-accent);background:color-mix(in srgb, var(--agsc-accent) 6%, transparent)}.cBtswW_chunkRun{border-radius:var(--agsc-radius-control);color:var(--dsw-alias-label-tertiary);background:var(--agsc-bg-raised);border:1px dashed var(--agsc-border-strong);align-items:center;gap:8px;padding:4px 10px;font-size:11px;line-height:16px;display:flex}.cBtswW_chunkRun[data-new]{border-color:var(--agsc-accent)}.cBtswW_chunkRunLabel{flex:none}.cBtswW_eventHead{align-items:center;gap:6px;min-width:0;display:flex}.cBtswW_eventGlyph{color:var(--dsw-alias-label-tertiary);flex:none;font-size:12px}.cBtswW_event[data-kind=user] .cBtswW_eventGlyph,.cBtswW_event[data-kind=assistant] .cBtswW_eventGlyph{color:var(--dsw-alias-brand-primary)}.cBtswW_event[data-kind=error] .cBtswW_eventGlyph{color:var(--dsw-alias-state-error-primary)}.cBtswW_eventLabel{color:var(--dsw-alias-label-primary);white-space:nowrap;text-overflow:ellipsis;font-size:12px;font-weight:600;overflow:hidden}.cBtswW_eventSeq{font-size:10px;font-family:var(--ds-font-family-code);color:var(--dsw-alias-label-tertiary);flex:none}.cBtswW_eventNew{color:var(--agsc-accent);flex:none}.cBtswW_eventSpacer{flex:1}.cBtswW_eventTime{color:var(--dsw-alias-label-caption);flex:none;font-size:11px}.cBtswW_eventSummary{color:var(--dsw-alias-label-secondary);overflow-wrap:anywhere;font-size:12px;line-height:18px}.cBtswW_expandButton{align-self:flex-start}.cBtswW_eventBody{border-radius:var(--agsc-radius-control);font-size:11px;line-height:16px;font-family:var(--ds-font-family-code);color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-2);white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;margin:0;padding:8px 10px;overflow-y:auto}.cBtswW_gap{border-radius:var(--agsc-radius-control);text-align:center;color:var(--agsc-warn);background:var(--dsw-alias-state-warn-tertiary);border:1px dashed var(--dsw-alias-state-warn-secondary);padding:4px 10px;font-size:11px;line-height:16px}";
-		const tagId$6 = "@shendeguize/dsh-agent-sidecar/src/client/detail/detail.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$6, css$6);
+		const tagId$6 = "dsh-agents-sidecar/src/client/detail/detail.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$6, css$6);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$6) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$6) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$6;
 				created = true;
 			}
 			tag.textContent = css$6;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var detail_module_css_default = {
@@ -7015,7 +7015,7 @@ window.__ModuleLoader__.load({
 				className: detail_module_css_default["event"],
 				"data-kind": entry.kind,
 				"data-new": row.isNew || void 0,
-				"data-testid": "agent-sidecar-detail-event",
+				"data-testid": "agents-sidecar-detail-event",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: detail_module_css_default["eventHead"],
@@ -7072,7 +7072,7 @@ window.__ModuleLoader__.load({
 				className: detail_module_css_default["chunkRun"],
 				"data-new": row.isNew || void 0,
 				title: row.hoverTitle,
-				"data-testid": "agent-sidecar-detail-chunks",
+				"data-testid": "agents-sidecar-detail-chunks",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 						className: detail_module_css_default["chunkRunLabel"],
@@ -7190,7 +7190,7 @@ window.__ModuleLoader__.load({
 			const statusDotState = status.status === "working" ? "ongoing" : status.status === "waiting" ? "warning" : null;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				...surfaceProps("timeline", detail_module_css_default["root"]),
-				"data-testid": "agent-sidecar-detail",
+				"data-testid": "agents-sidecar-detail",
 				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
 					className: detail_module_css_default["header"],
 					children: [
@@ -7202,7 +7202,7 @@ window.__ModuleLoader__.load({
 									size: "sm",
 									variant: "outline",
 									onClick: props.onClose,
-									"data-testid": "agent-sidecar-detail-back",
+									"data-testid": "agents-sidecar-detail-back",
 									children: DETAIL_STRINGS.header.close
 								}),
 								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
@@ -7232,7 +7232,7 @@ window.__ModuleLoader__.load({
 									disabled: props.refreshing === true,
 									title: DETAIL_STRINGS.header.refreshHint,
 									onClick: props.onRefresh,
-									"data-testid": "agent-sidecar-detail-refresh",
+									"data-testid": "agents-sidecar-detail-refresh",
 									children: props.refreshing === true ? DETAIL_STRINGS.header.refreshing : DETAIL_STRINGS.header.refresh
 								}),
 								/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Pill, {
@@ -7265,7 +7265,7 @@ window.__ModuleLoader__.load({
 									onClick: () => {
 										copyValue("project", props.header.project);
 									},
-									"data-testid": "agent-sidecar-detail-copy-project",
+									"data-testid": "agents-sidecar-detail-copy-project",
 									children: props.header.project
 								}),
 								/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -7277,7 +7277,7 @@ window.__ModuleLoader__.load({
 									onClick: () => {
 										copyValue("id", props.sessionId);
 									},
-									"data-testid": "agent-sidecar-detail-copy-id",
+									"data-testid": "agents-sidecar-detail-copy-id",
 									children: props.sessionId
 								}),
 								copied !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(StaticPill, {
@@ -7289,7 +7289,7 @@ window.__ModuleLoader__.load({
 						}),
 						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 							className: detail_module_css_default["metaRow"],
-							"data-testid": "agent-sidecar-detail-facts",
+							"data-testid": "agents-sidecar-detail-facts",
 							children: [
 								lastActivity !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 									className: detail_module_css_default["fact"],
@@ -7324,7 +7324,7 @@ window.__ModuleLoader__.load({
 								onClick: () => {
 									copyValue("transcript", props.header.transcript ?? "");
 								},
-								"data-testid": "agent-sidecar-detail-copy-transcript",
+								"data-testid": "agents-sidecar-detail-copy-transcript",
 								children: props.header.transcript
 							})]
 						}),
@@ -7362,7 +7362,7 @@ window.__ModuleLoader__.load({
 				}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: detail_module_css_default["filterRow"],
-						"data-testid": "agent-sidecar-detail-filter",
+						"data-testid": "agents-sidecar-detail-filter",
 						children: [["conversation", "all"].map((mode) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Pill, {
 							type: "button",
 							active: filterMode === mode,
@@ -7406,7 +7406,7 @@ window.__ModuleLoader__.load({
 						children: limited.rows.map((row) => row.type === "gap" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("li", {
 							className: detail_module_css_default["gap"],
 							role: "note",
-							"data-testid": "agent-sidecar-detail-gap",
+							"data-testid": "agents-sidecar-detail-gap",
 							children: row.label
 						}, row.key) : row.type === "chunks" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ChunkRunRow, {
 							row,
@@ -7426,20 +7426,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/dsh-tools/dsh-tools.module.css.mjs
 		const css$5 = "._1R83Ca_panel{min-width:0;color:var(--agsc-fg);flex-direction:column;gap:8px;display:flex}._1R83Ca_panelHead{align-items:baseline;gap:8px;min-width:0;display:flex}._1R83Ca_panelTitle{color:var(--dsw-alias-label-primary);font-size:13px;font-weight:600}._1R83Ca_panelCount{flex:none}._1R83Ca_mutedLine{color:var(--dsw-alias-label-secondary);font-size:12px}._1R83Ca_errorCard{border-radius:var(--agsc-radius-control);color:var(--agsc-fg);background:var(--agsc-err-fill);border:1px solid var(--dsw-alias-state-error-secondary);padding:8px 10px;font-size:12px;line-height:18px}._1R83Ca_errorDetail{color:var(--dsw-alias-label-secondary);word-break:break-all;margin-top:2px;font-size:11px;display:block}._1R83Ca_degradeCard{border-radius:var(--agsc-radius-control);border:1px dashed var(--agsc-border-strong);background:var(--agsc-bg-raised);flex-direction:column;gap:4px;padding:10px 12px;display:flex}._1R83Ca_degradeTitle{color:var(--dsw-alias-label-primary);font-size:12px;font-weight:600}._1R83Ca_degradeBody{color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px}._1R83Ca_degradeDetail{font-size:11px;font-family:var(--ds-font-family-code);color:var(--dsw-alias-label-tertiary);word-break:break-all}._1R83Ca_noticeBar{border-radius:var(--agsc-radius-control);color:var(--agsc-warn);background:var(--dsw-alias-state-warn-tertiary);border:1px solid var(--dsw-alias-state-warn-secondary);padding:5px 10px;font-size:12px;line-height:18px}._1R83Ca_tree{flex-direction:column;gap:2px;min-width:0;display:flex}._1R83Ca_treeRow{align-items:center;gap:4px;min-width:0;display:flex}._1R83Ca_toggle{flex:none;width:18px;height:18px;padding:0;font-size:10px;line-height:1}._1R83Ca_toggleSpacer{flex:none;width:18px}._1R83Ca_node{text-align:left;justify-content:flex-start;gap:6px;min-width:0;height:auto;padding:2px 8px}._1R83Ca_node[data-current=true]{color:var(--agsc-accent);background:color-mix(in srgb, var(--agsc-accent) 8%, transparent);box-shadow:inset 0 0 0 1px var(--agsc-accent);cursor:default}._1R83Ca_nodeId{font-family:var(--ds-font-family-code);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._1R83Ca_nodeRole{color:var(--dsw-alias-label-tertiary);flex:none;font-size:11px}._1R83Ca_nodeBadge{flex:none}._1R83Ca_nodeBadge>span,._1R83Ca_matchTag>span{color:inherit}._1R83Ca_nodeBadge[data-kind=current]{color:var(--agsc-accent)}._1R83Ca_nodeBadge[data-kind=live]{color:var(--agsc-ok)}._1R83Ca_searchForm{align-items:center;gap:8px;display:flex}._1R83Ca_searchInput{flex:1;min-width:0}._1R83Ca_projectChip{align-self:flex-start}._1R83Ca_resultList{flex-direction:column;gap:4px;min-width:0;display:flex}._1R83Ca_resultItem{text-align:left;border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);background:var(--agsc-bg-raised);flex-direction:column;justify-content:flex-start;align-items:stretch;gap:3px;min-width:0;height:auto;padding:6px 10px;display:flex}._1R83Ca_resultItem:hover{border-color:var(--agsc-border-strong)}._1R83Ca_resultItem:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:1px}._1R83Ca_resultHead{align-items:center;gap:6px;min-width:0;display:flex}._1R83Ca_resultAgent{color:var(--dsw-alias-label-secondary);flex:none;font-size:11px;font-weight:600}._1R83Ca_resultTitle{color:var(--dsw-alias-label-primary);text-overflow:ellipsis;white-space:nowrap;font-size:12px;overflow:hidden}._1R83Ca_matchTag{flex:none;margin-left:auto}._1R83Ca_matchTag[data-kind=full-text]{color:var(--agsc-accent)}._1R83Ca_resultMeta{min-width:0;color:var(--dsw-alias-label-tertiary);align-items:center;gap:8px;font-size:11px;display:flex}._1R83Ca_resultProject{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}._1R83Ca_resultId{font-family:var(--ds-font-family-code);flex:none}._1R83Ca_snippet{color:var(--dsw-alias-label-secondary);text-overflow:ellipsis;white-space:nowrap;font-size:12px;line-height:18px;overflow:hidden}._1R83Ca_snippetMark{color:var(--agsc-accent);background:color-mix(in srgb, var(--agsc-accent) 12%, transparent);border-radius:2px;font-weight:600}";
-		const tagId$5 = "@shendeguize/dsh-agent-sidecar/src/client/dsh-tools/dsh-tools.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$5, css$5);
+		const tagId$5 = "dsh-agents-sidecar/src/client/dsh-tools/dsh-tools.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$5, css$5);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$5) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$5) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$5;
 				created = true;
 			}
 			tag.textContent = css$5;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var dsh_tools_module_css_default = {
@@ -7889,7 +7889,7 @@ window.__ModuleLoader__.load({
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				className: dsh_tools_module_css_default["treeRow"],
 				style: { paddingLeft: node.depth * 16 },
-				"data-testid": "agent-sidecar-lineage-row",
+				"data-testid": "agents-sidecar-lineage-row",
 				"data-role": node.role,
 				children: [node.hasChildren ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
 					type: "button",
@@ -7965,7 +7965,7 @@ window.__ModuleLoader__.load({
 			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 				className: dsh_tools_module_css_default["tree"],
 				role: "tree",
-				"data-testid": "agent-sidecar-lineage-tree",
+				"data-testid": "agents-sidecar-lineage-tree",
 				children: visibleLineageNodes(tree.nodes, collapsed).map((node) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(TreeRow, {
 					node,
 					collapsed: collapsed.has(node.id),
@@ -7988,7 +7988,7 @@ window.__ModuleLoader__.load({
 			});
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 				...surfaceProps("dsh-tools", dsh_tools_module_css_default["panel"]),
-				"data-testid": "agent-sidecar-lineage",
+				"data-testid": "agents-sidecar-lineage",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: dsh_tools_module_css_default["panelHead"],
@@ -8016,7 +8016,7 @@ window.__ModuleLoader__.load({
 					view.kind === "degraded" && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: dsh_tools_module_css_default["degradeCard"],
 						"data-reason": view.card.reason,
-						"data-testid": "agent-sidecar-lineage-degraded",
+						"data-testid": "agents-sidecar-lineage-degraded",
 						children: [
 							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 								className: dsh_tools_module_css_default["degradeTitle"],
@@ -8070,7 +8070,7 @@ window.__ModuleLoader__.load({
 				variant: "ghost",
 				className: dsh_tools_module_css_default["resultItem"],
 				onClick: () => props.onSelectSession(item.sessionId),
-				"data-testid": "agent-sidecar-search-item",
+				"data-testid": "agents-sidecar-search-item",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
 						className: dsh_tools_module_css_default["resultHead"],
@@ -8125,7 +8125,7 @@ window.__ModuleLoader__.load({
 			const project = props.project ?? null;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 				...surfaceProps("dsh-tools", dsh_tools_module_css_default["panel"]),
-				"data-testid": "agent-sidecar-search",
+				"data-testid": "agents-sidecar-search",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: dsh_tools_module_css_default["panelHead"],
@@ -8161,7 +8161,7 @@ window.__ModuleLoader__.load({
 					view.notice !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: dsh_tools_module_css_default["noticeBar"],
 						role: "status",
-						"data-testid": "agent-sidecar-search-degraded",
+						"data-testid": "agents-sidecar-search-degraded",
 						children: view.notice
 					}),
 					view.body === "loading" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
@@ -8194,20 +8194,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/inject/inject.module.css.mjs
 		const css$4 = ".a2ZgPq_panel{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-card);background:var(--agsc-bg);flex-direction:column;max-width:560px;display:flex}.a2ZgPq_header{border-bottom:1px solid var(--agsc-border-strong);align-items:center;gap:12px;padding:14px 16px 10px;display:flex}.a2ZgPq_title{min-width:0;color:var(--agsc-fg);flex:1;margin:0;font-size:15px;font-weight:600;line-height:1.4}.a2ZgPq_body{flex-direction:column;gap:10px;padding:12px 16px 14px;display:flex}.a2ZgPq_capabilityOff,.a2ZgPq_noticeWarn,.a2ZgPq_noticeError,.a2ZgPq_warnBar,.a2ZgPq_auditNote,.a2ZgPq_resultOk,.a2ZgPq_resultFail,.a2ZgPq_resultUnknown{border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);color:var(--agsc-fg-secondary);margin:0;padding:8px 10px;font-size:12px;line-height:1.6}.a2ZgPq_noticeWarn,.a2ZgPq_warnBar{border:1px solid var(--agsc-warn);color:var(--agsc-warn)}.a2ZgPq_noticeError,.a2ZgPq_resultFail{border:1px solid var(--agsc-err);color:var(--agsc-err)}.a2ZgPq_noticeDetail,.a2ZgPq_noTarget,.a2ZgPq_modeHint,.a2ZgPq_resultDetail{color:var(--agsc-fg-dimmed)}.a2ZgPq_planKey,.a2ZgPq_observedNote{color:var(--agsc-fg-secondary)}.a2ZgPq_targetRow,.a2ZgPq_planRow{align-items:baseline;gap:10px;min-width:0;display:flex}.a2ZgPq_noTarget,.a2ZgPq_planKey,.a2ZgPq_modeHint,.a2ZgPq_resultDetail{font-size:12px;line-height:1.5}.a2ZgPq_agentTag{flex:none}.a2ZgPq_planTitle{min-width:0;color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;line-height:1.5;overflow:hidden}.a2ZgPq_field,.a2ZgPq_modeText,.a2ZgPq_planPreview{flex-direction:column;display:flex}.a2ZgPq_field{gap:6px}.a2ZgPq_label,.a2ZgPq_modeLabel{color:var(--agsc-fg);font-size:13px;line-height:1.5}.a2ZgPq_textarea{appearance:none;resize:vertical;border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);min-height:96px;color:var(--agsc-fg);font:inherit;padding:8px 10px;font-size:13px;line-height:1.6}.a2ZgPq_textarea:focus-visible{border-color:var(--agsc-accent);outline:none}.a2ZgPq_textarea::placeholder{color:var(--agsc-fg-dimmed)}.a2ZgPq_textarea:disabled{cursor:default;opacity:.5}.a2ZgPq_byteRow{align-items:center;gap:10px;display:flex}.a2ZgPq_byteBar{background:var(--agsc-border);border-radius:2px;flex:1;height:3px;overflow:hidden}.a2ZgPq_byteFill{background:var(--agsc-accent);border-radius:2px;height:100%;transition:width .12s}.a2ZgPq_byteFillOver{background:var(--agsc-err)}.a2ZgPq_byteText,.a2ZgPq_byteTextOver{color:var(--agsc-fg-dimmed);font-variant-numeric:tabular-nums;flex:none;font-size:11px;line-height:1.5}.a2ZgPq_byteTextOver,.a2ZgPq_invalid{color:var(--agsc-err)}.a2ZgPq_invalid{margin:0;font-size:12px;line-height:1.5}.a2ZgPq_modes{border:0;flex-direction:column;gap:8px;margin:0;padding:0;display:flex}.a2ZgPq_modeOption{cursor:pointer;align-items:flex-start;gap:10px;display:flex}.a2ZgPq_modeOption input{width:14px;height:14px;accent-color:var(--agsc-accent);cursor:pointer;margin:3px 0 0}.a2ZgPq_modeOption input:disabled{cursor:default}.a2ZgPq_modeText{gap:2px;min-width:0}.a2ZgPq_auditNote{padding:8px 10px}.a2ZgPq_planBox{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);flex-direction:column;gap:6px;padding:10px 12px;display:flex}.a2ZgPq_planKey{flex:none}.a2ZgPq_planValue{min-width:0;color:var(--agsc-fg);align-items:baseline;gap:8px;font-size:13px;line-height:1.5;display:flex}.a2ZgPq_observedNote{margin:0;font-size:11px;line-height:1.5}.a2ZgPq_planPreview{gap:4px;min-width:0}.a2ZgPq_preview{border:1px solid var(--agsc-border-strong);background:var(--agsc-bg);max-height:120px;color:var(--agsc-fg-secondary);white-space:pre-wrap;word-break:break-word;border-radius:6px;margin:0;padding:8px 10px;font-size:12px;line-height:1.6;overflow:auto}.a2ZgPq_countdown{color:var(--agsc-fg-secondary);font-variant-numeric:tabular-nums;margin:0;font-size:12px;line-height:1.5}.a2ZgPq_resultOk,.a2ZgPq_resultFail,.a2ZgPq_resultUnknown{color:var(--agsc-fg);padding:10px 12px;font-size:13px}.a2ZgPq_resultOk{border:1px solid var(--agsc-ok)}.a2ZgPq_resultUnknown{border:1px solid var(--agsc-fg-dimmed);color:var(--agsc-fg-secondary)}.a2ZgPq_resultDetail{margin:0;line-height:1.6}.a2ZgPq_footer{justify-content:flex-end;align-items:center;gap:8px;padding-top:4px;display:flex}.a2ZgPq_btnDanger{appearance:none;border:1px solid var(--agsc-err);border-radius:var(--agsc-radius-control);color:var(--agsc-fg);font:inherit;cursor:pointer;background:0 0;padding:5px 14px;font-size:13px;font-weight:600;line-height:1.5}.a2ZgPq_btnDanger:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover-danger);color:var(--agsc-fg)}.a2ZgPq_btnDanger:disabled{cursor:default;opacity:.4}.a2ZgPq_btnDanger:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:1px}";
-		const tagId$4 = "@shendeguize/dsh-agent-sidecar/src/client/inject/inject.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$4, css$4);
+		const tagId$4 = "dsh-agents-sidecar/src/client/inject/inject.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$4, css$4);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$4) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$4) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$4;
 				created = true;
 			}
 			tag.textContent = css$4;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var inject_module_css_default = {
@@ -8994,7 +8994,7 @@ window.__ModuleLoader__.load({
 							id: blockedReasonId,
 							className: inject_module_css_default["capabilityOff"],
 							role: "status",
-							"data-testid": "agent-sidecar-inject-blocked-reason",
+							"data-testid": "agents-sidecar-inject-blocked-reason",
 							children: isKimi && blockReason === "working_session" ? t$1("inject.kimiErrWorkingSession") : blockedCopy
 						}), closeButton !== null ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 							className: inject_module_css_default["footer"],
@@ -9042,7 +9042,7 @@ window.__ModuleLoader__.load({
 							verifyCopy !== null ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
 								className: verify.phase === "done" && verify.outcome === "confirmed" ? inject_module_css_default["resultOk"] : inject_module_css_default["resultDetail"],
 								role: "status",
-								"data-testid": "agent-sidecar-inject-verify",
+								"data-testid": "agents-sidecar-inject-verify",
 								children: t$1(verifyCopy)
 							}) : null,
 							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
@@ -9056,7 +9056,7 @@ window.__ModuleLoader__.load({
 										onClick: () => {
 											props.onOpenTarget?.(jumpTarget);
 										},
-										"data-testid": "agent-sidecar-inject-open-target",
+										"data-testid": "agents-sidecar-inject-open-target",
 										children: t$1("inject.openTarget")
 									}) : null,
 									!isKimiResult && isDeliveredResult(result) && props.onObserve !== void 0 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -9064,7 +9064,7 @@ window.__ModuleLoader__.load({
 										size: "sm",
 										variant: "primary",
 										onClick: props.onObserve,
-										"data-testid": "agent-sidecar-inject-observe",
+										"data-testid": "agents-sidecar-inject-observe",
 										children: t$1("inject.observeListen")
 									}) : null,
 									actions.canReprepare ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -9898,20 +9898,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/detail-view.module.css.mjs
 		const css$3 = ".T5Nmwa_switcherBar{align-items:center;gap:4px;padding:8px 12px 0;display:flex}.T5Nmwa_switcherButton{color:var(--dsw-alias-label-secondary);cursor:pointer;background:0 0;border:1px solid #0000;border-radius:999px;padding:3px 10px;font-size:12px}.T5Nmwa_switcherButton:hover{background:var(--dsw-alias-bg-layer-1)}.T5Nmwa_switcherButton[data-active=true]{color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-2);border-color:var(--dsw-alias-border-l2);font-weight:600}.T5Nmwa_detailRoot{box-sizing:border-box;flex-direction:column;gap:12px;min-width:0;height:100%;padding:12px;display:flex;overflow-y:auto}.T5Nmwa_actionsRow{flex-wrap:wrap;align-items:center;gap:8px;display:flex}.T5Nmwa_analysisDisabledReason{max-width:360px;color:var(--agsc-fg-secondary);font-size:11px;line-height:16px}.T5Nmwa_toolsSection{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);flex-direction:column;gap:16px;padding:8px 12px;display:flex}.T5Nmwa_toolsToggle{align-self:flex-start}.T5Nmwa_toolsToggleGlyph{color:var(--agsc-fg-dimmed);flex:none;font-size:10px}.T5Nmwa_injectDialog{gap:0;width:min(560px,100%);max-height:min(85vh,720px);padding:0;overflow:auto}.T5Nmwa_injectDialog>[data-dsh-part=inject-panel]{border-radius:inherit;background:0 0;border:0;width:100%;max-width:none}";
-		const tagId$3 = "@shendeguize/dsh-agent-sidecar/src/client/detail-view.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$3, css$3);
+		const tagId$3 = "dsh-agents-sidecar/src/client/detail-view.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$3, css$3);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$3) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$3) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$3;
 				created = true;
 			}
 			tag.textContent = css$3;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var detail_view_module_css_default = {
@@ -9938,7 +9938,7 @@ window.__ModuleLoader__.load({
 		*
 		* @module
 		*/
-		const ANALYSIS_DISABLED_REASON_ID = "agent-sidecar-analysis-disabled-reason";
+		const ANALYSIS_DISABLED_REASON_ID = "agents-sidecar-analysis-disabled-reason";
 		/**
 		* Coalesce target-verdict refreshes driven by the existing detail/SSE
 		* notification stream. There is deliberately no timer or independent poll.
@@ -9998,12 +9998,12 @@ window.__ModuleLoader__.load({
 				onClick: () => {
 					requestInjectOpen(reason, props.onOpen);
 				},
-				"data-testid": "agent-sidecar-detail-inject",
+				"data-testid": "agents-sidecar-detail-inject",
 				children: t("detail.actions.inject")
 			}), reason !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 				id: reasonId,
 				className: detail_view_module_css_default["analysisDisabledReason"],
-				"data-testid": "agent-sidecar-detail-inject-reason",
+				"data-testid": "agents-sidecar-detail-inject-reason",
 				children: hint
 			})] });
 		}
@@ -10063,13 +10063,13 @@ window.__ModuleLoader__.load({
 						setOutcome(null);
 						setConfirming(true);
 					},
-					"data-testid": "agent-sidecar-detail-dispose",
+					"data-testid": "agents-sidecar-detail-dispose",
 					children: t("detail.actions.dispose")
 				}),
 				failureKey !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 					className: detail_view_module_css_default["analysisDisabledReason"],
 					role: "alert",
-					"data-testid": "agent-sidecar-detail-dispose-outcome",
+					"data-testid": "agents-sidecar-detail-dispose-outcome",
 					children: t(failureKey)
 				}),
 				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Modal, {
@@ -10081,7 +10081,7 @@ window.__ModuleLoader__.load({
 					closeLabel: t("detail.dispose.cancel"),
 					description: t("detail.dispose.explain"),
 					children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
-						"data-testid": "agent-sidecar-detail-dispose-confirm",
+						"data-testid": "agents-sidecar-detail-dispose-confirm",
 						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
 							size: "sm",
 							variant: "ghost",
@@ -10095,7 +10095,7 @@ window.__ModuleLoader__.load({
 							variant: "primary",
 							disabled: busy,
 							onClick: run,
-							"data-testid": "agent-sidecar-detail-dispose-confirm-run",
+							"data-testid": "agents-sidecar-detail-dispose-confirm-run",
 							children: busy ? t("detail.dispose.disposing") : t("detail.dispose.confirm")
 						})]
 					})
@@ -10125,15 +10125,15 @@ window.__ModuleLoader__.load({
 					className: detail_view_module_css_default["toolsSection"],
 					role: health.kind === "partial" ? "status" : "alert",
 					"data-kind": health.kind,
-					"data-testid": "agent-sidecar-timeline-degraded",
+					"data-testid": "agents-sidecar-timeline-degraded",
 					children: [
 						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t(messageKey) }),
 						health.summary !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-							"data-testid": "agent-sidecar-timeline-source-summary",
+							"data-testid": "agents-sidecar-timeline-source-summary",
 							children: t("detail.sources.healthSummary", { ...health.summary })
 						}),
 						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
-							"data-testid": "agent-sidecar-timeline-degraded-hint",
+							"data-testid": "agents-sidecar-timeline-degraded-hint",
 							children: daemonDown ? t(props.daemonState === "defer" ? "detail.timeline.daemonDeferHint" : "detail.timeline.daemonDownHint") : t("detail.timeline.degradedRetry")
 						}),
 						blocksHealthyEmpty && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", { children: [props.onClose !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -10149,7 +10149,7 @@ window.__ModuleLoader__.load({
 							disabled: props.refreshing,
 							title: t("detail.header.refreshHint"),
 							onClick: props.onRefresh,
-							"data-testid": "agent-sidecar-timeline-retry",
+							"data-testid": "agents-sidecar-timeline-retry",
 							children: props.refreshing ? t("detail.header.refreshing") : t("detail.header.refresh")
 						})] })
 					]
@@ -10157,7 +10157,7 @@ window.__ModuleLoader__.load({
 				volatileOnly && !blocksHealthyEmpty && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: detail_view_module_css_default["toolsSection"],
 					role: "status",
-					"data-testid": "agent-sidecar-timeline-volatile",
+					"data-testid": "agents-sidecar-timeline-volatile",
 					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("detail.timeline.volatileOnly") }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("detail.timeline.volatileOnlyHint") })]
 				}),
 				!blocksHealthyEmpty && props.children
@@ -10203,7 +10203,7 @@ window.__ModuleLoader__.load({
 				focusFrameRef.current = window.requestAnimationFrame(() => {
 					focusFrameRef.current = null;
 					if (detailRootRef.current !== root || !root.isConnected) return;
-					const back = root.querySelector("[data-testid=\"agent-sidecar-detail\"] header button:not([disabled])");
+					const back = root.querySelector("[data-testid=\"agents-sidecar-detail\"] header button:not([disabled])");
 					const heading = root.querySelector("h1,[role=\"heading\"]");
 					(back ?? heading)?.focus({ preventScroll: true });
 				});
@@ -10244,7 +10244,7 @@ window.__ModuleLoader__.load({
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				...surfaceProps("detail", detail_view_module_css_default["detailRoot"]),
 				ref: detailRootRef,
-				"data-testid": "agent-sidecar-detail-view",
+				"data-testid": "agents-sidecar-detail-view",
 				children: [
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: detail_view_module_css_default["actionsRow"],
@@ -10268,7 +10268,7 @@ window.__ModuleLoader__.load({
 										targetId: sessionId
 									});
 								},
-								"data-testid": "agent-sidecar-detail-analyze",
+								"data-testid": "agents-sidecar-detail-analyze",
 								children: t("detail.actions.analyze")
 							}),
 							!analysisEnabled && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
@@ -10289,7 +10289,7 @@ window.__ModuleLoader__.load({
 					}),
 					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						...surfaceProps("dsh-tools", detail_view_module_css_default["toolsSection"]),
-						"data-testid": "agent-sidecar-detail-tools",
+						"data-testid": "agents-sidecar-detail-tools",
 						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_deepseek_ai_dsh_client_ui_primitives.Button, {
 							size: "sm",
 							variant: "ghost",
@@ -10491,20 +10491,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/navigation/center-overlay.module.css.mjs
 		const css$2 = ".nkYc2a_dialog{border-color:var(--agsc-border-strong);border-radius:var(--agsc-radius-card);background:var(--agsc-bg);width:min(1180px,100vw - 48px);height:min(860px,100vh - 48px);max-height:calc(100vh - 48px);box-shadow:var(--agsc-shadow-card);gap:0;padding:0}.nkYc2a_content{height:100%;min-height:0;overflow:hidden}.nkYc2a_content>:last-child{flex:1;min-height:0;margin-top:0;padding:0;overflow:hidden}.nkYc2a_surface{min-width:0;height:100%;min-height:0;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;display:flex;overflow:hidden}.nkYc2a_surface>:last-child{flex:1;height:auto;min-height:0}@media (width<=720px){.nkYc2a_dialog{border-radius:var(--agsc-radius-control);width:calc(100vw - 16px);height:calc(100dvh - 16px);max-height:calc(100dvh - 16px)}}";
-		const tagId$2 = "@shendeguize/dsh-agent-sidecar/src/client/navigation/center-overlay.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$2, css$2);
+		const tagId$2 = "dsh-agents-sidecar/src/client/navigation/center-overlay.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$2, css$2);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$2) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$2) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$2;
 				created = true;
 			}
 			tag.textContent = css$2;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var center_overlay_module_css_default = {
@@ -10515,7 +10515,7 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region src/client/navigation/modal-isolation.ts
 		const DIALOG_SELECTOR$1 = "[role=\"dialog\"][aria-modal=\"true\"]";
-		const MODAL_ISOLATION_STATE = Symbol.for("@shendeguize/dsh-agent-sidecar/modal-isolation-state");
+		const MODAL_ISOLATION_STATE = Symbol.for("dsh-agents-sidecar/modal-isolation-state");
 		const FOCUSABLE_SELECTOR = [
 			"a[href],area[href],button:not([disabled])",
 			"input:not([disabled]):not([type=\"hidden\"]),select:not([disabled])",
@@ -10881,7 +10881,7 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region src/client/navigation/modal-surface-anchor.ts
 		const DIALOG_SELECTOR = "[role=\"dialog\"][aria-modal=\"true\"]";
-		const MODAL_SURFACE_OWNER = Symbol.for("@shendeguize/dsh-agent-sidecar/modal-surface-anchor-owner");
+		const MODAL_SURFACE_OWNER = Symbol.for("dsh-agents-sidecar/modal-surface-anchor-owner");
 		/** Use a pre-paint effect in the browser without warning during SSR. */
 		function selectModalSurfaceAnchorEffect(hasDocument) {
 			return hasDocument ? react.useLayoutEffect : react.useEffect;
@@ -10948,7 +10948,7 @@ window.__ModuleLoader__.load({
 				backoffLimit: 5
 			},
 			sidecar: {
-				command: ["agent-sidecar"],
+				command: ["agents-sidecar"],
 				runtimeDir: ""
 			},
 			stream: {
@@ -11091,8 +11091,8 @@ window.__ModuleLoader__.load({
 		* It asks Board/ProjectView to take their existing missing-card fallback.
 		*/
 		const FALLBACK_FOCUS_TARGET = Object.freeze({
-			agent: Symbol("agent-sidecar-fallback-agent"),
-			sessionId: Symbol("agent-sidecar-fallback-session")
+			agent: Symbol("agents-sidecar-fallback-agent"),
+			sessionId: Symbol("agents-sidecar-fallback-session")
 		});
 		/** Clamp a remembered offset to the currently rendered scroll range. */
 		function clampScrollTop(requested, scrollHeight, clientHeight) {
@@ -11149,7 +11149,7 @@ window.__ModuleLoader__.load({
 		function AnalysisMainView(props) {
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("main", {
 				className: analysis_module_css_default["view"],
-				"data-testid": "agent-sidecar-analysis-view",
+				"data-testid": "agents-sidecar-analysis-view",
 				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
 					className: analysis_module_css_default["viewHead"],
 					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
@@ -11157,7 +11157,7 @@ window.__ModuleLoader__.load({
 						size: "sm",
 						variant: "outline",
 						onClick: props.onBack,
-						"data-testid": "agent-sidecar-analysis-back",
+						"data-testid": "agents-sidecar-analysis-back",
 						children: t("analysis.back")
 					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
 						className: analysis_module_css_default["viewTitle"],
@@ -11349,7 +11349,7 @@ window.__ModuleLoader__.load({
 				}, `${detail.returnRequest.focusTarget?.agent ?? "internal"}:${detail.id}`);
 				return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: detail_view_module_css_default["switcherBar"],
-					"data-testid": "agent-sidecar-view-switcher",
+					"data-testid": "agents-sidecar-view-switcher",
 					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
 						type: "button",
 						className: detail_view_module_css_default["switcherButton"],
@@ -11500,7 +11500,7 @@ window.__ModuleLoader__.load({
 							if (after !== void 0 && cardValuesEqual(configToValues(after), target)) setStaged({});
 							else setSaveFailed(true);
 						} catch (err) {
-							console.error("agent-sidecar: settings save failed", err);
+							console.error("dsh-agents-sidecar: settings save failed", err);
 							setSaveFailed(true);
 						} finally {
 							setSaving(false);
@@ -11572,20 +11572,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/navigation/sidebar-entry.module.css.mjs
 		const css$1 = ".D5hMGG_entry{box-sizing:border-box;border-radius:var(--agsc-radius-control);width:100%;height:36px;color:var(--agsc-fg-secondary);cursor:pointer;font:inherit;text-align:left;white-space:nowrap;background:0 0;border:0;align-items:center;gap:8px;padding:0 10px;font-size:13px;transition:background-color .12s,color .12s,transform .12s;display:flex}.D5hMGG_entry:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--agsc-fg)}.D5hMGG_entry:active{background:var(--dsw-alias-interactive-bg-active);color:var(--agsc-fg);transform:translateY(1px)}.D5hMGG_entry:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:2px}.D5hMGG_entryIcon{flex:none;justify-content:center;align-items:center;width:24px;height:24px;display:inline-flex}.D5hMGG_entryIcon svg{width:16px;height:16px;display:block}.D5hMGG_entryLabel{text-overflow:ellipsis;overflow:hidden}:where([data-dsh-frame][data-sidebar-collapsed],[data-dsh-frame][data-sidebar-collapsed=true],[data-dsh-frame][class*=sidebarCollapsed],[data-dsh-frame][class*=sidebarNarrow]) .D5hMGG_entry{border-radius:50%;justify-content:center;width:36px;margin:0 auto 12px;padding:0}@media (width<=640px){.D5hMGG_entry{border-radius:50%;justify-content:center;width:36px;margin:0 auto 12px;padding:0}}:where([data-dsh-frame][data-sidebar-collapsed],[data-dsh-frame][data-sidebar-collapsed=true],[data-dsh-frame][class*=sidebarCollapsed],[data-dsh-frame][class*=sidebarNarrow]) .D5hMGG_entryLabel{display:none}@media (width<=640px){.D5hMGG_entryLabel{display:none}}@media (prefers-reduced-motion:reduce){.D5hMGG_entry{transition:none}}";
-		const tagId$1 = "@shendeguize/dsh-agent-sidecar/src/client/navigation/sidebar-entry.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId$1, css$1);
+		const tagId$1 = "dsh-agents-sidecar/src/client/navigation/sidebar-entry.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$1, css$1);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$1) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId$1) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId$1;
 				created = true;
 			}
 			tag.textContent = css$1;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var sidebar_entry_module_css_default = {
@@ -11595,13 +11595,13 @@ window.__ModuleLoader__.load({
 		};
 		//#endregion
 		//#region src/client/navigation/sidebar-entry.ts
-		const SIDEBAR_ENTRY_SELECTOR = "[data-agent-sidecar-sidebar-entry]";
-		const ENTRY_ATTRIBUTE = "data-agent-sidecar-sidebar-entry";
-		const LABEL_ATTRIBUTE = "data-agent-sidecar-sidebar-entry-label";
+		const SIDEBAR_ENTRY_SELECTOR = "[data-agents-sidecar-sidebar-entry]";
+		const ENTRY_ATTRIBUTE = "data-agents-sidecar-sidebar-entry";
+		const LABEL_ATTRIBUTE = "data-agents-sidecar-sidebar-entry-label";
 		const SVG_NS = "http://www.w3.org/2000/svg";
-		const ENTRY_BINDING = Symbol.for("@shendeguize/dsh-agent-sidecar/sidebar-entry-binding");
-		const ENTRY_BRAND = Symbol.for("@shendeguize/dsh-agent-sidecar/sidebar-entry-brand");
-		const ENTRY_DISPATCHER = Symbol.for("@shendeguize/dsh-agent-sidecar/sidebar-entry-dispatcher");
+		const ENTRY_BINDING = Symbol.for("dsh-agents-sidecar/sidebar-entry-binding");
+		const ENTRY_BRAND = Symbol.for("dsh-agents-sidecar/sidebar-entry-brand");
+		const ENTRY_DISPATCHER = Symbol.for("dsh-agents-sidecar/sidebar-entry-dispatcher");
 		const warnedForeignEntries = /* @__PURE__ */ new WeakSet();
 		function applyCopy(target, copy) {
 			target.label.textContent = copy.label;
@@ -11628,7 +11628,7 @@ window.__ModuleLoader__.load({
 			const record = candidate;
 			if (record[ENTRY_BRAND] === true || record[ENTRY_BINDING] !== void 0) return true;
 			const element = candidate;
-			return element.tagName === "BUTTON" && element.getAttribute?.("data-dsh-plugin") === "agent-sidecar" && element.getAttribute?.("data-dsh-part") === "sidebar-entry" && element.querySelector?.(`[${LABEL_ATTRIBUTE}]`) != null;
+			return element.tagName === "BUTTON" && element.getAttribute?.("data-dsh-plugin") === "dsh-agents-sidecar" && element.getAttribute?.("data-dsh-part") === "sidebar-entry" && element.querySelector?.(`[${LABEL_ATTRIBUTE}]`) != null;
 		}
 		function brandSidebarEntry(button) {
 			button[ENTRY_BRAND] = true;
@@ -11742,7 +11742,7 @@ window.__ModuleLoader__.load({
 			};
 		}
 		function rejectLegacyEntry() {
-			console.warn("[agent-sidecar] Sidebar legacy entry cannot be safely replaced; leaving it untouched.");
+			console.warn("[dsh-agents-sidecar] Sidebar legacy entry cannot be safely replaced; leaving it untouched.");
 			return null;
 		}
 		function replaceLegacyEntry(button) {
@@ -11794,7 +11794,7 @@ window.__ModuleLoader__.load({
 			if (candidate !== null && !isOwnedSidebarEntry(candidate)) {
 				if (!warnedForeignEntries.has(candidate)) {
 					warnedForeignEntries.add(candidate);
-					console.warn("[agent-sidecar] Sidebar entry collision: refusing to modify a foreign [data-agent-sidecar-sidebar-entry] node.");
+					console.warn("[dsh-agents-sidecar] Sidebar entry collision: refusing to modify a foreign [data-agents-sidecar-sidebar-entry] node.");
 				}
 				return () => {};
 			}
@@ -11830,20 +11830,20 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region \0dsh-css:src/client/sidebar/sidebar-tab.module.css.mjs
 		const css = "._6whfGW_root{box-sizing:border-box;min-width:0;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;gap:8px;padding:10px 12px;font-size:12px;display:flex;overflow-y:auto}._6whfGW_header{align-items:center;min-width:0;display:flex}._6whfGW_counts{font-variant-numeric:tabular-nums;max-width:100%;color:var(--agsc-fg-secondary)}._6whfGW_counts>span{color:inherit}._6whfGW_sectionTitle{color:var(--agsc-fg-secondary);margin:0;font-size:11px;font-weight:600;line-height:16px}._6whfGW_sessionList{flex-direction:column;gap:2px;min-width:0;margin:0;padding:0;list-style:none;display:flex}._6whfGW_sessionItem{min-width:0;list-style:none}._6whfGW_sessionButton{width:100%;min-width:0;height:auto;color:var(--agsc-fg);text-align:left;justify-content:flex-start;align-items:center;gap:6px;padding:4px 6px;display:flex}._6whfGW_glyph{color:var(--agsc-accent);flex:none}._6whfGW_sessionTitle{min-width:0;color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;flex:1;overflow:hidden}._6whfGW_sessionMeta{color:var(--agsc-fg-dimmed);white-space:nowrap;flex:none;font-size:11px}._6whfGW_detail{overflow-wrap:anywhere;color:var(--agsc-fg-secondary);margin:0 6px 4px 20px;font-size:11px;line-height:16px}._6whfGW_muted{color:var(--agsc-fg-dimmed);margin:0}._6whfGW_hint{color:var(--agsc-fg-dimmed);margin:0;font-size:11px;line-height:16px}._6whfGW_icon{color:var(--agsc-fg-secondary);flex:none;display:block}._6whfGW_icon path,._6whfGW_icon circle{fill:currentColor}";
-		const tagId = "@shendeguize/dsh-agent-sidecar/src/client/sidebar/sidebar-tab.module.css";
-		globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest")].set(tagId, css);
+		const tagId = "dsh-agents-sidecar/src/client/sidebar/sidebar-tab.module.css";
+		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId, css);
 		if (typeof document !== "undefined") {
-			const selector = "style[data-plugin=\"@shendeguize/dsh-agent-sidecar\"][data-plugin-css=" + JSON.stringify(tagId) + "]";
+			const selector = "style[data-plugin=\"dsh-agents-sidecar\"][data-plugin-css=" + JSON.stringify(tagId) + "]";
 			let tag = document.querySelector(selector);
 			let created = false;
 			if (tag === null) {
 				tag = document.createElement("style");
-				tag.dataset.plugin = "@shendeguize/dsh-agent-sidecar";
+				tag.dataset.plugin = "dsh-agents-sidecar";
 				tag.dataset.pluginCss = tagId;
 				created = true;
 			}
 			tag.textContent = css;
-			tag[Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner")] = globalThis[Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation")];
+			tag[Symbol.for("dsh-agents-sidecar/style-owner")] = globalThis[Symbol.for("dsh-agents-sidecar/style-generation")];
 			if (created) document.head.appendChild(tag);
 		}
 		var sidebar_tab_module_css_default = {
@@ -11910,7 +11910,7 @@ window.__ModuleLoader__.load({
 					variant: "ghost",
 					className: sidebar_tab_module_css_default["sessionButton"],
 					onClick: props.onToggle,
-					"data-testid": "agent-sidecar-sidebar-session",
+					"data-testid": "agents-sidecar-sidebar-session",
 					"data-session-id": session.sessionId,
 					"data-status": status,
 					"aria-expanded": expanded,
@@ -11940,7 +11940,7 @@ window.__ModuleLoader__.load({
 					className: sidebar_tab_module_css_default["detail"],
 					role: "region",
 					"aria-label": title,
-					"data-testid": "agent-sidecar-sidebar-detail",
+					"data-testid": "agents-sidecar-sidebar-detail",
 					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: projectDisplayName(session.project) }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: lastEvent })]
 				})]
 			});
@@ -11949,7 +11949,7 @@ window.__ModuleLoader__.load({
 		function SidebarTab({ vm, visible, nowMs = Date.now() }) {
 			useActiveLocale();
 			const [expandedId, setExpandedId] = (0, react.useState)(null);
-			const recentTitleId = "agent-sidecar-sidebar-recent-title";
+			const recentTitleId = "agents-sidecar-sidebar-recent-title";
 			let body;
 			if (!vm.hasSnapshot) body = /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
 				className: sidebar_tab_module_css_default["muted"],
@@ -11966,7 +11966,7 @@ window.__ModuleLoader__.load({
 					session,
 					nowMs,
 					expanded: expandedId === session.sessionId,
-					detailId: `agent-sidecar-sidebar-detail-${index}`,
+					detailId: `agents-sidecar-sidebar-detail-${index}`,
 					onToggle: () => {
 						setExpandedId((previous) => previous === session.sessionId ? null : session.sessionId);
 					}
@@ -11974,7 +11974,7 @@ window.__ModuleLoader__.load({
 			});
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
 				...surfaceProps("sidebar-tab", sidebar_tab_module_css_default["root"]),
-				"data-testid": "agent-sidecar-sidebar-tab",
+				"data-testid": "agents-sidecar-sidebar-tab",
 				"data-visible": visible,
 				"aria-label": t("sidebar.tabTitle"),
 				"aria-hidden": !visible,
@@ -11984,7 +11984,7 @@ window.__ModuleLoader__.load({
 						title: vm.connectionTitle,
 						children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(StaticPill, {
 							className: sidebar_tab_module_css_default["counts"],
-							"data-testid": "agent-sidecar-sidebar-counts",
+							"data-testid": "agents-sidecar-sidebar-counts",
 							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.StateDot, {
 								state: CONNECTION_DOT_STATE[vm.connection],
 								size: 8
@@ -12043,7 +12043,7 @@ window.__ModuleLoader__.load({
 		* controller remains untouched.
 		*/
 		/** Registered tab type id (design §5.2 names it verbatim). */
-		const SIDEBAR_TAB_ID = "agent-sidecar:monitor";
+		const SIDEBAR_TAB_ID = "dsh-agents-sidecar:monitor";
 		/**
 		* Duck-type a candidate service value: any object exposing a callable
 		* `registerTab` qualifies (the registry contract is stable since
@@ -12141,12 +12141,12 @@ window.__ModuleLoader__.load({
 		*/
 		function mountSidebarTab(ctx, controller) {
 			const mount = ctx;
-			if (probeBetterSidebar(mount.get("betterSidebar")) === null) console.debug("agent-sidecar: better-sidebar not detected; the optional sidebar tab stays idle");
+			if (probeBetterSidebar(mount.get("betterSidebar")) === null) console.debug("dsh-agents-sidecar: better-sidebar not detected; the optional sidebar tab stays idle");
 			mount.inject(["betterSidebar"], (injected) => {
 				const bctx = injected;
 				const service = probeBetterSidebar(bctx.get("betterSidebar"));
 				if (service === null) {
-					console.debug("agent-sidecar: betterSidebar service lacks registerTab; skipping tab");
+					console.debug("dsh-agents-sidecar: betterSidebar service lacks registerTab; skipping tab");
 					return;
 				}
 				const component = createSidebarTabComponent(controller);
@@ -12160,12 +12160,12 @@ window.__ModuleLoader__.load({
 				}), {
 					isCollision: isRegistrationCollision,
 					onError: (error) => {
-						console.error("agent-sidecar: better-sidebar tab registration failed", error);
+						console.error("dsh-agents-sidecar: better-sidebar tab registration failed", error);
 					},
 					onTimeout: () => {
-						console.error("agent-sidecar: better-sidebar tab handoff timed out");
+						console.error("dsh-agents-sidecar: better-sidebar tab handoff timed out");
 					}
-				}), "agent-sidecar: better-sidebar tab");
+				}), "dsh-agents-sidecar: better-sidebar tab");
 			});
 		}
 		//#endregion
@@ -12719,15 +12719,15 @@ window.__ModuleLoader__.load({
 		}
 		//#endregion
 		//#region src/client/index.ts
-		const name = "agent-sidecar";
+		const name = "dsh-agents-sidecar";
 		/** The slot registry is the only hard dependency; settingsScope and locale are lazy. */
 		const inject = ["slots"];
 		/** Entry id (list slots) and cell key (settings keyed slot) in one. */
-		const ENTRY_ID = "agent-sidecar";
+		const ENTRY_ID = "dsh-agents-sidecar";
 		/** Distinct list-seat id for the frame-wide Agent Center surface. */
-		const CENTER_ENTRY_ID = "agent-sidecar-center";
+		const CENTER_ENTRY_ID = "dsh-agents-sidecar-center";
 		/** Host-side settings namespace (host half registers it via ctx.settings). */
-		const SETTINGS_NAMESPACE = "agent-sidecar";
+		const SETTINGS_NAMESPACE = "dsh-agents-sidecar";
 		/**
 		* Apply-guard: whether the slot ledger already holds this plugin's entry
 		* (list slots match their seat-specific `id`, the keyed settings slot by
@@ -12746,12 +12746,12 @@ window.__ModuleLoader__.load({
 		function mountHostLocale(ctx) {
 			ctx.inject(["locale"], (injected) => {
 				const lctx = injected;
-				lctx.effect(() => attachHostLocale(lctx), "agent-sidecar: host locale bridge");
+				lctx.effect(() => attachHostLocale(lctx), "dsh-agents-sidecar: host locale bridge");
 			});
 		}
-		const STYLE_OWNER = Symbol.for("@shendeguize/dsh-agent-sidecar/style-owner");
-		const STYLE_MANIFEST = Symbol.for("@shendeguize/dsh-agent-sidecar/style-manifest");
-		const STYLE_GENERATION = Symbol.for("@shendeguize/dsh-agent-sidecar/style-generation");
+		const STYLE_OWNER = Symbol.for("dsh-agents-sidecar/style-owner");
+		const STYLE_MANIFEST = Symbol.for("dsh-agents-sidecar/style-manifest");
+		const STYLE_GENERATION = Symbol.for("dsh-agents-sidecar/style-generation");
 		/**
 		* A fallback only for a sequential re-apply of this exact materialization.
 		* A new intro installs a new generation object, so it can never inherit an
@@ -12858,7 +12858,7 @@ window.__ModuleLoader__.load({
 				try {
 					controller.start();
 				} catch (err) {
-					console.error("agent-sidecar: data stream start failed", err);
+					console.error("dsh-agents-sidecar: data stream start failed", err);
 				}
 				if (typeof document === "undefined") return () => {
 					controller.stop();
@@ -12871,8 +12871,8 @@ window.__ModuleLoader__.load({
 					document.removeEventListener("visibilitychange", onVisibility);
 					controller.stop();
 				};
-			}, "agent-sidecar: client data feed");
-			ctx.effect(keepStylesAlive, "agent-sidecar: injected styles");
+			}, "dsh-agents-sidecar: client data feed");
+			ctx.effect(keepStylesAlive, "dsh-agents-sidecar: injected styles");
 			try {
 				const SidecarCenterOverlay = createCenterOverlay(controller, uiIntegration, navigation);
 				ctx.slots.inject("shell.overlay", () => acquireWithHandoff(() => hasOwnEntry(ctx, "shell.overlay") ? void 0 : ctx.slots.register({
@@ -12882,19 +12882,19 @@ window.__ModuleLoader__.load({
 				}, SidecarCenterOverlay), {
 					isCollision: isRegistrationCollision,
 					onError: (error) => {
-						console.error("agent-sidecar: center overlay registration failed", error);
+						console.error("dsh-agents-sidecar: center overlay registration failed", error);
 					},
 					onTimeout: () => {
-						console.error("agent-sidecar: center overlay handoff timed out");
+						console.error("dsh-agents-sidecar: center overlay handoff timed out");
 					}
 				}));
 			} catch (err) {
-				console.error("agent-sidecar: center overlay mount failed", err);
+				console.error("dsh-agents-sidecar: center overlay mount failed", err);
 			}
 			try {
-				ctx.effect(() => mountSidebarEntry(openAgentCenter, sidebarEntryCopy), "agent-sidecar: sidebar entry");
+				ctx.effect(() => mountSidebarEntry(openAgentCenter, sidebarEntryCopy), "dsh-agents-sidecar: sidebar entry");
 			} catch (err) {
-				console.error("agent-sidecar: sidebar entry mount failed", err);
+				console.error("dsh-agents-sidecar: sidebar entry mount failed", err);
 			}
 			try {
 				const SidecarBoardTab = createBoardTab(controller, uiIntegration);
@@ -12906,14 +12906,14 @@ window.__ModuleLoader__.load({
 				}, SidecarBoardTab), {
 					isCollision: isRegistrationCollision,
 					onError: (error) => {
-						console.error("agent-sidecar: board tab registration failed", error);
+						console.error("dsh-agents-sidecar: board tab registration failed", error);
 					},
 					onTimeout: () => {
-						console.error("agent-sidecar: board tab handoff timed out");
+						console.error("dsh-agents-sidecar: board tab handoff timed out");
 					}
 				}));
 			} catch (err) {
-				console.error("agent-sidecar: board tab mount failed", err);
+				console.error("dsh-agents-sidecar: board tab mount failed", err);
 			}
 			try {
 				const SidecarFooterWidget = createFooterWidget(controller, openAgentCenter);
@@ -12924,14 +12924,14 @@ window.__ModuleLoader__.load({
 				}, SidecarFooterWidget), {
 					isCollision: isRegistrationCollision,
 					onError: (error) => {
-						console.error("agent-sidecar: footer widget registration failed", error);
+						console.error("dsh-agents-sidecar: footer widget registration failed", error);
 					},
 					onTimeout: () => {
-						console.error("agent-sidecar: footer widget handoff timed out");
+						console.error("dsh-agents-sidecar: footer widget handoff timed out");
 					}
 				}));
 			} catch (err) {
-				console.error("agent-sidecar: footer widget mount failed", err);
+				console.error("dsh-agents-sidecar: footer widget mount failed", err);
 			}
 			try {
 				ctx.inject(["settingsScope"], (injected) => {
@@ -12944,7 +12944,7 @@ window.__ModuleLoader__.load({
 							if (value?.inject !== void 0) injectPrefs.defaultMode = value.inject.defaultMode;
 							if (value?.analysis !== void 0) analysisPrefs.enabled = value.analysis.enabled;
 						};
-						sctx.effect(() => scope.subscribe(adoptDefaults), "agent-sidecar: settings→filter defaults");
+						sctx.effect(() => scope.subscribe(adoptDefaults), "dsh-agents-sidecar: settings→filter defaults");
 						adoptDefaults();
 						const SidecarSettingsCardEntry = createSettingsCardEntry(controller, scope);
 						sctx.slots.inject("settings.plugin.item", () => acquireWithHandoff(() => hasOwnEntry(sctx, "settings.plugin.item") ? void 0 : sctx.slots.register({
@@ -12953,28 +12953,28 @@ window.__ModuleLoader__.load({
 						}, SidecarSettingsCardEntry), {
 							isCollision: isRegistrationCollision,
 							onError: (error) => {
-								console.error("agent-sidecar: settings card registration failed", error);
+								console.error("dsh-agents-sidecar: settings card registration failed", error);
 							},
 							onTimeout: () => {
-								console.error("agent-sidecar: settings card handoff timed out");
+								console.error("dsh-agents-sidecar: settings card handoff timed out");
 							}
 						}));
 					} catch (err) {
-						console.error("agent-sidecar: settings card mount failed", err);
+						console.error("dsh-agents-sidecar: settings card mount failed", err);
 					}
 				});
 			} catch (err) {
-				console.error("agent-sidecar: settings scope injection failed", err);
+				console.error("dsh-agents-sidecar: settings scope injection failed", err);
 			}
 			try {
 				registerSidecarCommand(ctx, { openCenter: openAgentCenter });
 			} catch (err) {
-				console.error("agent-sidecar: /sidecar command mount failed", err);
+				console.error("dsh-agents-sidecar: /sidecar command mount failed", err);
 			}
 			try {
 				mountSidebarTab(ctx, controller);
 			} catch (err) {
-				console.error("agent-sidecar: better-sidebar tab mount failed", err);
+				console.error("dsh-agents-sidecar: better-sidebar tab mount failed", err);
 			}
 		}
 		//#endregion

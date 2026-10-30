@@ -89,7 +89,7 @@ function createLog(): { entries: LogEntry[]; log: (level: 'debug' | 'info' | 'wa
 // ---------------------------------------------------------------------------
 
 describe('registerSidecarSkillProvider', () => {
-  it('registers one provider whose catalog is exactly the agent-sidecar candidate', async () => {
+  it('registers one provider whose catalog is exactly the agents-sidecar candidate', async () => {
     const skills = createFakeSkills()
     const { log } = createLog()
 
@@ -138,7 +138,7 @@ describe('registerSidecarSkillProvider', () => {
     // protected Kimi ACP resume, in-process DSH injection, direct-send
     // compatibility boundaries, and the S5/S6 wording preserved.
     const content = definition!.content
-    expect(content).toContain('agent-sidecar status --json')
+    expect(content).toContain('agents-sidecar status --json')
     expect(content).toContain('Sidecar')
     expect(content).toContain('Kimi Code 0.38.0')
     expect(content).toContain('protected ACP')

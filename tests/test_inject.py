@@ -1431,7 +1431,7 @@ class ExecutionTests(InjectionTestCase):
 
         with mock.patch.dict(
             os.environ,
-            {"AGENT_SIDECAR_RUNTIME_DIR": str(configured)},
+            {"AGENTS_SIDECAR_RUNTIME_DIR": str(configured)},
         ):
             result = execute_send(
                 plan,
@@ -1452,7 +1452,7 @@ class ExecutionTests(InjectionTestCase):
         home.mkdir(mode=0o700, exist_ok=True)
 
         with mock.patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("AGENT_SIDECAR_RUNTIME_DIR", None)
+            os.environ.pop("AGENTS_SIDECAR_RUNTIME_DIR", None)
             with mock.patch("sidecar.inject.Path.home", return_value=home):
                 result = execute_send(
                     plan,
@@ -1465,7 +1465,7 @@ class ExecutionTests(InjectionTestCase):
                 )
 
         self.assertEqual("completed", result.outcome)
-        lock_root = home / ".agent_sidecar" / "send-locks"
+        lock_root = home / ".agents_sidecar" / "send-locks"
         self.assertEqual(1, len(list(lock_root.iterdir())))
 
     def test_rejects_unsafe_lock_directories_and_symlink_file(self):
@@ -2819,7 +2819,7 @@ class KimiSendIntegrationTests(unittest.TestCase):
                             "protocolVersion": 1,
                             "clientCapabilities": {},
                             "clientInfo": {
-                                "name": "agent-sidecar",
+                                "name": "agents-sidecar",
                                 "version": "test",
                             },
                         },

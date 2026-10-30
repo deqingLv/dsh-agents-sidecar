@@ -83,7 +83,7 @@ DEFAULT_SEND_TIMEOUT_SECONDS = 300.0
 MAX_SEND_TIMEOUT_SECONDS = 900.0
 MAX_SESSION_ID_BYTES = 512
 SEND_LOCK_DIRECTORY = "send-locks"
-RUNTIME_ENV = "AGENT_SIDECAR_RUNTIME_DIR"
+RUNTIME_ENV = "AGENTS_SIDECAR_RUNTIME_DIR"
 KIMI_SUPPORTED_VERSION = "0.38.0"
 KIMI_SUPPORTED_VERSIONS = frozenset((KIMI_SUPPORTED_VERSION, "0.39.1"))
 KIMI_VERSION_TIMEOUT_SECONDS = 30.0
@@ -1116,7 +1116,7 @@ def _capture_macho_closure(
             (),
         )
     try:
-        analysis_root = Path(tempfile.mkdtemp(prefix="agent-sidecar-kimi-otool-"))
+        analysis_root = Path(tempfile.mkdtemp(prefix="agents-sidecar-kimi-otool-"))
     except OSError as error:
         raise SendError("unsupported_kimi") from error
     try:
@@ -1426,7 +1426,7 @@ def _bind_kimi_executable(
 ) -> _BoundKimiExecutable:
     snapshot: Optional[tempfile.TemporaryDirectory] = None
     try:
-        snapshot = tempfile.TemporaryDirectory(prefix="agent-sidecar-kimi-")
+        snapshot = tempfile.TemporaryDirectory(prefix="agents-sidecar-kimi-")
         os.chmod(snapshot.name, 0o700)
         root = Path(snapshot.name)
         details = root.lstat()
@@ -1588,7 +1588,7 @@ def _probe_bound_kimi_initialize(bound: _BoundKimiExecutable) -> None:
                     "protocolVersion": 1,
                     "clientCapabilities": {},
                     "clientInfo": {
-                        "name": "agent-sidecar",
+                        "name": "agents-sidecar",
                         "version": "runtime-probe",
                     },
                 },
@@ -1850,7 +1850,7 @@ def _runtime_root(
     configured: Union[str, os.PathLike]
     if runtime_dir is None:
         configured = os.environ.get(RUNTIME_ENV) or str(
-            Path.home() / ".agent_sidecar"
+            Path.home() / ".agents_sidecar"
         )
     else:
         configured = runtime_dir

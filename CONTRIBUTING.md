@@ -104,7 +104,7 @@ advance the stable `release` branch. The final `X.Y.Z` release advances
 ## dsh plugin development and releases
 
 The `plugin/` directory is an independent npm package,
-`@shendeguize/dsh-agent-sidecar`, and the only sanctioned exception to the
+`dsh-agents-sidecar`, and the only sanctioned exception to the
 standard-library runtime boundary: its Node toolchain — pnpm, vitest,
 TypeScript with the dual `tsconfig.host.json`/`tsconfig.client.json`
 programs, and the tsdown builds that produce the tracked prebuilt `lib/`

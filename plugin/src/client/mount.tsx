@@ -89,8 +89,8 @@ type AnalysisRoute = {
  * It asks Board/ProjectView to take their existing missing-card fallback.
  */
 const FALLBACK_FOCUS_TARGET = Object.freeze({
-  agent: Symbol('agent-sidecar-fallback-agent'),
-  sessionId: Symbol('agent-sidecar-fallback-session'),
+  agent: Symbol('agents-sidecar-fallback-agent'),
+  sessionId: Symbol('agents-sidecar-fallback-session'),
 }) as unknown as SessionFocusTarget
 
 interface AnimationFrameScheduler {
@@ -179,7 +179,7 @@ function AnalysisMainView(props: {
   return (
     <main
       className={analysisCss['view']}
-      data-testid="agent-sidecar-analysis-view"
+      data-testid="agents-sidecar-analysis-view"
     >
       <header className={analysisCss['viewHead']}>
         <Button
@@ -187,7 +187,7 @@ function AnalysisMainView(props: {
           size="sm"
           variant="outline"
           onClick={props.onBack}
-          data-testid="agent-sidecar-analysis-back"
+          data-testid="agents-sidecar-analysis-back"
         >
           {t('analysis.back')}
         </Button>
@@ -417,7 +417,7 @@ function createBoardContent(
 
     return (
       <>
-        <div className={css['switcherBar']} data-testid="agent-sidecar-view-switcher">
+        <div className={css['switcherBar']} data-testid="agents-sidecar-view-switcher">
           <button
             type="button"
             className={css['switcherButton']}
@@ -619,7 +619,7 @@ export function createSettingsCardEntry(
             setSaveFailed(true)
           }
         } catch (err) {
-          console.error('agent-sidecar: settings save failed', err)
+          console.error('dsh-agents-sidecar: settings save failed', err)
           setSaveFailed(true)
         } finally {
           setSaving(false)

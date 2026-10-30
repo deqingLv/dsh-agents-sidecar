@@ -47,7 +47,7 @@
  * stays on the two devDependency SDKs (cordis, schemastery) while the
  * service packages resolve at runtime from the dsh profile tree.
  *
- * @module @shendeguize/dsh-agent-sidecar
+ * @module dsh-agents-sidecar
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -104,7 +104,7 @@ import { DaemonSupervisor, type DaemonProcess, type LogLevel } from './superviso
 
 export { Config } from './config.ts'
 
-export const name = 'agent-sidecar'
+export const name = 'dsh-agents-sidecar'
 
 /** Required services; see the module doc for why `agents` is lazy instead. */
 export const inject = ['webServer', 'subprocess']
@@ -254,7 +254,7 @@ export type HostContext = Context & {
 /** `SOCKET_NAME` in sidecar/daemon.py. */
 const SOCKET_NAME = 'daemon.sock'
 /** `RUNTIME_ENV` / `LEGACY_RUNTIME_ENV` in sidecar/daemon.py. */
-const RUNTIME_ENV = 'AGENT_SIDECAR_RUNTIME_DIR'
+const RUNTIME_ENV = 'AGENTS_SIDECAR_RUNTIME_DIR'
 const LEGACY_RUNTIME_ENV = 'AGENT_SIDECAR_HOME'
 
 /** SIGTERM → grace → SIGKILL window for a hosted daemon (design §4.a: 5s). */
@@ -321,15 +321,15 @@ const SERVICE_PRESENT = /^service is (?:running|loaded|degraded)/m
 /**
  * Resolve the effective runtime directory the way sidecar/daemon.py
  * `default_runtime_dir()` does: explicit config wins, then the
- * AGENT_SIDECAR_RUNTIME_DIR / legacy AGENT_SIDECAR_HOME environment of the
- * dsh host process, then `~/.agent_sidecar`.
+ * AGENTS_SIDECAR_RUNTIME_DIR / legacy AGENT_SIDECAR_HOME environment of the
+ * dsh host process, then `~/.agents_sidecar`.
  */
 function resolveRuntimeDir(configured: string, env: NodeJS.ProcessEnv): string {
   const raw =
     configured.trim() !== ''
       ? configured.trim()
       : (env[RUNTIME_ENV] ?? env[LEGACY_RUNTIME_ENV] ?? '').trim()
-  if (raw === '') return join(homedir(), '.agent_sidecar')
+  if (raw === '') return join(homedir(), '.agents_sidecar')
   const expanded =
     raw === '~' ? homedir() : raw.startsWith('~/') ? join(homedir(), raw.slice(2)) : raw
   return isAbsolute(expanded) ? expanded : resolve(expanded)
@@ -447,7 +447,7 @@ export function apply(ctx: HostContext, config: Config): void {
 
   const log = (level: LogLevel, msg: string, meta?: object): void => {
     ctx.logger[level](
-      meta === undefined ? `agent-sidecar: ${msg}` : `agent-sidecar: ${msg} ${JSON.stringify(meta)}`,
+      meta === undefined ? `dsh-agents-sidecar: ${msg}` : `dsh-agents-sidecar: ${msg} ${JSON.stringify(meta)}`,
     )
   }
 
@@ -458,7 +458,7 @@ export function apply(ctx: HostContext, config: Config): void {
     const lines = createInterface({ input: stream })
     lines.on('line', (line) => {
       const text = line.length > LOG_LINE_LIMIT ? `${line.slice(0, LOG_LINE_LIMIT)}…` : line
-      if (text.trim() !== '') ctx.logger[level](`agent-sidecar daemon: ${text}`)
+      if (text.trim() !== '') ctx.logger[level](`agents-sidecar daemon: ${text}`)
     })
   }
 
@@ -1159,7 +1159,7 @@ export function apply(ctx: HostContext, config: Config): void {
       // a feed-bound instance is also stopped by its own inject release).
       fusionHolder.current.stop()
     }
-  }, 'agent-sidecar: host assembly (route + reconciler + supervisor + fusion + analysis)')
+  }, 'dsh-agents-sidecar: host assembly (route + reconciler + supervisor + fusion + analysis)')
 
   // Fusion dsh event feed binding (M3). Lazy inject on `sessions`
   // (dsh-session's service key; the feed itself is the cordis event bus —
@@ -1226,7 +1226,7 @@ export function apply(ctx: HostContext, config: Config): void {
       downgraded.start()
       fusionHolder.current = downgraded
       withFeed.stop()
-    }, 'agent-sidecar: fusion dsh feed release')
+    }, 'dsh-agents-sidecar: fusion dsh feed release')
     log('debug', 'fusion dsh event feed online (sessions service bound)')
   })
 
@@ -1253,7 +1253,7 @@ export function apply(ctx: HostContext, config: Config): void {
       hostServiceGeneration += 1
       if (coldServices === bound) coldServices = null
       await dshExecutor.invalidateColdServiceGeneration(bound)
-    }, 'agent-sidecar: cold dsh resume services release')
+    }, 'dsh-agents-sidecar: cold dsh resume services release')
     log('debug', 'cold dsh resume services online', {
       agentsAvailable: true,
       persistenceAvailable: true,
@@ -1273,7 +1273,7 @@ export function apply(ctx: HostContext, config: Config): void {
     mctx.effect(() => () => {
       hostServiceGeneration += 1
       if (liveAgentDefaultModel === bound) liveAgentDefaultModel = null
-    }, 'agent-sidecar: default model generation release')
+    }, 'dsh-agents-sidecar: default model generation release')
   })
 
   // dsh live injection + analysis path binding (M2/M3). Lazy inject, same
@@ -1291,11 +1291,11 @@ export function apply(ctx: HostContext, config: Config): void {
     liveAgents = actx.agents
     actx.effect(() => () => {
       liveAgents = null
-    }, 'agent-sidecar: agents binding release')
+    }, 'dsh-agents-sidecar: agents binding release')
     log('debug', 'dsh live inject + analysis paths online (agents service bound)')
   })
 
-  // Skill path two (T6.2, design §7): register the embedded agent-sidecar
+  // Skill path two (T6.2, design §7): register the embedded agents-sidecar
   // skill provider. Lazy inject on `skills` (dsh-skill's service key):
   // compositions without dsh-skill simply never run this — silent,
   // capability-honest skip. Registration rides this callback's fiber, so
@@ -1314,7 +1314,7 @@ export function apply(ctx: HostContext, config: Config): void {
     })
   })
 
-  // Settings namespace 'agent-sidecar' (T2.4): pairs the browser settings
+  // Settings namespace 'dsh-agents-sidecar' (T2.4): pairs the browser settings
   // card (keyed `settings.plugin.item` slot) and persists user edits into
   // dsh's settings document. Lazy inject: compositions without dsh-settings
   // simply never run this, and nothing else depends on it.
@@ -1344,7 +1344,7 @@ export function apply(ctx: HostContext, config: Config): void {
         log(
           'warn',
           `settings values read at apply time were not applied: ${drifted.join(', ')}; ` +
-            "set these in the profile's cordis patch for the 'agent-sidecar' row, " +
+            "set these in the profile's cordis patch for the 'dsh-agents-sidecar' row, " +
             'since a plugin reload reads the entry config rather than the settings document',
         )
       }
@@ -1356,7 +1356,7 @@ export function apply(ctx: HostContext, config: Config): void {
       sctx.effect(() => () => {
         unwatch()
         effective = config
-      }, 'agent-sidecar: settings scope release')
+      }, 'dsh-agents-sidecar: settings scope release')
       log('debug', 'settings namespace registered', { applies: 'live' })
     } catch (err) {
       log('warn', `settings namespace registration failed: ${String(err)}`)
@@ -1368,6 +1368,6 @@ export function apply(ctx: HostContext, config: Config): void {
   // dsh 0.1.1-rc.2 web — s0_smoke.md F-4 — but the in-process log face and
   // boot-completion probe both consume it).
   ctx.logger.info(
-    `agent-sidecar: host half assembled (policy=${config.daemon.policy}, socket=${socketPath}, route=${API_PREFIX})`,
+    `dsh-agents-sidecar: host half assembled (policy=${config.daemon.policy}, socket=${socketPath}, route=${API_PREFIX})`,
   )
 }

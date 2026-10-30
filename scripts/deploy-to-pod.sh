@@ -105,7 +105,7 @@ note "Rescanning SSH config and pod state"
 python3 "$FLEET" hosts --hosts "$HOST" >/dev/null
 "$SCAN" "$HOST" >/dev/null
 
-ARTIFACT="${TMPDIR:-/tmp}/agent-sidecar-deploy.$$.pyz"
+ARTIFACT="${TMPDIR:-/tmp}/agents-sidecar-deploy.$$.pyz"
 cleanup() {
     rm -f "$ARTIFACT"
 }
@@ -114,7 +114,7 @@ trap cleanup EXIT
 note "Building a deterministic Sidecar zipapp"
 (
     cd "$REPO_ROOT"
-    ./agent-sidecar package build --output "$ARTIFACT" >/dev/null
+    ./agents-sidecar package build --output "$ARTIFACT" >/dev/null
 )
 
 if ((INSTALL_PLUGIN)); then
@@ -125,9 +125,9 @@ if ((INSTALL_PLUGIN)); then
     )
 fi
 
-REMOTE_ARTIFACT="$REMOTE_DIR/.agent-sidecar.pyz"
+REMOTE_ARTIFACT="$REMOTE_DIR/.agents-sidecar.pyz"
 REMOTE_PLUGIN="$REMOTE_DIR/plugin"
-REMOTE_COMMAND="$REMOTE_DIR/agent-sidecar-with-auth"
+REMOTE_COMMAND="$REMOTE_DIR/agents-sidecar-with-auth"
 
 note "Preparing remote workspace: $REMOTE_DIR"
 if ((DRY_RUN)); then
@@ -143,7 +143,7 @@ rsync -a "$ARTIFACT" "$HOST:$REMOTE_ARTIFACT"
 rsync -a --exclude node_modules/ "$REPO_ROOT/plugin/" "$HOST:$REMOTE_PLUGIN/"
 
 ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
-    "install -m 0755 '$REMOTE_ARTIFACT' '$REMOTE_DIR/agent-sidecar.pyz'"
+    "install -m 0755 '$REMOTE_ARTIFACT' '$REMOTE_DIR/agents-sidecar.pyz'"
 ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
     "cat > '$REMOTE_COMMAND' <<'EOF'
 #!/usr/bin/env bash
@@ -154,7 +154,7 @@ if [ -r \"\$HOME/.nexis-agent-settings/copilot-byok.env\" ]; then
     . \"\$HOME/.nexis-agent-settings/copilot-byok.env\"
     set +a
 fi
-exec '$REMOTE_DIR/agent-sidecar.pyz' \"\$@\"
+exec '$REMOTE_DIR/agents-sidecar.pyz' \"\$@\"
 EOF
 chmod 0755 '$REMOTE_COMMAND'"
 ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
@@ -169,10 +169,10 @@ ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
          ln -s \"\$HOME/.canon/node/bin/node\" /usr/local/bin/node; \
      fi"
 ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
-    "if [ -L /usr/local/bin/agent-sidecar ]; then \
-         ln -sfn '$REMOTE_COMMAND' /usr/local/bin/agent-sidecar; \
-     elif [ ! -e /usr/local/bin/agent-sidecar ]; then \
-         ln -s '$REMOTE_COMMAND' /usr/local/bin/agent-sidecar; \
+    "if [ -L /usr/local/bin/agents-sidecar ]; then \
+         ln -sfn '$REMOTE_COMMAND' /usr/local/bin/agents-sidecar; \
+     elif [ ! -e /usr/local/bin/agents-sidecar ]; then \
+         ln -s '$REMOTE_COMMAND' /usr/local/bin/agents-sidecar; \
      fi"
 
 if ((INSTALL_PLUGIN)); then
@@ -188,11 +188,11 @@ if ((RESTART_DAEMON)); then
     note "Restarting remote Sidecar daemon"
     ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
         "export PATH=\"\$HOME/.canon/node/bin:\$HOME/.local/bin:\$PATH\"; \
-         '$REMOTE_DIR/agent-sidecar.pyz' daemon stop >/dev/null 2>&1 || true; \
-         nohup '$REMOTE_DIR/agent-sidecar.pyz' daemon run \
+         '$REMOTE_DIR/agents-sidecar.pyz' daemon stop >/dev/null 2>&1 || true; \
+         nohup '$REMOTE_DIR/agents-sidecar.pyz' daemon run \
              >/dev/null 2>&1 </dev/null & \
          for i in 1 2 3 4 5 6 7 8 9 10; do \
-             '$REMOTE_DIR/agent-sidecar.pyz' daemon status >/dev/null 2>&1 && exit 0; \
+             '$REMOTE_DIR/agents-sidecar.pyz' daemon status >/dev/null 2>&1 && exit 0; \
              sleep 0.2; \
          done; \
          echo 'remote daemon did not become ready' >&2; exit 1"
@@ -201,6 +201,6 @@ fi
 note "Remote deployment complete"
 ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes "$HOST" \
     "export PATH=\"\$HOME/.canon/node/bin:\$HOME/.local/bin:\$PATH\"; \
-     printf 'sidecar=%s\n' \"\$('$REMOTE_DIR/agent-sidecar.pyz' --version)\"; \
+     printf 'sidecar=%s\n' \"\$('$REMOTE_DIR/agents-sidecar.pyz' --version)\"; \
      printf 'python=%s\n' \"\$(python3 --version 2>&1)\"; \
      printf 'dsh=%s\n' \"\$(dsh --version 2>&1 || true)\""

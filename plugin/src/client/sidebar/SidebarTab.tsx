@@ -74,7 +74,7 @@ function SessionRow(props: {
         variant="ghost"
         className={css['sessionButton']}
         onClick={props.onToggle}
-        data-testid="agent-sidecar-sidebar-session"
+        data-testid="agents-sidecar-sidebar-session"
         data-session-id={session.sessionId}
         data-status={status}
         aria-expanded={expanded}
@@ -94,7 +94,7 @@ function SessionRow(props: {
           className={css['detail']}
           role="region"
           aria-label={title}
-          data-testid="agent-sidecar-sidebar-detail"
+          data-testid="agents-sidecar-sidebar-detail"
         >
           <div>{projectDisplayName(session.project)}</div>
           <div>{lastEvent}</div>
@@ -108,7 +108,7 @@ function SessionRow(props: {
 export function SidebarTab({ vm, visible, nowMs = Date.now() }: SidebarTabProps): ReactElement {
   useActiveLocale()
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const recentTitleId = 'agent-sidecar-sidebar-recent-title'
+  const recentTitleId = 'agents-sidecar-sidebar-recent-title'
 
   let body: ReactElement
   if (!vm.hasSnapshot) {
@@ -124,7 +124,7 @@ export function SidebarTab({ vm, visible, nowMs = Date.now() }: SidebarTabProps)
             session={session}
             nowMs={nowMs}
             expanded={expandedId === session.sessionId}
-            detailId={`agent-sidecar-sidebar-detail-${index}`}
+            detailId={`agents-sidecar-sidebar-detail-${index}`}
             onToggle={() => {
               setExpandedId((previous) => previous === session.sessionId ? null : session.sessionId)
             }}
@@ -137,13 +137,13 @@ export function SidebarTab({ vm, visible, nowMs = Date.now() }: SidebarTabProps)
   return (
     <section
       {...surfaceProps('sidebar-tab', css['root'])}
-      data-testid="agent-sidecar-sidebar-tab"
+      data-testid="agents-sidecar-sidebar-tab"
       data-visible={visible}
       aria-label={t('sidebar.tabTitle')}
       aria-hidden={!visible}
     >
       <header className={css['header']} title={vm.connectionTitle}>
-        <StaticPill className={css['counts']} data-testid="agent-sidecar-sidebar-counts">
+        <StaticPill className={css['counts']} data-testid="agents-sidecar-sidebar-counts">
           <StateDot state={CONNECTION_DOT_STATE[vm.connection]} size={8} />
           {t('sidebar.countsRow', { working: vm.workingCount, waiting: vm.waitingCount })}
         </StaticPill>

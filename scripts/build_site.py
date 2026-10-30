@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "site"
 DEFAULT_OUTPUT = ROOT / "_site"
 DEFAULT_BASE_PATH = "/AgentSideCar/"
-DEMO_NONCE = "agent-sidecar-static-demo"
+DEMO_NONCE = "agents-sidecar-static-demo"
 
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -57,9 +57,9 @@ opt-in numeric-loopback HTTP panel.
 
 DEMO_HEAD = """<meta name="description" content="Synthetic, read-only Agent Sidecar panel demo.">
 <meta name="robots" content="noindex">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-agent-sidecar-static-demo'; style-src 'nonce-agent-sidecar-static-demo'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-agents-sidecar-static-demo'; style-src 'nonce-agents-sidecar-static-demo'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<style nonce="agent-sidecar-static-demo">
+<style nonce="agents-sidecar-static-demo">
 .demo-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:0 0 1.5rem;padding:.8rem 1rem;border:1px solid #9a6700;border-radius:.4rem;background:#fff8c5;color:#3b2300}
 .demo-banner p{margin:0}.demo-banner a{color:#663c00;font-weight:700}
 @media(max-width:42rem){.demo-banner{align-items:flex-start;flex-direction:column}body{margin:1rem}table{display:block;overflow-x:auto}}
@@ -73,7 +73,7 @@ DEMO_BODY = """<aside class="demo-banner" aria-label="Static demo notice">
 """
 
 DEMO_TRANSPORT = (
-    '<script nonce="agent-sidecar-static-demo" src="./mock-api.js"></script>\n'
+    '<script nonce="agents-sidecar-static-demo" src="./mock-api.js"></script>\n'
 )
 
 

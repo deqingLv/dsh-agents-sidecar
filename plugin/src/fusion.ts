@@ -378,7 +378,7 @@ export const DEFAULT_MAX_BUFFERED_SESSIONS = 256
 
 const DSH_AGENT = 'dsh'
 const KEY_SEP = '\u0000'
-const ANALYSIS_SESSION_PREFIX = 'agent-sidecar-analysis-'
+const ANALYSIS_SESSION_PREFIX = 'agents-sidecar-analysis-'
 
 /** Analysis sessions are private tool sessions and cannot become board data. */
 function isAnalysisSession(

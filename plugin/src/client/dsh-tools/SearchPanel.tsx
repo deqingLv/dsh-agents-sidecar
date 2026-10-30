@@ -59,7 +59,7 @@ function ResultItem(props: {
       variant="ghost"
       className={css['resultItem']}
       onClick={() => props.onSelectSession(item.sessionId)}
-      data-testid="agent-sidecar-search-item"
+      data-testid="agents-sidecar-search-item"
     >
       <span className={css['resultHead']}>
         <span className={css['resultAgent']}>{item.agent}</span>
@@ -107,7 +107,7 @@ export function SearchPanel(props: SearchPanelProps): ReactElement {
   const project = props.project ?? null
 
   return (
-    <section {...surfaceProps('dsh-tools', css['panel'])} data-testid="agent-sidecar-search">
+    <section {...surfaceProps('dsh-tools', css['panel'])} data-testid="agents-sidecar-search">
       <div className={css['panelHead']}>
         <span className={css['panelTitle']}>{S.title}</span>
       </div>
@@ -141,7 +141,7 @@ export function SearchPanel(props: SearchPanelProps): ReactElement {
         <div
           className={css['noticeBar']}
           role="status"
-          data-testid="agent-sidecar-search-degraded"
+          data-testid="agents-sidecar-search-degraded"
         >
           {view.notice}
         </div>

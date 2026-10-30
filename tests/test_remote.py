@@ -930,7 +930,7 @@ class ZipappTests(unittest.TestCase):
     def test_zipapp_bytes_run_version_and_list_with_isolated_home(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            artifact_path = root / "dist" / "agent-sidecar.pyz"
+            artifact_path = root / "dist" / "agents-sidecar.pyz"
             artifact_path.parent.mkdir()
             artifact = remote.build_zipapp_bytes()
             artifact_path.write_bytes(artifact)
@@ -975,7 +975,7 @@ class ZipappTests(unittest.TestCase):
 
             self.assertEqual(0, version.returncode, version.stderr)
             self.assertEqual(
-                "agent-sidecar {}\n".format(sidecar.__version__),
+                "agents-sidecar {}\n".format(sidecar.__version__),
                 version.stdout,
             )
             self.assertEqual(0, listing.returncode, listing.stderr)
@@ -1065,7 +1065,7 @@ class ZipappTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            outer = root / "agent-sidecar.pyz"
+            outer = root / "agents-sidecar.pyz"
             build_release_zipapp(outer)
             expected = hashlib.sha256(remote.build_zipapp_bytes()).hexdigest()
 

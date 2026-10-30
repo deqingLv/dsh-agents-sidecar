@@ -240,7 +240,7 @@ describe('Host locale bridge', () => {
   })
 
   it('shares the lease registry through the global Symbol registry', async () => {
-    const key = Symbol.for('@shendeguize/dsh-agent-sidecar/host-locale-leases')
+    const key = Symbol.for('dsh-agents-sidecar/host-locale-leases')
     const symbols = globalThis as typeof globalThis & { [key: symbol]: unknown }
     const registry = symbols[key]
     const shape = registry as {
@@ -250,7 +250,7 @@ describe('Host locale bridge', () => {
       detachEvents?: unknown
     }
 
-    expect(Symbol.keyFor(key)).toBe('@shendeguize/dsh-agent-sidecar/host-locale-leases')
+    expect(Symbol.keyFor(key)).toBe('dsh-agents-sidecar/host-locale-leases')
     expect(typeof shape.leases?.get).toBe('function')
     expect(typeof shape.leases?.set).toBe('function')
     expect(typeof shape.leases?.delete).toBe('function')
