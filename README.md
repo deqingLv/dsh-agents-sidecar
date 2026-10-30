@@ -2,13 +2,13 @@
 
 [English](README.md) | [简体中文](README.zh.md)
 
-[![CI](https://github.com/shendeguize/AgentSideCar/actions/workflows/ci.yml/badge.svg)](https://github.com/shendeguize/AgentSideCar/actions/workflows/ci.yml)
-[![Python >=3.9](https://img.shields.io/badge/Python-%3E%3D3.9-3776AB?logo=python&logoColor=white)](https://github.com/shendeguize/AgentSideCar/blob/main/pyproject.toml)
-[![Runtime dependencies: 0](https://img.shields.io/badge/runtime%20dependencies-0-brightgreen)](https://github.com/shendeguize/AgentSideCar/blob/main/pyproject.toml)
-[![Release](https://img.shields.io/github/v/release/shendeguize/AgentSideCar?display_name=tag)](https://github.com/shendeguize/AgentSideCar/releases/latest)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/shendeguize/AgentSideCar/blob/main/LICENSE)
+[![CI](https://github.com/deqingLv/dsh-agents-sidecar/actions/workflows/ci.yml/badge.svg)](https://github.com/deqingLv/dsh-agents-sidecar/actions/workflows/ci.yml)
+[![Python >=3.9](https://img.shields.io/badge/Python-%3E%3D3.9-3776AB?logo=python&logoColor=white)](https://github.com/deqingLv/dsh-agents-sidecar/blob/main/pyproject.toml)
+[![Runtime dependencies: 0](https://img.shields.io/badge/runtime%20dependencies-0-brightgreen)](https://github.com/deqingLv/dsh-agents-sidecar/blob/main/pyproject.toml)
+[![Release](https://img.shields.io/github/v/release/deqingLv/dsh-agents-sidecar?display_name=tag)](https://github.com/deqingLv/dsh-agents-sidecar/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/deqingLv/dsh-agents-sidecar/blob/main/LICENSE)
 
-[Latest release](https://github.com/shendeguize/AgentSideCar/releases/latest) ·
+[Latest release](https://github.com/deqingLv/dsh-agents-sidecar/releases/latest) ·
 [Website/demo](https://shendeguize.github.io/AgentSideCar/)
 
 Agent Sidecar is a local-first CLI for observing AI-agent sessions. It
@@ -31,14 +31,14 @@ edit transcripts or agent configuration; a resumed native agent can do so as
 described above. The release installer writes only the selected executable and
 optional skill bundle; the checkout installer creates integration symlinks.
 
-Local installation and tooling for version 0.11.4 require Python 3.9+ and have
+Local installation and tooling for version 0.12.0 require Python 3.9+ and have
 no runtime Python dependencies. The remote observation payload accepts Python
 3.8+ on SSH targets. DSH event watching additionally requires an external
 `zstd` executable.
 
-## Version 0.11.4
+## Version 0.12.0
 
-Version 0.11.4 provides concurrent local/remote `watch --all --remote`, durable
+Version 0.12.0 provides concurrent local/remote `watch --all --remote`, durable
 private send auditing and request-ID idempotency, and the opt-in
 numeric-loopback HTTP panel. It also includes a deterministic executable
 zipapp, package metadata suitable for `pipx`, an explicit macOS user
@@ -46,6 +46,18 @@ LaunchAgent, a current-user Linux systemd unit, bounded private daemon
 diagnostics with log rotation, immutable private status snapshots, remote
 observation on Python 3.8+ SSH targets with an explicit fail-closed interpreter
 pin, and recoverable serialized release installation.
+New in 0.12.0, the command is `agents-sidecar` (was `agent-sidecar`) and the
+DSH plugin is `dsh-agents-sidecar` (was `@shendeguize/dsh-agent-sidecar`);
+releases are published from this repository and ship the matching
+`agents-sidecar-<version>.pyz` asset. `install.sh` resolves only that current
+name, and the plugin now finds the CLI beyond the host's inherited `PATH`: after
+a `PATH` miss it tries `~/.local/bin`, then `/opt/homebrew/bin` and
+`/usr/local/bin` on macOS, and logs the path it chose or the directories it
+searched. A GUI host inherits launchd's `PATH`, which usually omits
+`~/.local/bin`, so the executable that `install.sh` links there used to fail at
+spawn and surface only as an offline board. Renamed runtime identities are
+listed under `[0.12.0]` in the changelog; the migration is not an in-place
+upgrade.
 New in 0.11.4, `cluster` applies its recency window whichever source answers.
 It handed the window to the remote half but grouped the local half from the
 daemon's whole index, so `--all` was a no-op and the same command answered
@@ -113,7 +125,7 @@ The agent names below are also the exact values accepted by `list --agent`:
 - `codex`: Codex CLI rollout JSONL plus read-only native status SQLite when
   available.
 - `copilot`: GitHub Copilot CLI `workspace.yaml` metadata and authenticated
-  `--resume --interactive` send support. It has no event source in v0.11.4 and
+  `--resume --interactive` send support. It has no event source in v0.12.0 and
   is reported as `idle`.
 - `dsh`: DeepSeek DSH projection-cache metadata for listing and status, with
   bounded durable-session discovery as a fallback for cache-missing headless
@@ -153,13 +165,13 @@ copy:
 ```sh
 installer="$(mktemp)"
 curl --fail --location --proto '=https' --tlsv1.2 --output "$installer" \
-  https://raw.githubusercontent.com/shendeguize/AgentSideCar/main/install.sh
+  https://raw.githubusercontent.com/deqingLv/dsh-agents-sidecar/main/install.sh
 ${PAGER:-less} "$installer"
-sh "$installer" --version v0.11.4
+sh "$installer" --version v0.12.0
 rm "$installer"
 ```
 
-Omit `--version v0.11.4` to resolve the latest stable GitHub Release. The script
+Omit `--version v0.12.0` to resolve the latest stable GitHub Release. The script
 parses release metadata with Python, requires the exact versioned zipapp and
 `SHA256SUMS` assets, verifies the checksum with `shasum -a 256` on macOS or
 `sha256sum` on Linux, and only then atomically replaces
@@ -172,7 +184,7 @@ executes it immediately:
 
 ```sh
 curl -fsSL --proto '=https' --tlsv1.2 \
-  https://raw.githubusercontent.com/shendeguize/AgentSideCar/main/install.sh | sh
+  https://raw.githubusercontent.com/deqingLv/dsh-agents-sidecar/main/install.sh | sh
 ```
 
 This one-liner trusts the current protected `main` content over TLS without
@@ -191,10 +203,10 @@ pipx install .
 Or install directly from Git:
 
 ```sh
-pipx install 'git+https://github.com/shendeguize/AgentSideCar.git'
+pipx install 'git+https://github.com/deqingLv/dsh-agents-sidecar.git'
 ```
 
-For a released, immutable revision, append its tag, for example `@v0.11.4`, to
+For a released, immutable revision, append its tag, for example `@v0.12.0`, to
 the Git URL after that tag is available. Both forms create an isolated
 environment and install `agents-sidecar`; the package has no runtime Python
 dependencies.
@@ -202,12 +214,12 @@ dependencies.
 ### Install a GitHub Release zipapp
 
 For manual installation, GitHub Releases publish the executable zipapp and its
-checksum file. For version 0.11.4:
+checksum file. For version 0.12.0:
 
 ```sh
-version=0.11.4
-curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/agents-sidecar-${version}.pyz"
-curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/SHA256SUMS"
+version=0.12.0
+curl -fLO "https://github.com/deqingLv/dsh-agents-sidecar/releases/download/v${version}/agents-sidecar-${version}.pyz"
+curl -fLO "https://github.com/deqingLv/dsh-agents-sidecar/releases/download/v${version}/SHA256SUMS"
 shasum -a 256 -c SHA256SUMS
 chmod +x "agents-sidecar-${version}.pyz"
 ./agents-sidecar-${version}.pyz --version
@@ -1288,13 +1300,13 @@ boundaries, safe diagnostic handling, and the private vulnerability-reporting
 channel. Do not disclose suspected vulnerabilities in a public issue.
 
 For non-security defects and feature requests, use the repository's
-[issue forms](https://github.com/shendeguize/AgentSideCar/issues/new/choose).
+[issue forms](https://github.com/deqingLv/dsh-agents-sidecar/issues/new/choose).
 Before sharing logs, JSON output, screenshots, transcripts, databases, or
 runtime files, follow the sanitization requirements in the Security Policy.
 
 ## Current scope and deferred work
 
-Version 0.11.4 provides local observation for the supported sources, Cursor CLI
+Version 0.12.0 provides local observation for the supported sources, Cursor CLI
 event watching, remote `list`/`status` snapshots, concurrent local and remote
 `watch --all --remote`, and experimental local send for Claude, Codex, Cursor
 CLI, Copilot, and exact Kimi Code 0.38.0/0.39.1 protected ACP paths. It packages the CLI for
@@ -1314,7 +1326,7 @@ control plane.
 
 No publication is claimed. Use `pipx` with a checkout or Git URL, or download a
 verified executable zipapp from the
-[GitHub Releases](https://github.com/shendeguize/AgentSideCar/releases) page.
+[GitHub Releases](https://github.com/deqingLv/dsh-agents-sidecar/releases) page.
 Do not assume that an unqualified package from PyPI is this project.
 
 ### Can I use Agent Sidecar on Linux or Windows?

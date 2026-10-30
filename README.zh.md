@@ -2,13 +2,13 @@
 
 [English](README.md) | [简体中文](README.zh.md)
 
-[![CI](https://github.com/shendeguize/AgentSideCar/actions/workflows/ci.yml/badge.svg)](https://github.com/shendeguize/AgentSideCar/actions/workflows/ci.yml)
-[![Python >=3.9](https://img.shields.io/badge/Python-%3E%3D3.9-3776AB?logo=python&logoColor=white)](https://github.com/shendeguize/AgentSideCar/blob/main/pyproject.toml)
-[![Runtime dependencies: 0](https://img.shields.io/badge/runtime%20dependencies-0-brightgreen)](https://github.com/shendeguize/AgentSideCar/blob/main/pyproject.toml)
-[![Release](https://img.shields.io/github/v/release/shendeguize/AgentSideCar?display_name=tag)](https://github.com/shendeguize/AgentSideCar/releases/latest)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/shendeguize/AgentSideCar/blob/main/LICENSE)
+[![CI](https://github.com/deqingLv/dsh-agents-sidecar/actions/workflows/ci.yml/badge.svg)](https://github.com/deqingLv/dsh-agents-sidecar/actions/workflows/ci.yml)
+[![Python >=3.9](https://img.shields.io/badge/Python-%3E%3D3.9-3776AB?logo=python&logoColor=white)](https://github.com/deqingLv/dsh-agents-sidecar/blob/main/pyproject.toml)
+[![Runtime dependencies: 0](https://img.shields.io/badge/runtime%20dependencies-0-brightgreen)](https://github.com/deqingLv/dsh-agents-sidecar/blob/main/pyproject.toml)
+[![Release](https://img.shields.io/github/v/release/deqingLv/dsh-agents-sidecar?display_name=tag)](https://github.com/deqingLv/dsh-agents-sidecar/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/deqingLv/dsh-agents-sidecar/blob/main/LICENSE)
 
-[最新版本](https://github.com/shendeguize/AgentSideCar/releases/latest) ·
+[最新版本](https://github.com/deqingLv/dsh-agents-sidecar/releases/latest) ·
 [网站/演示](https://shendeguize.github.io/AgentSideCar/)
 
 Agent Sidecar 是一个用于观察 AI Agent 会话的本地优先 CLI。它能够发现已持久化的
@@ -26,18 +26,26 @@ HTTP 面板和 API 会在本机 IPv4 回环地址上公开只读的守护进程�
 Agent 配置；但恢复后的原生 Agent 可以按上述方式进行修改。Release 安装程序只
 写入所选可执行文件和可选 Skill Bundle；检出版本安装程序则创建集成用符号链接。
 
-0.11.4 版本的本地安装与工具要求 Python 3.9+，且没有 Python 运行时依赖。SSH
+0.12.0 版本的本地安装与工具要求 Python 3.9+，且没有 Python 运行时依赖。SSH
 目标接受使用 Python 3.8+ 的远程观察载荷。监视 DSH 事件还需要外部 `zstd`
 可执行文件。
 
-## 版本 0.11.4
+## 版本 0.12.0
 
-0.11.4 版本提供并发的本地/远程 `watch --all --remote`、持久化的私有发送审计、
+0.12.0 版本提供并发的本地/远程 `watch --all --remote`、持久化的私有发送审计、
 请求 ID 幂等性，以及可选启用、仅限数值回环地址的 HTTP 面板。它还包含确定性的
 可执行 zipapp、适用于 `pipx` 的包元数据、显式管理的 macOS 用户 LaunchAgent、
 当前用户的 Linux systemd 服务单元、具有日志轮转的有界私有守护进程诊断、不可变的
 私有状态快照、面向 Python 3.8+ SSH 目标且可显式钉死解释器的远程观察，以及可恢复
 且串行化的 Release 安装。
+0.12.0 新增：命令改名为 `agents-sidecar`（原 `agent-sidecar`），DSH 插件改名为
+`dsh-agents-sidecar`（原 `@shendeguize/dsh-agent-sidecar`）；release 从本仓库发布，
+资产名随之变为 `agents-sidecar-<version>.pyz`。`install.sh` 现在只解析这个新名字，
+插件也不再受宿主继承的 `PATH` 限制：`PATH` 未命中后先试 `~/.local/bin`，在 macOS 上
+再试 `/opt/homebrew/bin` 与 `/usr/local/bin`，并把选中的路径或搜索过的目录写进日志。
+GUI 宿主继承 launchd 的 `PATH`，通常不含 `~/.local/bin`，于是 `install.sh` 装到那里
+的可执行文件在 spawn 时失败，界面上只剩一个离线面板。改名涉及的运行时标识都列在
+changelog 的 `[0.12.0]` 里；这次是迁移而不是原地升级。
 0.11.4 新增：`cluster` 无论由哪个来源应答，都会应用自己的时间窗。它此前把时间窗
 交给远程一侧，本地一侧却直接拿 daemon 的整份索引来分组，于是 `--all` 形同虚设，
 同一条命令还会因为 daemon 是否在应答而给出不同答案——同一台机器上 155 组对 11 组。
@@ -92,7 +100,7 @@ daemon 不再被当成已死的 daemon。它在首扫结束前不应答任何 pi
   关系。
 - `codex`：Codex CLI rollout JSONL，以及可用时的只读原生状态 SQLite。
 - `copilot`：支持 GitHub Copilot CLI 的 `workspace.yaml` 元数据和认证后的
-  `--resume --interactive` 发送。0.11.4 版本没有对应事件源，因此状态报告为
+  `--resume --interactive` 发送。0.12.0 版本没有对应事件源，因此状态报告为
   `idle`。
 - `dsh`：优先通过 DeepSeek DSH 投影缓存元数据进行列表和状态查询，并以有界的
   持久会话扫描补充发现缓存缺失的 headless 运行，也支持从压缩会话记录中监视
@@ -124,13 +132,13 @@ daemon 不再被当成已死的 daemon。它在首扫结束前不应答任何 pi
 ```sh
 installer="$(mktemp)"
 curl --fail --location --proto '=https' --tlsv1.2 --output "$installer" \
-  https://raw.githubusercontent.com/shendeguize/AgentSideCar/main/install.sh
+  https://raw.githubusercontent.com/deqingLv/dsh-agents-sidecar/main/install.sh
 ${PAGER:-less} "$installer"
-sh "$installer" --version v0.11.4
+sh "$installer" --version v0.12.0
 rm "$installer"
 ```
 
-省略 `--version v0.11.4` 时会解析最新稳定 GitHub Release。脚本使用 Python 解析
+省略 `--version v0.12.0` 时会解析最新稳定 GitHub Release。脚本使用 Python 解析
 Release 元数据，要求精确匹配带版本号的 zipapp 和 `SHA256SUMS` 资产，在 macOS
 上使用 `shasum -a 256`、在 Linux 上使用 `sha256sum` 验证校验和，之后才会原子
 替换 `~/.local/bin/agents-sidecar`。可用 `--prefix <path>` 选择其他前缀，用
@@ -140,7 +148,7 @@ Release 元数据，要求精确匹配带版本号的 zipapp 和 `SHA256SUMS` �
 
 ```sh
 curl -fsSL --proto '=https' --tlsv1.2 \
-  https://raw.githubusercontent.com/shendeguize/AgentSideCar/main/install.sh | sh
+  https://raw.githubusercontent.com/deqingLv/dsh-agents-sidecar/main/install.sh | sh
 ```
 
 该单行命令通过 TLS 信任受保护 `main` 的当前内容，不提供本地检查步骤。应优先
@@ -158,22 +166,22 @@ pipx install .
 也可以直接从 Git 安装：
 
 ```sh
-pipx install 'git+https://github.com/shendeguize/AgentSideCar.git'
+pipx install 'git+https://github.com/deqingLv/dsh-agents-sidecar.git'
 ```
 
-如需安装已发布且不可变的修订版，可在对应标签可用后，将标签（例如 `@v0.11.4`）
+如需安装已发布且不可变的修订版，可在对应标签可用后，将标签（例如 `@v0.12.0`）
 附加到 Git URL 后。两种方式都会创建隔离环境并安装 `agents-sidecar`；该包没有
 Python 运行时依赖。
 
 ### 安装 GitHub Release zipapp
 
-如需手动安装，GitHub Releases 会发布可执行 zipapp 及其校验和文件。以 0.11.4
+如需手动安装，GitHub Releases 会发布可执行 zipapp 及其校验和文件。以 0.12.0
 版本为例：
 
 ```sh
-version=0.11.4
-curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/agents-sidecar-${version}.pyz"
-curl -fLO "https://github.com/shendeguize/AgentSideCar/releases/download/v${version}/SHA256SUMS"
+version=0.12.0
+curl -fLO "https://github.com/deqingLv/dsh-agents-sidecar/releases/download/v${version}/agents-sidecar-${version}.pyz"
+curl -fLO "https://github.com/deqingLv/dsh-agents-sidecar/releases/download/v${version}/SHA256SUMS"
 shasum -a 256 -c SHA256SUMS
 chmod +x "agents-sidecar-${version}.pyz"
 ./agents-sidecar-${version}.pyz --version
@@ -1059,13 +1067,13 @@ Changelog 和发布治理请参见[贡献指南](CONTRIBUTING.md)。
 私密漏洞报告渠道。不要在公开 Issue 中披露疑似漏洞。
 
 对于非安全缺陷和功能请求，请使用仓库的
-[Issue 表单](https://github.com/shendeguize/AgentSideCar/issues/new/choose)。
+[Issue 表单](https://github.com/deqingLv/dsh-agents-sidecar/issues/new/choose)。
 分享日志、JSON 输出、截图、会话记录、数据库或运行时文件之前，请遵循安全策略中的
 净化要求。
 
 ## 当前范围与后续工作
 
-0.11.4 版本为受支持数据源提供本地观察、Cursor CLI 事件监视、远程 `list`/`status`
+0.12.0 版本为受支持数据源提供本地观察、Cursor CLI 事件监视、远程 `list`/`status`
 快照、并发本地和远程 `watch --all --remote`，并为 Claude、Codex、Cursor CLI、
 Copilot 以及精确 Kimi Code 0.38.0/0.39.1 受保护 ACP 路径提供实验性本地发送。它可以为 pipx 和
 确定性 zipapp 使用场景打包 CLI，并加入显式 macOS LaunchAgent 与 Linux systemd
@@ -1080,7 +1088,7 @@ user service 管理和私有轮转守护进程诊断。`scripts/copilot_compat.p
 ### Agent Sidecar 发布到 PyPI 了吗？
 
 当前没有任何发布声明。请让 `pipx` 使用检出版本或 Git URL，或者从
-[GitHub Releases](https://github.com/shendeguize/AgentSideCar/releases) 页面
+[GitHub Releases](https://github.com/deqingLv/dsh-agents-sidecar/releases) 页面
 下载经过验证的可执行 zipapp。不要假设 PyPI 上未限定来源的同名包就是本项目。
 
 ### 可以在 Linux 或 Windows 上使用 Agent Sidecar 吗？

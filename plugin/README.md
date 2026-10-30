@@ -35,7 +35,7 @@
 dsh plugin --profile web add dsh-agents-sidecar
 
 # ② git 来源(monorepo 子目录,须带 path 选择器)
-dsh plugin --profile web add github:shendeguize/AgentSideCar#path:plugin
+dsh plugin --profile web add github:deqingLv/dsh-agents-sidecar#path:plugin
 
 # ③ 本地路径(仓库 checkout)
 dsh plugin --profile web add /path/to/agents_sidecar/plugin

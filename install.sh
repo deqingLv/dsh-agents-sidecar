@@ -2,7 +2,7 @@
 
 set -eu
 
-REPOSITORY=shendeguize/AgentSideCar
+REPOSITORY=deqingLv/dsh-agents-sidecar
 API_ROOT=https://api.github.com/repos/$REPOSITORY
 RAW_ROOT=https://raw.githubusercontent.com/$REPOSITORY
 SKILL_MARKER=.agents-sidecar-release-skill
@@ -1120,20 +1120,13 @@ if requested != "latest" and requested != tag:
 if release.get("draft") is not False or release.get("prerelease") is not False:
     raise SystemExit("release is draft or prerelease")
 version = tag[1:]
-# Tags published before the CLI rename ship `agent-sidecar-<version>.pyz`, and
-# every tag from the next release on ships `agents-sidecar-<version>.pyz`.
-# Accept either name, preferring the current one, so `--version latest` and
-# pinned older tags both keep resolving the exact asset they have.
-candidates = (
-    "agents-sidecar-{}.pyz".format(version),
-    "agent-sidecar-{}.pyz".format(version),
-)
+artifact_name = "agents-sidecar-{}.pyz".format(version)
 checksum_name = "SHA256SUMS"
 release_base = (
-    "https://github.com/shendeguize/AgentSideCar/releases/download/"
+    "https://github.com/deqingLv/dsh-agents-sidecar/releases/download/"
     "{}/".format(tag)
 )
-expected_urls = {name: release_base + name for name in candidates}
+expected_urls = {artifact_name: release_base + artifact_name}
 expected_urls[checksum_name] = release_base + checksum_name
 assets = release.get("assets")
 if not isinstance(assets, list):
@@ -1151,14 +1144,9 @@ for asset in assets:
     if url != expected_urls[name]:
         raise SystemExit("release asset URL mismatch for {}".format(name))
     resolved[name] = url
-if checksum_name not in resolved:
-    raise SystemExit("release is missing exact asset(s): {}".format(checksum_name))
-identified = [name for name in candidates if name in resolved]
-if not identified:
-    raise SystemExit(
-        "release is missing exact asset(s): {}".format(", ".join(candidates))
-    )
-artifact_name = identified[0]
+for name in (artifact_name, checksum_name):
+    if name not in resolved:
+        raise SystemExit("release is missing exact asset(s): {}".format(name))
 (output / "version").write_text(version + "\n", encoding="utf-8")
 (output / "tag").write_text(tag + "\n", encoding="utf-8")
 (output / "artifact-name").write_text(artifact_name + "\n", encoding="utf-8")

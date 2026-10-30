@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-30
+
 ### Changed
 
 - The DSH plugin is now published as `dsh-agents-sidecar` instead of
@@ -18,7 +20,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/plugins/dsh-agents-sidecar/api`. Existing profiles that still carry a
   `id: agent-sidecar` patch row must rename that row (or remove and reinstall
   the plugin) to pick up the new identity. The Python package and module name
-  (`sidecar`) and the upstream repository URLs are unchanged.
+  (`sidecar`) is unchanged.
+- Releases are now published from `deqingLv/dsh-agents-sidecar` instead of
+  `shendeguize/AgentSideCar`, and every release from `0.12.0` on attaches
+  `agents-sidecar-<version>.pyz` plus `SHA256SUMS`. `install.sh` and both
+  READMEs point at this repository for the installer, the release metadata
+  request, and the documented artifact URLs, so nothing in the install path
+  depends on legacy `agent-sidecar-<version>.pyz` build outputs. Tags
+  published before this release keep their old asset name on the upstream
+  repository, and the upstream project remains the source of record and the
+  documentation site.
 - The CLI is now `agents-sidecar` instead of `agent-sidecar`, and the rest of
   the product's on-disk identity moved with it: the `[project.scripts]` entry
   point and the repository shim (`./agents-sidecar`), the `dist/agents-sidecar.pyz`
@@ -42,12 +53,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `install.sh` now installs releases published before this rename. Its asset
-  name check accepted only `agents-sidecar-<version>.pyz`, while every tag
-  published so far attaches `agent-sidecar-<version>.pyz`, so `--version
-  latest` could not install any released artifact. It now accepts either name,
-  prefers the current one when a tag publishes both, and still verifies
-  `SHA256SUMS` and the zipapp's embedded version.
+- `install.sh` resolves the release metadata, the `agents-sidecar-<version>.pyz`
+  asset, and `SHA256SUMS` from this repository. Only the current asset name is
+  accepted, so a release that is missing that exact asset fails loudly instead
+  of silently falling back to a legacy build output. The checksum and the
+  zipapp's embedded version are still verified before the executable is
+  written.
 - The DSH plugin resolves a bare `sidecar.command` name past the host's
   inherited `PATH`. After a PATH miss it now looks in `~/.local/bin`, plus
   `/opt/homebrew/bin` and `/usr/local/bin` on macOS, rewrites a hit to its
@@ -686,7 +697,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI and terminal-dashboard workflows for session listing, status, watching,
   and process inspection.
 
-[Unreleased]: https://github.com/shendeguize/AgentSideCar/compare/v0.11.4...HEAD
+[Unreleased]: https://github.com/deqingLv/dsh-agents-sidecar/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/deqingLv/dsh-agents-sidecar/compare/v0.11.4...v0.12.0
 [0.11.4]: https://github.com/shendeguize/AgentSideCar/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/shendeguize/AgentSideCar/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/shendeguize/AgentSideCar/compare/v0.11.1...v0.11.2
