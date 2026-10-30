@@ -581,7 +581,11 @@ interface FakeResumeOptions {
 
 function runSetupSynchronously(
   options: FakeResumeOptions,
-  session: { readonly header: unknown; readonly events: readonly unknown[] } = {
+  session: {
+    readonly header: unknown
+    snapshotEvents?(): readonly { readonly type: string; readonly data?: unknown }[]
+    readonly events?: readonly unknown[]
+  } = {
     header: {},
     events: [],
   },
@@ -1106,6 +1110,20 @@ describe('M2 injection wiring', () => {
       status: 502,
       errorCode: 'executor_error',
     },
+    {
+      label: 'snapshot API late selected preset',
+      session: {
+        header: {},
+        snapshotEvents: () => [
+          {
+            type: 'agent-preset/selected',
+            data: { agentPreset: 'SECRET-SNAPSHOT-LATE-PRESET' },
+          },
+        ],
+      },
+      status: 409,
+      errorCode: 'dsh_preset_unsupported',
+    },
   ])(
     'rejects actual unpublished session $label despite absent inspect proof',
     async ({ session, status, errorCode }) => {
@@ -1146,6 +1164,35 @@ describe('M2 injection wiring', () => {
       expect(external).not.toContain('SECRET-ACTUAL')
     },
   )
+
+  it('accepts a cold session with an empty snapshotEvents log as preset-absent', async () => {
+    const followup = vi.fn()
+    const resume = vi.fn(async (options: FakeResumeOptions) => {
+      runSetupSynchronously(options, { header: {}, snapshotEvents: () => [] })
+      return {
+        agent: { followup, steer: vi.fn() },
+        dispose: async () => {},
+      }
+    })
+    const { fake, prepared } = await prepareColdDsh({
+      agents: { get: () => undefined, resume },
+      sessionPersistence: absentPresetPersistence,
+      agentDefaultModel: {
+        currentSelection: () => ({ provider: 'provider', model: 'model' }),
+      },
+    })
+    expect(prepared.status).toBe(200)
+
+    const executed = await postAction(fake.routes[0]!, {
+      type: 'inject.execute',
+      requestId: prepared.json.requestId,
+      confirmToken: prepared.json.confirmToken,
+      message: 'cold lifecycle probe',
+    })
+
+    expect(executed.json).toEqual({ outcome: 'delivered' })
+    expect(followup).toHaveBeenCalled()
+  })
 
   it('disposes a fulfilled cold-resume slot when the plugin unloads', async () => {
     const followup = vi.fn()

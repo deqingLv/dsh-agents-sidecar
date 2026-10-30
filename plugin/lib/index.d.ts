@@ -3,72 +3,38 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { Readable, Writable } from "node:stream";
 import { Context } from "@deepseek-ai/cordis";
 
-//#region src/analysis.d.ts
+//#region src/session-events.d.ts
 /**
- * AI bypass-analysis engine — design §5 pillar 3 / §4.e.3 (M3, T5.6).
- * Creates a DEDICATED dsh analysis session per request via `ctx.agents.create`,
- * feeds it a bounded summary of the observed session/project, supports
- * incremental follow-up questions, and can be cancelled from the UI at any
- * time. Pure engine: routing/index wiring is the integration layer's job, and
- * the analysis INPUT (summary text assembled from fusion timelines/overviews)
- * arrives as a structured parameter — this module never touches fusion.
+ * Cross-cutting read of a live dsh session log's event snapshot.
  *
- * API facts verified against the installed SDK
- * (`@deepseek-ai/dsh-agent@0.1.1-rc.2` d.ts, authoritative over the design
- * sketch):
+ * `@deepseek-ai/dsh-session` replaced the `events` getter with
+ * `snapshotEvents(fromSeq?, toSeqExclusive?)` in the 0.2.x line; the
+ * getter is simply absent, not deprecated, so a structural `readonly
+ * events` claim reads `undefined` at runtime and the immediate `.length`
+ * dereference throws. Every consumer that needs the whole log goes
+ * through this one helper: current API first, legacy property second,
+ * empty last. Method-syntax members keep the branded SDK types assignable,
+ * and the default `toSeqExclusive` binds to the session, so the helper
+ * always calls with the session as receiver.
  *
- * - `ctx.agents.create(options): Promise<AgentHandle>` (lib/types/index.d.ts:288)
- *   with `CreateAgentOptions` requiring a CALLER-SUPPLIED `sessionId`
- *   (index.d.ts:65-118) — the engine mints one per analysis — plus an optional
- *   creation-only `signal` (index.d.ts:98). `AgentHandle = { agent; dispose():
- *   Promise<void> }` (index.d.ts:155-158); `dispose()` stops the loop and
- *   removes the session, which is exactly the UI "stop" semantics.
- * - There is NO system-prompt field on `CreateAgentOptions` (`agentOptions` is
- *   only provider/model/maxTokens, runtime-types.d.ts:21-28; `setup` composes
- *   cordis scopes and would break pure DI), so the read-only-analyst guidance
- *   rides the FIRST user message instead.
- * - `Agent.followup(message: UserMessage): void` is a SYNCHRONOUS inbox splice
- *   (runtime-types.d.ts:115) — same finding as T4.4. There is no per-message
- *   response promise; the result must be read back from the session.
- * - "Getting the analysis result": `Agent.whenIdle(): Promise<void>` resolves
- *   after whole-agent quiescence (runtime-types.d.ts:87), and a waking
- *   followup flips status to running synchronously (runtime-types.d.ts:161-172),
- *   so `followup → whenIdle → read log` observes the completed turn. The text
- *   is read from `agent.session.deriveMessages()` (dsh-session
- *   index.d.ts:259, the cached surface projection); token accounting rides
- *   `assistant/message` events as `data.usage?: TokenUsage`
- *   (dsh-session types.d.ts:279-285, dsh-llm types.d.ts:123-129) — that feeds
- *   `tokensHint`.
- * - `Agent.cancel(cause: AgentCancelCause): void` aborts the active turn
- *   (runtime-types.d.ts:80); `{ kind: 'user' }` is the honest cause for a
- *   user-facing stop/timeout (dsh-session types.d.ts:118-127).
- *
- * Bounds (§7-B token-cost touchpoint, design risk 12): gated by live
- * `analysis.enabled` (default false), input truncated to `maxInputChars`,
- * first response and every follow-up bounded by `analysisTimeoutMs` (timeout
- * cancels the in-flight turn), and at most `maxActiveSessions` concurrent
- * analysis sessions. No periodic/automatic analysis exists here by design.
- *
- * Error vocabulary (contractual):
- * `analysis_disabled | create_failed | timeout | too_many_active | cancelled`.
- * `create_failed` covers the whole establishment phase of `request()`
- * (create + priming followup + first-turn wait); `cancelled` covers follow-ups
- * against a session that is unknown, already stopped, or died mid-turn.
- *
- * Honesty: results are AI-generated inference; every {@link AnalysisResult}
- * carries {@link ANALYSIS_DISCLAIMER} for the UI to display.
- *
- * Log lines NEVER carry the analyzed content: no `summaryText`, no follow-up
- * question, no model reply — only kind/title/analysisSessionId/outcome/token
- * hints and sizes (S8).
- *
- * Pure DI: no cordis/dsh imports; `ctx.agents.create` is injected through the
- * minimal structural face {@link AnalysisAgentFace} (method-syntax members
- * keep parameter checks bivariant, so the SDK's branded `SessionId` / wider
- * `UserMessage` / union `AgentCancelCause` signatures remain assignable).
+ * Pure DI: no cordis/dsh imports.
  *
  * @module
  */
+/** Widened session-event envelope (dsh-session types.d.ts:425-443). */
+interface SessionEventSnapshotFace {
+  readonly type: string;
+  readonly data?: unknown;
+}
+/** Log face exposing the current snapshot API and/or the legacy property. */
+interface SessionSnapshotFace<E extends SessionEventSnapshotFace = SessionEventSnapshotFace> {
+  /** Current Harness API (`0.2.1-rc.3` and newer). */
+  snapshotEvents?(): readonly E[];
+  /** Legacy Harness snapshot property (`0.1.1-rc.2` and older). */
+  readonly events?: readonly E[];
+}
+//#endregion
+//#region src/analysis.d.ts
 /** Widened user-message face (same shape family as dsh-inject's, F11). */
 interface AnalysisUserMessageFace {
   readonly id: string;
@@ -97,11 +63,9 @@ interface AnalysisSessionEventFace {
   readonly data?: unknown;
 }
 /** Read face over the live session log (dsh-session index.d.ts:106-267). */
-interface AnalysisSessionLogFace {
+interface AnalysisSessionLogFace extends SessionSnapshotFace<AnalysisSessionEventFace> {
   /** Cached surface projection of the derived LLM history (index.d.ts:259). */
   deriveMessages(): ReadonlyArray<AnalysisDerivedMessageFace>;
-  /** Immutable append-only event snapshot (index.d.ts:174). */
-  readonly events: ReadonlyArray<AnalysisSessionEventFace>;
 }
 /** Cancellation cause face; `{kind:'user'}` ∈ `AgentCancelCause` (dsh-session types.d.ts:118-127). */
 interface AnalysisCancelCauseFace {
@@ -285,9 +249,8 @@ interface DshAgentSetupCommitFace {
 /** Unpublished setup context exposes the exact restored Agent + Session. */
 interface AgentSetupContextFace {
   readonly agent?: {
-    readonly session?: {
+    /** `snapshotEvents()` on current Harness; legacy `events` stays optional. */readonly session?: SessionSnapshotFace & {
       readonly header: unknown;
-      readonly events: readonly unknown[];
     };
   };
 }
@@ -309,70 +272,6 @@ interface AgentsServiceFace {
 }
 //#endregion
 //#region src/fusion.d.ts
-/**
- * FusionQuery — bypass-analysis data-fusion layer of the host half
- * (design §4.e / M3, T5.1): merges the in-process dsh session-event feed
- * with sidecar socket data into one cross-agent query surface.
- *
- * API facts verified against the installed SDK (authoritative over the
- * design sketch; both design assumptions CONFIRMED):
- *
- * - In-process dsh event feed: `@deepseek-ai/dsh-session` augments the
- *   cordis `Events` map with `'session/event'(session, event)`
- *   (lib/types/index.d.ts:66 — post-commit, fire-and-forget append feed),
- *   plus `'session/created'` (:44) and `'session/disposed'` (:54). A
- *   root-scoped listener receives all sessions (scope filtering only
- *   narrows agent-scoped listeners). `Session` exposes `id` (:122),
- *   `header` (:120 — `cwd?`/`parentSession?`/`createdAt`,
- *   types.d.ts:40-78) and the on-demand immutable log snapshot `events`
- *   (:174). `SessionEvent` is `{type, seq, time(epoch ms), data}`
- *   (types.d.ts:425-457). Titles are NOT header fields: they are
- *   log-only `'session/title'` events with `{title: string}` data
- *   (`@deepseek-ai/dsh-session-title` lib/types/index.d.ts:37-45,73),
- *   folded latest-wins here.
- * - Deep-query service: `@deepseek-ai/dsh-session-query` augments
- *   `Context` with `sessionQuery: SessionQueryEngine`
- *   (lib/types/index.d.ts:19-23). Methods used: `traceSession` (:123 →
- *   `SessionLineageTrace`, types.d.ts:59-76), `readSession` (:62 → full
- *   raw log) and `searchSessions` (:42 → `SessionSearchPage
- *   <SessionSearchHit>`, types.d.ts:224-235/:255-258). Headless or
- *   trimmed compositions may not mount it, so it is resolved lazily on
- *   every use and every capability degrades instead of throwing.
- * - Sidecar side: session rows come from the SessionStore board state
- *   (`plugin/src/session-store.ts`); `updated_at` is epoch SECONDS
- *   (sidecar/model.py:50) while dsh `time` is epoch ms, normalized here
- *   to ms. The dsh adapter reuses the raw dsh session id as
- *   `session_id` (sidecar/adapters/dsh.py:311-372), which is what makes
- *   `session_id` a valid dedup key, and conditionally mirrors the native
- *   seq into `extra.seq` (dsh.py:263-269). One dsh record may normalize
- *   into several events sharing that seq (content blocks), so timeline
- *   dedup identity is seq+kind+text, never seq alone (F1).
- *   `SessionView` today drops `extra` and
- *   `parent_id`; the store face marks them optional so the extra
- *   supplement activates when the wiring supplies fuller rows.
- *
- * Fusion rules (design §4.e):
- * - Same `session_id` dsh session: the in-process feed is the
- *   authoritative primary source (real-time); the sidecar row only
- *   supplements fields the feed lacks (status estimate, `extra`
- *   stats/plan, normalized last-event summary) and serves as the cold
- *   fallback when the session is not live in this dsh process. Non-dsh
- *   agents only ever have the sidecar source.
- * - Cross-agent correlation key: normalized project path + time window
- *   (`getProjectGroups`).
- * - No bulk event retention: dsh timelines are read on demand from the
- *   live session's own log snapshot (or `readSession` when cold);
- *   sidecar events are kept only in a small bounded per-session ring
- *   fed by the wiring, and {@link SidecarReplayFace} is the seam for the
- *   daemon `replay` op (T5.2 provides, T5.3 consumes).
- *
- * Pure DI: no cordis/dsh imports. All faces are minimal structural
- * shapes extracted from the d.ts; method-syntax members keep parameter
- * checks bivariant, so the SDK's branded `SessionId` and wider request
- * types remain assignable (same pattern as dsh-inject.ts).
- *
- * @module
- */
 /** `SessionHeader` subset (dsh-session types.d.ts:40-78). */
 interface DshSessionHeaderFace {
   readonly createdAt: number;
@@ -389,10 +288,9 @@ interface DshSessionEventFace {
   readonly data: unknown;
 }
 /** `Session` subset: identity, header, on-demand log snapshot (index.d.ts:106-174). */
-interface DshSessionFace {
+interface DshSessionFace extends SessionSnapshotFace<DshSessionEventFace> {
   readonly id: string;
   readonly header: DshSessionHeaderFace;
-  readonly events: readonly DshSessionEventFace[];
 }
 //#endregion
 //#region src/index.d.ts

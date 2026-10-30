@@ -1176,3 +1176,41 @@ describe('lifecycle', () => {
     expect(fusion.getCapabilities().dshEvents.liveSessions).toBe(1)
   })
 })
+
+describe('current Harness session snapshots', () => {
+  it('accepts session creation without the legacy events property', async () => {
+    const { fusion, dshEvents } = makeFusion()
+    const events: DshSessionEventFace[] = []
+    const session = {
+      id: 'snapshot-session',
+      header: { createdAt: T0 },
+      snapshotEvents() { return events.slice() },
+    } satisfies DshSessionFace
+    expect(() => dshEvents.emitCreated(session)).not.toThrow()
+    expect(fusion.getUnifiedSessions()[0]?.lastSeq).toBeNull()
+    events.push({ type: 'session/title', seq: 0, time: T0 + 1, data: { title: 'Current title' } })
+    dshEvents.emitEvent(session, events[0]!)
+    const page = await fusion.getSessionTimeline(session.id)
+    expect(page.sources.dshLive).toBe(true)
+    expect(page.entries.map(e => e.seq)).toEqual([0])
+    expect(fusion.getUnifiedSessions()[0]?.title).toBe('Current title')
+  })
+
+  it('reads existing title and timeline through snapshotEvents on late attachment', async () => {
+    const { fusion, dshEvents } = makeFusion()
+    const session = {
+      id: 'snapshot-existing',
+      header: { createdAt: T0 },
+      snapshotEvents() {
+        expect(this.id).toBe('snapshot-existing')
+        return [{ type: 'session/title', seq: 0, time: T0 + 1, data: { title: 'Existing title' } }]
+      },
+      get events(): never { throw new Error('legacy getter must not be used') },
+    }
+    dshEvents.seed(session)
+    const page = await fusion.getSessionTimeline(session.id)
+    expect(page.sources.dshLive).toBe(true)
+    expect(page.entries.map(e => e.seq)).toEqual([0])
+    expect(fusion.getUnifiedSessions()[0]?.title).toBe('Existing title')
+  })
+})

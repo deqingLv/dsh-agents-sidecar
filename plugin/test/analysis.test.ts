@@ -61,18 +61,27 @@ class FakeDriver {
 
   readonly session: {
     deriveMessages(): Array<{ role: string; content: Array<{ type: string; text?: string }> }>
-    readonly events: Array<{ type: string; data?: unknown }>
+    snapshotEvents?(): Array<{ type: string; data?: unknown }>
+    readonly events?: Array<{ type: string; data?: unknown }>
   }
 
-  constructor(respond: Responder) {
+  constructor(respond: Responder, useSnapshotApi = false) {
     this.respond = respond
     const driver = this
-    this.session = {
-      deriveMessages: () => [...driver.derived],
-      get events() {
-        return [...driver.eventLog]
-      },
-    }
+    this.session = useSnapshotApi
+      ? {
+          deriveMessages: () => [...driver.derived],
+          snapshotEvents: () => [...driver.eventLog],
+          get events(): never {
+            throw new Error('legacy session.events must not be read')
+          },
+        }
+      : {
+          deriveMessages: () => [...driver.derived],
+          get events() {
+            return [...driver.eventLog]
+          },
+        }
   }
 
   followup(message: AnalysisUserMessageFace): void {
@@ -138,6 +147,7 @@ function fakeWorld(opts?: {
   respond?: Responder
   respondDelayMs?: number
   respondPartial?: (promptText: string) => string
+  snapshotApi?: boolean
   createRejects?: Error
   createNever?: boolean
   createDelayMs?: number
@@ -153,12 +163,12 @@ function fakeWorld(opts?: {
       created.push({
         sessionId: options.sessionId,
         signal: options.signal,
-        driver: new FakeDriver(respond),
+        driver: new FakeDriver(respond, opts?.snapshotApi ?? false),
         disposeCalls: 0,
       })
       return new Promise<AnalysisSession>(() => {})
     }
-    const driver = new FakeDriver(respond)
+    const driver = new FakeDriver(respond, opts?.snapshotApi ?? false)
     driver.respondDelayMs = opts?.respondDelayMs ?? 0
     if (opts?.respondPartial !== undefined) driver.respondPartial = opts.respondPartial
     const record: FakeCreated = {
@@ -313,6 +323,19 @@ describe('request', () => {
 
     expect(result.outcome).toBe('completed')
     expect(result.tokensHint).toBeUndefined()
+  })
+
+  it('reads the event log through the current snapshotEvents API', async () => {
+    const world = fakeWorld({ snapshotApi: true })
+    const { engine } = makeEngine({ world })
+
+    const first = await engine.request(input())
+    expect(first.outcome).toBe('completed')
+    expect(first.tokensHint).toBe(120)
+
+    const second = await engine.followup(first.analysisSessionId!, 'and now?')
+    expect(second.outcome).toBe('completed')
+    expect(second.tokensHint).toBe(120)
   })
 
   it('maps a create rejection to create_failed and frees the slot', async () => {

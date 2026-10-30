@@ -59,10 +59,18 @@
  * Pure DI: no cordis/dsh imports; `ctx.agents.create` is injected through the
  * minimal structural face {@link AnalysisAgentFace} (method-syntax members
  * keep parameter checks bivariant, so the SDK's branded `SessionId` / wider
- * `UserMessage` / union `AgentCancelCause` signatures remain assignable).
+ * `UserMessage` / union `AgentCancelCause` signatures remain assignable). The
+ * only internal dependency is the shared {@link sessionEvents} read, because
+ * the Harness log snapshot moved from the legacy `events` getter to
+ * `snapshotEvents()` (dsh-session 0.2.x).
  *
  * @module
  */
+
+import {
+  sessionEvents,
+  type SessionSnapshotFace,
+} from './session-events.ts'
 
 // ---------------------------------------------------------------------------
 // Minimal structural faces over the dsh-agent / dsh-session SDK.
@@ -90,11 +98,10 @@ export interface AnalysisSessionEventFace {
 }
 
 /** Read face over the live session log (dsh-session index.d.ts:106-267). */
-export interface AnalysisSessionLogFace {
+export interface AnalysisSessionLogFace
+  extends SessionSnapshotFace<AnalysisSessionEventFace> {
   /** Cached surface projection of the derived LLM history (index.d.ts:259). */
   deriveMessages(): ReadonlyArray<AnalysisDerivedMessageFace>
-  /** Immutable append-only event snapshot (index.d.ts:174). */
-  readonly events: ReadonlyArray<AnalysisSessionEventFace>
 }
 
 /** Cancellation cause face; `{kind:'user'}` ∈ `AgentCancelCause` (dsh-session types.d.ts:118-127). */
@@ -311,7 +318,7 @@ interface ActiveAnalysis {
   busy: boolean
   /** deriveMessages() length already consumed by earlier turns. */
   messageBaseline: number
-  /** session.events length already consumed by earlier turns. */
+  /** Session event-log length already consumed by earlier turns. */
   eventBaseline: number
   /** Per-session message id counter. */
   messageSeq: number
@@ -679,7 +686,7 @@ export class AnalysisEngine {
     const handle = entry.handle!
     const session = handle.agent.session
     entry.messageBaseline = session.deriveMessages().length
-    entry.eventBaseline = session.events.length
+    entry.eventBaseline = sessionEvents(session).length
 
     const message: AnalysisUserMessageFace = {
       id: `${entry.analysisSessionId}-msg-${++entry.messageSeq}`,
@@ -713,9 +720,9 @@ export class AnalysisEngine {
     }
 
     const summary = extractNewAssistantText(session.deriveMessages(), entry.messageBaseline)
-    const tokensHint = extractTokensHint(session.events, entry.eventBaseline)
+    const tokensHint = extractTokensHint(sessionEvents(session), entry.eventBaseline)
     entry.messageBaseline = session.deriveMessages().length
-    entry.eventBaseline = session.events.length
+    entry.eventBaseline = sessionEvents(session).length
     return {
       status: 'completed',
       summary,

@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `TypeError: contribution.description is not a function`, and the command
   source no longer collapses — which had hidden every native and plugin
   slash command at once.
+- The DSH plugin now reads live sessions through `snapshotEvents()` on current
+  Harness versions while retaining legacy `events` support. Creating sessions
+  no longer fails with an undefined-length error, and live timelines and titles
+  remain available after attaching to an existing session. The same shared read
+  backs bypass-analysis token accounting and the cold-resume preset guard, so
+  both paths keep working instead of throwing (analysis) or rejecting every
+  resume as `executor_error` (injection) on those Harness versions.
 
 ## [0.12.0] - 2026-10-30
 

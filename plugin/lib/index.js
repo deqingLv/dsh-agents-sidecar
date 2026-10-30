@@ -6,6 +6,11 @@ import z from "@deepseek-ai/schemastery";
 import { createConnection } from "node:net";
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { performance } from "node:perf_hooks";
+//#region src/session-events.ts
+/** Read the whole event log, preferring the current snapshot API. */
+function sessionEvents(log) {
+	return typeof log.snapshotEvents === "function" ? log.snapshotEvents() : log.events ?? [];
+}
 /** Prefix marker used to keep dedicated analysis sessions off the board. */
 const ANALYSIS_SESSION_PREFIX$2 = "agents-sidecar-analysis-";
 /** Title chars kept in prompts and logs (titles are untrusted input too). */
@@ -299,7 +304,7 @@ var AnalysisEngine = class {
 		const handle = entry.handle;
 		const session = handle.agent.session;
 		entry.messageBaseline = session.deriveMessages().length;
-		entry.eventBaseline = session.events.length;
+		entry.eventBaseline = sessionEvents(session).length;
 		const message = {
 			id: `${entry.analysisSessionId}-msg-${++entry.messageSeq}`,
 			role: "user",
@@ -334,9 +339,9 @@ var AnalysisEngine = class {
 			partial: extractNewAssistantText(session.deriveMessages(), entry.messageBaseline)
 		};
 		const summary = extractNewAssistantText(session.deriveMessages(), entry.messageBaseline);
-		const tokensHint = extractTokensHint(session.events, entry.eventBaseline);
+		const tokensHint = extractTokensHint(sessionEvents(session), entry.eventBaseline);
 		entry.messageBaseline = session.deriveMessages().length;
-		entry.eventBaseline = session.events.length;
+		entry.eventBaseline = sessionEvents(session).length;
 		return {
 			status: "completed",
 			summary,
@@ -2784,7 +2789,7 @@ var FusionQuery = class {
 			sourceOutcomes.liveSession = classifySourceFailure(error);
 		}
 		if (liveEntry !== void 0) {
-			dshEvents = liveEntry.session.events;
+			dshEvents = sessionEvents(liveEntry.session);
 			sources.dshLive = true;
 			sourceOutcomes.liveSession = "succeeded";
 		} else {
@@ -2995,7 +3000,7 @@ var FusionQuery = class {
 	ensureLive(session) {
 		let entry = this.live.get(session.id);
 		if (entry !== void 0) return entry;
-		const events = session.events;
+		const events = sessionEvents(session);
 		const tail = events.length > 0 ? events[events.length - 1] : void 0;
 		let title = null;
 		for (let i = events.length - 1; i >= 0; i -= 1) {
@@ -6056,7 +6061,7 @@ function apply(ctx, config) {
 				if (session === void 0) throw new DshResumeGuardError("executor_error");
 				const actual = classifyStoredPreset({
 					meta: session.header,
-					events: session.events
+					events: sessionEvents(session)
 				});
 				if (actual === "present") throw new DshResumeGuardError("dsh_preset_unsupported");
 				if (actual === "unknown") throw new DshResumeGuardError("executor_error");

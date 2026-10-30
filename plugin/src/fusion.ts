@@ -14,7 +14,8 @@
  *   narrows agent-scoped listeners). `Session` exposes `id` (:122),
  *   `header` (:120 — `cwd?`/`parentSession?`/`createdAt`,
  *   types.d.ts:40-78) and the on-demand immutable log snapshot `events`
- *   (:174). `SessionEvent` is `{type, seq, time(epoch ms), data}`
+ *   (:174 in the legacy SDK), replaced by `snapshotEvents()` in current Harness.
+ *   `SessionEvent` is `{type, seq, time(epoch ms), data}`
  *   (types.d.ts:425-457). Titles are NOT header fields: they are
  *   log-only `'session/title'` events with `{title: string}` data
  *   (`@deepseek-ai/dsh-session-title` lib/types/index.d.ts:37-45,73),
@@ -63,6 +64,8 @@
  * @module
  */
 
+import { sessionEvents, type SessionSnapshotFace } from './session-events.ts'
+
 // ---------------------------------------------------------------------------
 // In-process dsh faces (see header for d.ts provenance).
 // ---------------------------------------------------------------------------
@@ -85,10 +88,9 @@ export interface DshSessionEventFace {
 }
 
 /** `Session` subset: identity, header, on-demand log snapshot (index.d.ts:106-174). */
-export interface DshSessionFace {
+export interface DshSessionFace extends SessionSnapshotFace<DshSessionEventFace> {
   readonly id: string
   readonly header: DshSessionHeaderFace
-  readonly events: readonly DshSessionEventFace[]
 }
 
 /**
@@ -871,7 +873,7 @@ export class FusionQuery {
       }
     }
     if (liveEntry !== undefined) {
-      dshEvents = liveEntry.session.events
+      dshEvents = sessionEvents(liveEntry.session)
       sources.dshLive = true
       sourceOutcomes.liveSession = 'succeeded'
     } else {
@@ -1078,7 +1080,7 @@ export class FusionQuery {
   private ensureLive(session: DshSessionFace): DshLiveEntry {
     let entry = this.live.get(session.id)
     if (entry !== undefined) return entry
-    const events = session.events
+    const events = sessionEvents(session)
     const tail = events.length > 0 ? events[events.length - 1] : undefined
     let title: string | null = null
     for (let i = events.length - 1; i >= 0; i -= 1) {

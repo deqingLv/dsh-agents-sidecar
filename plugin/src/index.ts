@@ -97,6 +97,7 @@ import {
   type FusionApi,
 } from './routes.ts'
 import { createSendCliExecutor, type SpawnLike } from './send-cli.ts'
+import { sessionEvents } from './session-events.ts'
 import { SessionStore } from './session-store.ts'
 import {
   registerSidecarSkillProvider,
@@ -840,7 +841,7 @@ export function apply(ctx: HostContext, config: Config): void {
         }
         const actual = classifyStoredPreset({
           meta: session.header,
-          events: session.events,
+          events: sessionEvents(session),
         })
         if (actual === 'present') {
           throw new DshResumeGuardError('dsh_preset_unsupported')

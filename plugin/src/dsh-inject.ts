@@ -51,6 +51,7 @@ import { createHash } from 'node:crypto'
 import { performance } from 'node:perf_hooks'
 
 import type { InjectExecutionRequest, InjectExecutor, InjectResult } from './inject-gateway.ts'
+import type { SessionSnapshotFace } from './session-events.ts'
 
 // ---------------------------------------------------------------------------
 // Minimal structural faces over the dsh-agent SDK.
@@ -110,10 +111,8 @@ export interface DshAgentSetupCommitFace {
 /** Unpublished setup context exposes the exact restored Agent + Session. */
 export interface AgentSetupContextFace {
   readonly agent?: {
-    readonly session?: {
-      readonly header: unknown
-      readonly events: readonly unknown[]
-    }
+    /** `snapshotEvents()` on current Harness; legacy `events` stays optional. */
+    readonly session?: SessionSnapshotFace & { readonly header: unknown }
   }
 }
 
