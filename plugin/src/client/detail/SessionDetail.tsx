@@ -330,6 +330,12 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
 
   const boundary = props.timelineBoundary ?? ((body: ReactElement) => body)
 
+  // dsh session logs are mostly internal machinery and the detail pane is
+  // narrow by design: the merged event stream adds noise there without
+  // answering "what is this session doing", so it is suppressed outright.
+  // The header keeps every fact a glance needs; other agents unchanged.
+  const streamHidden = props.header.agent.trim().toLowerCase() === 'dsh'
+
   const statusDotState: StateDotState | null =
     status.status === 'working'
       ? 'ongoing'
@@ -472,7 +478,16 @@ export function SessionDetail(props: SessionDetailProps): ReactElement {
         </div>
       </header>
 
-      {boundary(
+      {streamHidden ? (
+        <div
+          className={styles['bodyState']}
+          data-kind="stream-hidden"
+          role="status"
+          data-testid="agents-sidecar-detail-stream-hidden"
+        >
+          <div className={styles['bodyStateTitle']}>{DETAIL_STRINGS.timeline.hiddenForDsh}</div>
+        </div>
+      ) : boundary(
         <Fragment>
       {bodyState.errorBanner !== null && (
         <div className={styles['banner']} role="alert">

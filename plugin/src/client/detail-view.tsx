@@ -653,7 +653,6 @@ export function SidecarDetailView(props: SidecarDetailViewProps): ReactElement {
           open={injectOpen}
           onClose={closeInject}
           title={t('inject.title')}
-          closeLabel={t('inject.close')}
           className={css['injectDialog']}
           headless
         >

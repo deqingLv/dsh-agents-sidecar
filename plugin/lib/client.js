@@ -575,6 +575,9 @@ window.__ModuleLoader__.load({
 			"board.topbar.agentFilter": "Agent",
 			"board.topbar.agentFilterAria": "按 agent 类型过滤会话",
 			"board.topbar.allAgents": "全部 agent",
+			"board.topbar.agentTabsAria": "按 agent 区分会话",
+			"board.topbar.agentTabAll": "全部 ({n})",
+			"board.topbar.agentTab": "{label} ({n})",
 			"board.topbar.countWorking": "{n} 工作中",
 			"board.topbar.countWaiting": "{n} 等待中",
 			"board.topbar.countTotal": "共 {n} 个会话",
@@ -710,6 +713,7 @@ window.__ModuleLoader__.load({
 			"detail.timeline.hiddenNotice": "为保持流畅,较早的 {n} 条已折叠",
 			"detail.timeline.showAll": "全部显示",
 			"detail.timeline.chunkRun": "{n} 个流式分块",
+			"detail.timeline.hiddenForDsh": "dsh 会话不展示会话流,窗口太小也展示不了什么",
 			"detail.timeline.degradedPartial": "部分时间线来源暂不可用,当前显示的事件可能不完整。",
 			"detail.timeline.degradedAll": "最近一次请求的可用时间线来源均读取失败,未能加载新事件。",
 			"detail.timeline.degradedUnverified": "无法确认时间线来源状态,当前事件可能不完整。",
@@ -1098,6 +1102,9 @@ window.__ModuleLoader__.load({
 			"board.topbar.agentFilter": "Agent",
 			"board.topbar.agentFilterAria": "Filter sessions by agent type",
 			"board.topbar.allAgents": "All agents",
+			"board.topbar.agentTabsAria": "Sessions split by agent",
+			"board.topbar.agentTabAll": "All ({n})",
+			"board.topbar.agentTab": "{label} ({n})",
 			"board.topbar.countWorking": "{n} working",
 			"board.topbar.countWaiting": "{n} waiting",
 			"board.topbar.countTotal": "{n} sessions total",
@@ -1233,6 +1240,7 @@ window.__ModuleLoader__.load({
 			"detail.timeline.hiddenNotice": "{n} earlier entries collapsed to stay smooth",
 			"detail.timeline.showAll": "Show all",
 			"detail.timeline.chunkRun": "{n} streaming chunks",
+			"detail.timeline.hiddenForDsh": "dsh sessions hide the event stream here — this panel is too narrow to show anything useful.",
 			"detail.timeline.degradedPartial": "Some timeline sources are unavailable. The events shown may be incomplete.",
 			"detail.timeline.degradedAll": "All usable timeline sources failed for the latest request. No new events could be loaded.",
 			"detail.timeline.degradedUnverified": "Timeline source status could not be verified. Events may be incomplete.",
@@ -1888,26 +1896,6 @@ window.__ModuleLoader__.load({
 			const normalized = raw.trim().toLowerCase();
 			return SUPPORTED_AGENT_FILTERS.includes(normalized) ? normalized : null;
 		}
-		/** Stable, recognizable display name for one supported agent token. */
-		function agentDisplayName(agent) {
-			return AGENT_DISPLAY_NAMES[agent];
-		}
-		/**
-		* Supported agents currently present on the board, in adapter-stable order.
-		* A still-selected supported value remains available after its last card
-		* disappears so the user can explicitly clear it. Unknown values are never
-		* reflected into labels or option values.
-		*/
-		function agentFilterOptions(sessions, selected) {
-			const available = /* @__PURE__ */ new Set();
-			for (const session of sessions) {
-				const agent = normalizeAgentFilter(session.agent);
-				if (agent !== null) available.add(agent);
-			}
-			const selectedAgent = normalizeAgentFilter(selected);
-			if (selectedAgent !== null) available.add(selectedAgent);
-			return SUPPORTED_AGENT_FILTERS.filter((agent) => available.has(agent));
-		}
 		/**
 		* Apply a toolbar agent choice. Empty/unknown values mean "All agents" and
 		* clear only the agent condition, preserving every other board filter.
@@ -1918,6 +1906,27 @@ window.__ModuleLoader__.load({
 			if (agent === null) delete next.agentFilter;
 			else next.agentFilter = agent;
 			return next;
+		}
+		/**
+		* Build the segmented-board agent tabs: every supported agent represented
+		* in the given (agent-unfiltered) cards, in adapter-stable order. A still
+		* selected agent keeps its tab at count 0 so the choice never strands the
+		* user after its last card ages out; unknown tokens are never reflected.
+		*/
+		function agentSegments(sessions, selected) {
+			const counts = /* @__PURE__ */ new Map();
+			for (const session of sessions) {
+				const agent = normalizeAgentFilter(session.agent);
+				if (agent !== null) counts.set(agent, (counts.get(agent) ?? 0) + 1);
+			}
+			const available = new Set(counts.keys());
+			const selectedAgent = normalizeAgentFilter(selected);
+			if (selectedAgent !== null) available.add(selectedAgent);
+			return SUPPORTED_AGENT_FILTERS.filter((agent) => available.has(agent)).map((agent) => ({
+				agent,
+				label: AGENT_DISPLAY_NAMES[agent],
+				count: counts.get(agent) ?? 0
+			}));
 		}
 		/**
 		* Visibility rules (task spec):
@@ -3626,7 +3635,7 @@ window.__ModuleLoader__.load({
 		}
 		//#endregion
 		//#region \0dsh-css:src/client/board/board.module.css.mjs
-		const css$10 = ".PLm6rG_root{box-sizing:border-box;height:100%;min-height:420px;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;gap:12px;padding:16px 20px;display:flex;overflow-y:auto}.PLm6rG_topbar{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.PLm6rG_title{color:var(--agsc-fg);margin-right:2px;font-size:15px;font-weight:650}.PLm6rG_dot{background:var(--dsw-alias-label-tertiary);border-radius:50%;flex:none;width:8px;height:8px}.PLm6rG_dot[data-tone=neutral]{background:var(--dsw-alias-label-tertiary)}.PLm6rG_dot[data-tone=muted]{background:var(--agsc-fg-dimmed)}.PLm6rG_countBadge{white-space:nowrap}.PLm6rG_countTotal{color:var(--agsc-fg-secondary);white-space:nowrap;font-size:12px}.PLm6rG_spacer{flex:1}.PLm6rG_control{color:var(--agsc-fg-secondary);white-space:nowrap;align-items:center;gap:5px;font-size:12px;display:inline-flex}.PLm6rG_select{height:28px;color:var(--agsc-fg);background:var(--agsc-bg-raised);border:1px solid var(--agsc-border-strong);border-radius:14px;padding:0 10px;font-family:inherit;font-size:12px}.PLm6rG_checkbox{accent-color:var(--agsc-accent);margin:0}.PLm6rG_banner{border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);padding:6px 10px;font-size:12px;line-height:18px}.PLm6rG_banner[data-tone=warn]{color:var(--agsc-warn);background:var(--dsw-alias-state-warn-tertiary);border-color:var(--dsw-alias-state-warn-secondary)}.PLm6rG_banner[data-tone=danger]{color:var(--agsc-fg);background:var(--agsc-err-fill);border-color:var(--dsw-alias-state-error-secondary)}.PLm6rG_clusterPanel{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);flex-direction:column;gap:8px;padding:10px;display:flex}.PLm6rG_clusterHead,.PLm6rG_clusterSummary{flex-wrap:wrap;align-items:baseline;gap:8px;display:flex}.PLm6rG_clusterTitle{color:var(--agsc-fg);font-size:13px;font-weight:600}.PLm6rG_clusterList{flex-direction:column;gap:6px;display:flex}.PLm6rG_clusterCard{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);padding:7px 8px}.PLm6rG_clusterSummary span{color:var(--agsc-fg-secondary);font-size:12px}.PLm6rG_clusterMeta,.PLm6rG_clusterEmpty{color:var(--agsc-fg-dimmed);overflow-wrap:anywhere;font-size:11px}.PLm6rG_bannerDismiss{color:inherit;margin-left:10px;text-decoration:underline}.PLm6rG_archiveBody{flex-direction:column;gap:10px;min-width:0;display:flex}.PLm6rG_archiveControls{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.PLm6rG_archiveNumber{width:76px;height:28px;font:inherit;color:var(--agsc-fg);background:var(--agsc-bg-raised);border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);padding:0 8px;font-size:12px}.PLm6rG_archiveSummary{color:var(--agsc-fg-secondary);align-items:center;gap:6px;font-size:12px;display:flex}.PLm6rG_archiveEmpty{color:var(--agsc-fg-dimmed);padding:8px 0;font-size:12px}.PLm6rG_archiveList{flex-direction:column;gap:4px;max-height:320px;margin:0;padding:0;list-style:none;display:flex;overflow-y:auto}.PLm6rG_archiveRow{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);align-items:center;gap:8px;min-width:0;padding:5px 8px;display:flex}.PLm6rG_archiveRowLabel{cursor:pointer;align-items:center;gap:8px;width:100%;min-width:0;display:flex}.PLm6rG_archiveRowTitle{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;font-size:12px;overflow:hidden}.PLm6rG_archiveRowMeta{color:var(--agsc-fg-secondary);white-space:nowrap;flex:none;font-size:11px}.PLm6rG_archiveActions{justify-content:flex-end;align-items:center;gap:8px;display:flex}.PLm6rG_archivedPanel{border:1px dashed var(--agsc-border-strong);border-radius:var(--agsc-radius-control);flex-direction:column;gap:6px;padding:8px 10px;display:flex}.PLm6rG_archivedHead{align-items:center;gap:8px;display:flex}.PLm6rG_empty{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;min-height:180px;padding:24px;display:flex}.PLm6rG_emptyTitle{color:var(--agsc-fg);font-size:14px;font-weight:600}.PLm6rG_emptyHint{max-width:420px;color:var(--agsc-fg-secondary);font-size:12px;line-height:20px}.PLm6rG_group{flex-direction:column;gap:8px;display:flex}.PLm6rG_groupHead{text-align:left;cursor:pointer;background:0 0;border:none;align-items:baseline;gap:8px;width:100%;min-width:0;padding:0;font-family:inherit;display:flex}.PLm6rG_chevron{color:var(--agsc-fg-dimmed);flex:none;font-size:10px}.PLm6rG_groupAttention{color:var(--agsc-warn);flex:none;font-size:11px}.PLm6rG_idleSummary{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);color:var(--agsc-fg-secondary);font:inherit;cursor:pointer;align-self:flex-start;align-items:center;gap:6px;padding:4px 8px;font-size:12px;display:flex}.PLm6rG_idleSummary:hover{color:var(--agsc-fg);background:var(--dsw-alias-interactive-bg-hover)}.PLm6rG_showMore{align-self:flex-start}.PLm6rG_groupName{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600;overflow:hidden}.PLm6rG_groupCount{color:var(--agsc-fg-secondary);background:var(--dsw-alias-bg-layer-2);border-radius:999px;flex:none;padding:0 8px;font-size:11px;line-height:18px}.PLm6rG_grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;display:grid}.PLm6rG_card{border-radius:var(--agsc-radius-card);border:1px solid var(--agsc-border-strong);background:var(--agsc-bg-raised);flex-direction:column;gap:6px;min-width:0;padding:10px 12px;display:flex}.PLm6rG_card:hover{border-color:var(--dsw-alias-label-dimmed);background:var(--dsw-alias-interactive-bg-hover)}.PLm6rG_cardOpen{border-radius:var(--agsc-radius-control);width:100%;min-width:0;color:inherit;font:inherit;text-align:left;cursor:pointer;background:0 0;border:0;flex-direction:column;gap:6px;padding:0;display:flex}.PLm6rG_cardOpen:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:2px}.PLm6rG_cardHead{justify-content:space-between;align-items:center;gap:8px;min-width:0;display:flex}.PLm6rG_agent{text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--agsc-fg);align-items:center;gap:5px;font-size:12px;font-weight:600;display:inline-flex;overflow:hidden}.PLm6rG_glyph{color:var(--agsc-accent);flex:none}.PLm6rG_statusPill{max-width:100%}.PLm6rG_attention{color:var(--agsc-warn);font-size:11px}.PLm6rG_attention[data-kind=gap]{color:var(--agsc-err)}.PLm6rG_cardTitle{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;overflow:hidden}.PLm6rG_cardId{max-width:100%;font-size:11px;font-family:var(--agsc-font-mono);color:var(--agsc-fg-secondary);text-overflow:ellipsis;white-space:nowrap;justify-content:flex-start;align-self:flex-start;overflow:hidden}.PLm6rG_copied{color:var(--agsc-ok);margin-left:6px;font-family:inherit}.PLm6rG_cardEvent{color:var(--agsc-fg-secondary);text-overflow:ellipsis;white-space:nowrap;font-size:12px;overflow:hidden}.PLm6rG_cardTime{color:var(--agsc-fg-secondary);font-size:11px}";
+		const css$10 = ".PLm6rG_root{box-sizing:border-box;height:100%;min-height:420px;color:var(--agsc-fg);background:var(--agsc-bg);flex-direction:column;gap:12px;padding:16px 20px;display:flex;overflow-y:auto}.PLm6rG_topbar{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.PLm6rG_title{color:var(--agsc-fg);margin-right:2px;font-size:15px;font-weight:650}.PLm6rG_dot{background:var(--dsw-alias-label-tertiary);border-radius:50%;flex:none;width:8px;height:8px}.PLm6rG_dot[data-tone=neutral]{background:var(--dsw-alias-label-tertiary)}.PLm6rG_dot[data-tone=muted]{background:var(--agsc-fg-dimmed)}.PLm6rG_countBadge{white-space:nowrap}.PLm6rG_countTotal{color:var(--agsc-fg-secondary);white-space:nowrap;font-size:12px}.PLm6rG_spacer{flex:1}.PLm6rG_control{color:var(--agsc-fg-secondary);white-space:nowrap;align-items:center;gap:5px;font-size:12px;display:inline-flex}.PLm6rG_select{height:28px;color:var(--agsc-fg);background:var(--agsc-bg-raised);border:1px solid var(--agsc-border-strong);border-radius:14px;padding:0 10px;font-family:inherit;font-size:12px}.PLm6rG_checkbox{accent-color:var(--agsc-accent);margin:0}.PLm6rG_banner{border-radius:var(--agsc-radius-control);border:1px solid var(--agsc-border);padding:6px 10px;font-size:12px;line-height:18px}.PLm6rG_agentTabs{scrollbar-width:thin;align-items:center;gap:6px;padding-bottom:2px;display:flex;overflow-x:auto}.PLm6rG_agentTabs>*{flex:none}.PLm6rG_banner[data-tone=warn]{color:var(--agsc-warn);background:var(--dsw-alias-state-warn-tertiary);border-color:var(--dsw-alias-state-warn-secondary)}.PLm6rG_banner[data-tone=danger]{color:var(--agsc-fg);background:var(--agsc-err-fill);border-color:var(--dsw-alias-state-error-secondary)}.PLm6rG_clusterPanel{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);flex-direction:column;gap:8px;padding:10px;display:flex}.PLm6rG_clusterHead,.PLm6rG_clusterSummary{flex-wrap:wrap;align-items:baseline;gap:8px;display:flex}.PLm6rG_clusterTitle{color:var(--agsc-fg);font-size:13px;font-weight:600}.PLm6rG_clusterList{flex-direction:column;gap:6px;display:flex}.PLm6rG_clusterCard{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);padding:7px 8px}.PLm6rG_clusterSummary span{color:var(--agsc-fg-secondary);font-size:12px}.PLm6rG_clusterMeta,.PLm6rG_clusterEmpty{color:var(--agsc-fg-dimmed);overflow-wrap:anywhere;font-size:11px}.PLm6rG_bannerDismiss{color:inherit;margin-left:10px;text-decoration:underline}.PLm6rG_archiveBody{flex-direction:column;gap:10px;min-width:0;display:flex}.PLm6rG_archiveControls{flex-wrap:wrap;align-items:center;gap:10px;display:flex}.PLm6rG_archiveNumber{width:76px;height:28px;font:inherit;color:var(--agsc-fg);background:var(--agsc-bg-raised);border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);padding:0 8px;font-size:12px}.PLm6rG_archiveSummary{color:var(--agsc-fg-secondary);align-items:center;gap:6px;font-size:12px;display:flex}.PLm6rG_archiveEmpty{color:var(--agsc-fg-dimmed);padding:8px 0;font-size:12px}.PLm6rG_archiveList{flex-direction:column;gap:4px;max-height:320px;margin:0;padding:0;list-style:none;display:flex;overflow-y:auto}.PLm6rG_archiveRow{border:1px solid var(--agsc-border);border-radius:var(--agsc-radius-control);align-items:center;gap:8px;min-width:0;padding:5px 8px;display:flex}.PLm6rG_archiveRowLabel{cursor:pointer;align-items:center;gap:8px;width:100%;min-width:0;display:flex}.PLm6rG_archiveRowTitle{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;font-size:12px;overflow:hidden}.PLm6rG_archiveRowMeta{color:var(--agsc-fg-secondary);white-space:nowrap;flex:none;font-size:11px}.PLm6rG_archiveActions{justify-content:flex-end;align-items:center;gap:8px;display:flex}.PLm6rG_archivedPanel{border:1px dashed var(--agsc-border-strong);border-radius:var(--agsc-radius-control);flex-direction:column;gap:6px;padding:8px 10px;display:flex}.PLm6rG_archivedHead{align-items:center;gap:8px;display:flex}.PLm6rG_empty{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;gap:6px;min-height:180px;padding:24px;display:flex}.PLm6rG_emptyTitle{color:var(--agsc-fg);font-size:14px;font-weight:600}.PLm6rG_emptyHint{max-width:420px;color:var(--agsc-fg-secondary);font-size:12px;line-height:20px}.PLm6rG_group{flex-direction:column;gap:8px;display:flex}.PLm6rG_groupHead{text-align:left;cursor:pointer;background:0 0;border:none;align-items:baseline;gap:8px;width:100%;min-width:0;padding:0;font-family:inherit;display:flex}.PLm6rG_chevron{color:var(--agsc-fg-dimmed);flex:none;font-size:10px}.PLm6rG_groupAttention{color:var(--agsc-warn);flex:none;font-size:11px}.PLm6rG_idleSummary{border:1px solid var(--agsc-border-strong);border-radius:var(--agsc-radius-control);background:var(--agsc-bg-raised);color:var(--agsc-fg-secondary);font:inherit;cursor:pointer;align-self:flex-start;align-items:center;gap:6px;padding:4px 8px;font-size:12px;display:flex}.PLm6rG_idleSummary:hover{color:var(--agsc-fg);background:var(--dsw-alias-interactive-bg-hover)}.PLm6rG_showMore{align-self:flex-start}.PLm6rG_groupName{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600;overflow:hidden}.PLm6rG_groupCount{color:var(--agsc-fg-secondary);background:var(--dsw-alias-bg-layer-2);border-radius:999px;flex:none;padding:0 8px;font-size:11px;line-height:18px}.PLm6rG_grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;display:grid}.PLm6rG_card{border-radius:var(--agsc-radius-card);border:1px solid var(--agsc-border-strong);background:var(--agsc-bg-raised);flex-direction:column;gap:6px;min-width:0;padding:10px 12px;display:flex}.PLm6rG_card:hover{border-color:var(--dsw-alias-label-dimmed);background:var(--dsw-alias-interactive-bg-hover)}.PLm6rG_cardOpen{border-radius:var(--agsc-radius-control);width:100%;min-width:0;color:inherit;font:inherit;text-align:left;cursor:pointer;background:0 0;border:0;flex-direction:column;gap:6px;padding:0;display:flex}.PLm6rG_cardOpen:focus-visible{outline:2px solid var(--agsc-accent);outline-offset:2px}.PLm6rG_cardHead{justify-content:space-between;align-items:center;gap:8px;min-width:0;display:flex}.PLm6rG_agent{text-overflow:ellipsis;white-space:nowrap;min-width:0;color:var(--agsc-fg);align-items:center;gap:5px;font-size:12px;font-weight:600;display:inline-flex;overflow:hidden}.PLm6rG_glyph{color:var(--agsc-accent);flex:none}.PLm6rG_statusPill{max-width:100%}.PLm6rG_attention{color:var(--agsc-warn);font-size:11px}.PLm6rG_attention[data-kind=gap]{color:var(--agsc-err)}.PLm6rG_cardTitle{color:var(--agsc-fg);text-overflow:ellipsis;white-space:nowrap;font-size:13px;overflow:hidden}.PLm6rG_cardId{max-width:100%;font-size:11px;font-family:var(--agsc-font-mono);color:var(--agsc-fg-secondary);text-overflow:ellipsis;white-space:nowrap;justify-content:flex-start;align-self:flex-start;overflow:hidden}.PLm6rG_copied{color:var(--agsc-ok);margin-left:6px;font-family:inherit}.PLm6rG_cardEvent{color:var(--agsc-fg-secondary);text-overflow:ellipsis;white-space:nowrap;font-size:12px;overflow:hidden}.PLm6rG_cardTime{color:var(--agsc-fg-secondary);font-size:11px}";
 		const tagId$10 = "dsh-agents-sidecar/src/client/board/board.module.css";
 		globalThis[Symbol.for("dsh-agents-sidecar/style-manifest")].set(tagId$10, css$10);
 		if (typeof document !== "undefined") {
@@ -3645,6 +3654,7 @@ window.__ModuleLoader__.load({
 		}
 		var board_module_css_default = {
 			"agent": "PLm6rG_agent",
+			"agentTabs": "PLm6rG_agentTabs",
 			"archiveActions": "PLm6rG_archiveActions",
 			"archiveBody": "PLm6rG_archiveBody",
 			"archiveControls": "PLm6rG_archiveControls",
@@ -4350,7 +4360,10 @@ window.__ModuleLoader__.load({
 			});
 			const windowOptions = TIME_WINDOW_OPTIONS.includes(props.filters.timeWindowHours) ? TIME_WINDOW_OPTIONS : [...TIME_WINDOW_OPTIONS, props.filters.timeWindowHours].sort((a, b) => a - b);
 			const selectedAgent = normalizeAgentFilter(props.filters.agentFilter);
-			const availableAgents = agentFilterOptions(props.sessions, props.filters.agentFilter);
+			const agentTabFilters = { ...props.filters };
+			delete agentTabFilters.agentFilter;
+			const agentTabSessions = filterSessions(props.sessions, agentTabFilters, nowMs);
+			const agentTabs = agentSegments(agentTabSessions, props.filters.agentFilter);
 			const [showClusters, setShowClusters] = (0, react.useState)(false);
 			const clusters = clusterSessions(vm.groups.flatMap((group) => group.cards));
 			const fallbackFocusRef = (0, react.useRef)(null);
@@ -4496,25 +4509,6 @@ window.__ModuleLoader__.load({
 							}),
 							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
 								className: board_module_css_default["control"],
-								children: [t("board.topbar.agentFilter"), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("select", {
-									className: board_module_css_default["select"],
-									"aria-label": t("board.topbar.agentFilterAria"),
-									value: selectedAgent ?? "",
-									onChange: (ev) => {
-										props.onFiltersChange(withAgentFilter(props.filters, ev.target.value));
-									},
-									"data-testid": "agents-sidecar-agent-filter",
-									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
-										value: "",
-										children: t("board.topbar.allAgents")
-									}), availableAgents.map((agent) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("option", {
-										value: agent,
-										children: agentDisplayName(agent)
-									}, agent))]
-								})]
-							}),
-							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
-								className: board_module_css_default["control"],
 								children: [BOARD_STRINGS.topbar.timeWindow, /* @__PURE__ */ (0, react_jsx_runtime.jsx)("select", {
 									className: board_module_css_default["select"],
 									value: String(props.filters.timeWindowHours),
@@ -4563,6 +4557,34 @@ window.__ModuleLoader__.load({
 								children: refreshing ? BOARD_STRINGS.topbar.refreshing : BOARD_STRINGS.topbar.refresh
 							})
 						]
+					}),
+					props.hasSnapshot && !props.initialLoadFailed && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("nav", {
+						className: board_module_css_default["agentTabs"],
+						"aria-label": t("board.topbar.agentTabsAria"),
+						"data-testid": "agents-sidecar-agent-tabs",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Pill, {
+							type: "button",
+							active: selectedAgent === null,
+							"aria-pressed": selectedAgent === null,
+							onClick: () => {
+								props.onFiltersChange(withAgentFilter(props.filters, ""));
+							},
+							"data-testid": "agents-sidecar-agent-tab-all",
+							children: formatTemplate$2(t("board.topbar.agentTabAll"), { n: agentTabSessions.length })
+						}), agentTabs.map((segment) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Pill, {
+							type: "button",
+							active: selectedAgent === segment.agent,
+							"aria-pressed": selectedAgent === segment.agent,
+							onClick: () => {
+								props.onFiltersChange(withAgentFilter(props.filters, segment.agent));
+							},
+							"data-testid": "agents-sidecar-agent-tab",
+							"data-agent": segment.agent,
+							children: formatTemplate$2(t("board.topbar.agentTab"), {
+								label: segment.label,
+								n: segment.count
+							})
+						}, segment.agent))]
 					}),
 					props.hasSnapshot && !props.initialLoadFailed && refreshFailed && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: board_module_css_default["banner"],
@@ -5832,7 +5854,7 @@ window.__ModuleLoader__.load({
 							className: settings_card_module_css_default["pending"],
 							children: t$2("settings.unsaved")
 						}) : null,
-						/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconChevronDownOutline14, { className: `${settings_card_module_css_default["chevron"]} ${open ? settings_card_module_css_default["chevronOpen"] : ""}` })
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconChevronDownOutlineMedium, { className: `${settings_card_module_css_default["chevron"]} ${open ? settings_card_module_css_default["chevronOpen"] : ""}` })
 					]
 				}), open ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: settings_card_module_css_default["body"],
@@ -6178,7 +6200,8 @@ window.__ModuleLoader__.load({
 				seq: "detail.timeline.seq",
 				hiddenNotice: "detail.timeline.hiddenNotice",
 				showAll: "detail.timeline.showAll",
-				chunkRun: "detail.timeline.chunkRun"
+				chunkRun: "detail.timeline.chunkRun",
+				hiddenForDsh: "detail.timeline.hiddenForDsh"
 			},
 			states: {
 				loadingTitle: "detail.states.loadingTitle",
@@ -7187,6 +7210,7 @@ window.__ModuleLoader__.load({
 				}, 2e3);
 			};
 			const boundary = props.timelineBoundary ?? ((body) => body);
+			const streamHidden = props.header.agent.trim().toLowerCase() === "dsh";
 			const statusDotState = status.status === "working" ? "ongoing" : status.status === "waiting" ? "warning" : null;
 			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 				...surfaceProps("timeline", detail_module_css_default["root"]),
@@ -7344,7 +7368,16 @@ window.__ModuleLoader__.load({
 							})]
 						})
 					]
-				}), boundary(/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react.Fragment, { children: [bodyState.errorBanner !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				}), streamHidden ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: detail_module_css_default["bodyState"],
+					"data-kind": "stream-hidden",
+					role: "status",
+					"data-testid": "agents-sidecar-detail-stream-hidden",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: detail_module_css_default["bodyStateTitle"],
+						children: DETAIL_STRINGS.timeline.hiddenForDsh
+					})
+				}) : boundary(/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react.Fragment, { children: [bodyState.errorBanner !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 					className: detail_module_css_default["banner"],
 					role: "alert",
 					children: bodyState.errorBanner
@@ -10370,7 +10403,6 @@ window.__ModuleLoader__.load({
 						open: injectOpen,
 						onClose: closeInject,
 						title: t("inject.title"),
-						closeLabel: t("inject.close"),
 						className: detail_view_module_css_default["injectDialog"],
 						headless: true,
 						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InjectPanel, {
@@ -11066,8 +11098,9 @@ window.__ModuleLoader__.load({
 		* Each exported root factory's top-level component subscribes once to the
 		* active locale, refreshing its complete descendant tree without leaf subscriptions.
 		*
-		* The settings card owns the staged-edit lifecycle over a bound
-		* `SettingsScope` (browser mirror of the host settings namespace):
+		* The settings card owns the staged-edit lifecycle over a bound settings
+		* form port (0.1.x `SettingsScope` or 0.2.x `ConfigForm`, both structural):
+		* browser mirror of the host settings namespace):
 		* resolved values come from the scope snapshot, edits stage locally, save
 		* writes one complete top-level group per changed group (see
 		* settings-glue.ts for the write-granularity rationale), and success is
@@ -11463,7 +11496,8 @@ window.__ModuleLoader__.load({
 			const getState = () => controller.getState();
 			const subscribeScope = (cb) => scope.subscribe(cb);
 			const getSnapshot = () => scope.getSnapshot();
-			return function SidecarSettingsCardEntry() {
+			return function SidecarSettingsCardEntry(props) {
+				if (props?.view === "summary") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("settings.cardDescription") });
 				useActiveLocale();
 				const snapshot = (0, react.useSyncExternalStore)(subscribeScope, getSnapshot, getSnapshot);
 				const state = (0, react.useSyncExternalStore)(subscribeState, getState, getState);
@@ -11475,7 +11509,7 @@ window.__ModuleLoader__.load({
 					...resolved,
 					...staged
 				};
-				const writable = snapshot.status === "ready" && snapshot.writable && snapshot.mode === "host";
+				const writable = snapshot.status === "ready" && snapshot.writable && (snapshot.mode === void 0 || snapshot.mode === "host");
 				const dirty = !cardValuesEqual(values, resolved);
 				const onChange = (field, value) => {
 					setSaveFailed(false);
@@ -12729,6 +12763,17 @@ window.__ModuleLoader__.load({
 		/** Host-side settings namespace (host half registers it via ctx.settings). */
 		const SETTINGS_NAMESPACE = "dsh-agents-sidecar";
 		/**
+		* Key of this bundle's own row on the dsh 0.2.x plugins page:
+		* `<bundle package name>#<row id>` (harness
+		* packages/client/ui-plugin-manager/src/client/slot-contract.ts).
+		*/
+		const ROW_CONFIG_KEY = `${name}#${ENTRY_ID}`;
+		/** The keyed settings seats, per harness generation (both keyed by namespace/row). */
+		const KEYED_SLOTS = {
+			"settings.plugin.item": SETTINGS_NAMESPACE,
+			"plugins.row.config": ROW_CONFIG_KEY
+		};
+		/**
 		* Apply-guard: whether the slot ledger already holds this plugin's entry
 		* (list slots match their seat-specific `id`, the keyed settings slot by
 		* namespace `key`). `entries()` answers [] for undeclared slots, and the
@@ -12736,8 +12781,11 @@ window.__ModuleLoader__.load({
 		* registration time, when the ledger is authoritative.
 		*/
 		function hasOwnEntry(ctx, slot) {
+			const key = KEYED_SLOTS[slot];
+			const entries = ctx.slots.entries(slot);
+			if (key !== void 0) return entries.some((entry) => entry.options.key === key);
 			const entryId = slot === "shell.overlay" ? CENTER_ENTRY_ID : ENTRY_ID;
-			return ctx.slots.entries(slot).some((entry) => entry.options.id === entryId || slot === "settings.plugin.item" && entry.options.key === SETTINGS_NAMESPACE);
+			return entries.some((entry) => entry.options.id === entryId);
 		}
 		/**
 		* Lease the optional Host locale service for this injected child fiber.
@@ -12933,17 +12981,46 @@ window.__ModuleLoader__.load({
 			} catch (err) {
 				console.error("dsh-agents-sidecar: footer widget mount failed", err);
 			}
+			const adoptSettingsDefaults = (scope) => {
+				const value = scope.getSnapshot().value;
+				if (value?.ui !== void 0) controller.adoptConfigDefaults(value.ui);
+				if (value?.inject !== void 0) injectPrefs.defaultMode = value.inject.defaultMode;
+				if (value?.analysis !== void 0) analysisPrefs.enabled = value.analysis.enabled;
+			};
+			try {
+				ctx.inject(["configForms"], (injected) => {
+					const fctx = injected;
+					try {
+						const form = fctx.configForms.get(SETTINGS_NAMESPACE);
+						const adoptDefaults = () => adoptSettingsDefaults(form);
+						fctx.effect(() => form.subscribe(adoptDefaults), "dsh-agents-sidecar: configForms→filter defaults");
+						adoptDefaults();
+						const SidecarRowConfigEntry = createSettingsCardEntry(controller, form);
+						fctx.effect(() => fctx.configForms.whileServed([SETTINGS_NAMESPACE], () => acquireWithHandoff(() => hasOwnEntry(fctx, "plugins.row.config") ? void 0 : fctx.slots.register({
+							name: "plugins.row.config",
+							key: ROW_CONFIG_KEY
+						}, SidecarRowConfigEntry), {
+							isCollision: isRegistrationCollision,
+							onError: (error) => {
+								console.error("dsh-agents-sidecar: row configuration registration failed", error);
+							},
+							onTimeout: () => {
+								console.error("dsh-agents-sidecar: row configuration handoff timed out");
+							}
+						})), "dsh-agents-sidecar: row configuration seat");
+					} catch (err) {
+						console.error("dsh-agents-sidecar: row configuration mount failed", err);
+					}
+				});
+			} catch (err) {
+				console.error("dsh-agents-sidecar: configForms injection failed", err);
+			}
 			try {
 				ctx.inject(["settingsScope"], (injected) => {
 					const sctx = injected;
 					try {
 						const scope = sctx.settingsScope.bind({ namespace: SETTINGS_NAMESPACE });
-						const adoptDefaults = () => {
-							const value = scope.getSnapshot().value;
-							if (value?.ui !== void 0) controller.adoptConfigDefaults(value.ui);
-							if (value?.inject !== void 0) injectPrefs.defaultMode = value.inject.defaultMode;
-							if (value?.analysis !== void 0) analysisPrefs.enabled = value.analysis.enabled;
-						};
+						const adoptDefaults = () => adoptSettingsDefaults(scope);
 						sctx.effect(() => scope.subscribe(adoptDefaults), "dsh-agents-sidecar: settings→filter defaults");
 						adoptDefaults();
 						const SidecarSettingsCardEntry = createSettingsCardEntry(controller, scope);

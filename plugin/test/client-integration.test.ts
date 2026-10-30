@@ -108,7 +108,7 @@ import {
 
 vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
   Button: 'button',
-  IconChevronDownOutline14: 'svg',
+  IconChevronDownOutlineMedium: 'svg',
   Input: 'input',
   Modal: 'div',
   Pill: 'span',
@@ -1257,15 +1257,75 @@ describe('board agent filtering and initial snapshot state', () => {
         sessions,
         filters: { timeWindowHours: 24, showDead: false, agentFilter: secretLikeAgent },
       })
-      const select =
-        html.match(/<select[^>]*data-testid="agents-sidecar-agent-filter"[\s\S]*?<\/select>/)
-          ?.[0] ?? ''
-      expect(select).toContain('All agents')
-      expect(select).toContain('aria-label="Filter sessions by agent type"')
-      expect(select).not.toContain(secretLikeAgent)
+      const tabs =
+        html.match(/<nav[^>]*data-testid="agents-sidecar-agent-tabs"[\s\S]*?<\/nav>/)?.[0] ?? ''
+      expect(tabs).toContain('All (')
+      expect(tabs).toContain('aria-label="Sessions split by agent"')
+      expect(tabs).not.toContain(secretLikeAgent)
     } finally {
       setLocale('zh')
     }
+  })
+
+  it('segments the board by agent with counts that ignore only the agent filter', () => {
+    const sessions = [
+      session('a1', 'claude'),
+      session('a2', 'claude'),
+      session('d1', 'dsh'),
+      session('old-dsh', 'dsh', 'idle', nowMs - 48 * hourMs),
+    ]
+
+    const html = renderBoard({
+      sessions,
+      filters: { timeWindowHours: 24, showDead: false },
+    })
+    const tabs =
+      html.match(/<nav[^>]*data-testid="agents-sidecar-agent-tabs"[\s\S]*?<\/nav>/)?.[0] ?? ''
+    expect(tabs).toContain('全部 (3)')
+    expect(tabs).toContain('Claude (2)')
+    expect(tabs).toContain('DSH (1)')
+    // Adapter order, not frequency order: dsh precedes claude.
+    expect(tabs.indexOf('DSH (1)')).toBeLessThan(tabs.indexOf('Claude (2)'))
+  })
+
+  it('keeps the selected agent tab after its last card ages out of the window', () => {
+    const sessions = [session('old-dsh', 'dsh', 'idle', nowMs - 48 * hourMs)]
+
+    const html = renderBoard({
+      sessions,
+      filters: { timeWindowHours: 24, showDead: false, agentFilter: 'dsh' },
+    })
+    const tabs =
+      html.match(/<nav[^>]*data-testid="agents-sidecar-agent-tabs"[\s\S]*?<\/nav>/)?.[0] ?? ''
+    expect(tabs).toContain('全部 (0)')
+    expect(tabs).toContain('DSH (0)')
+  })
+
+  it('marks exactly the selected agent tab as pressed and keeps other conditions intact', () => {
+    const filters: BoardFilterState = {
+      timeWindowHours: 12,
+      showDead: true,
+      statusFilter: 'waiting',
+      agentFilter: 'dsh',
+    }
+    const html = renderBoard({
+      sessions: [session('a1', 'claude'), session('d1', 'dsh')],
+      filters,
+    })
+    const allTab =
+      html.match(
+        /<(?:span|button)[^>]*data-testid="agents-sidecar-agent-tab-all"[\s\S]*?<\/(?:span|button)>/,
+      )?.[0] ?? ''
+    const dshTab =
+      html.match(/<(?:span|button)[^>]*data-agent="dsh"[\s\S]*?<\/(?:span|button)>/)?.[0] ?? ''
+    expect(allTab).toContain('aria-pressed="false"')
+    expect(dshTab).toContain('aria-pressed="true"')
+    expect(withAgentFilter(filters, 'dsh')).toEqual(filters)
+    expect(withAgentFilter(filters, '')).toEqual({
+      timeWindowHours: 12,
+      showDead: true,
+      statusFilter: 'waiting',
+    })
   })
 
   it('localizes delayed initial loading and suppresses premature empty/error states', () => {

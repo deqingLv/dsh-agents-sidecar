@@ -1107,11 +1107,15 @@ only the attributes it wrote, drains queued lifecycle records during HMR
 handoff, and handles a nested remove-then-reinsert race without restoring a
 stale opener; closing the reinserted layer restores its exact current opener.
 
-The session board adds an agent-type selector to the existing status,
-time-window, and dead-session filters. Before its first snapshot it shows
-localized loading copy and exposes `aria-busy`; an initial failure ends that
-busy state and remains retryable, while failures after a successful snapshot
-keep the stale cards visible with honest degraded or refresh-failure feedback.
+The session board is segmented by agent: a tab strip lists every agent that
+has sessions (with live counts) alongside the existing status, time-window,
+and dead-session filters, and picking a tab narrows the board to that agent
+only. Before its first snapshot it shows localized loading copy and exposes
+`aria-busy`; an initial failure ends that busy state and remains retryable,
+while failures after a successful snapshot keep the stale cards visible with
+honest degraded or refresh-failure feedback. In the detail view, dsh sessions
+hide the merged event stream — the narrow pane cannot show their internal log
+usefully — while keeping the header facts intact.
 
 Opening detail from either the board or project view moves focus into the
 detail controls and remembers the source by its agent/session pair. Back

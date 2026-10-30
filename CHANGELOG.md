@@ -7,8 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The session board is segmented by agent: a tab strip lists every agent
+  with sessions (with live counts, adapter-stable order) in place of the old
+  agent dropdown, and a selected tab narrows the board to that agent while
+  every other filter keeps applying.
+- The session detail view hides the merged event stream for dsh sessions:
+  their logs are mostly internal machinery and the narrow pane cannot show
+  them usefully, so only the header facts render.
+
+### Changed
+
+- The DSH plugin now builds against `@deepseek-ai/dsh-agent` / `dsh-session`
+  `0.2.1-rc.3` and its browser client against the `0.2.1-rc.3` client UI
+  packages, while still running on dsh `0.1.1-rc.2` and newer: `dsh.engines.dsh`
+  and the `dsh-agent` peer widened to `>=0.1.1-rc.2 <0.3.0`. The browser half no
+  longer imports `dsh-client-runtime`, so it no longer depends on a package
+  dsh 0.2.x does not ship: slot services resolve through the plugin's own
+  structural `Context` face. The settings card now has two seats — the 0.1.x
+  `settings.plugin.item` cell (bound through `settingsScope`) and the 0.2.x
+  plugin-manager row configuration page (`plugins.row.config`, bound through
+  `configForms`); whichever generation's service is present is used, the other
+  seat stays inert. Slot-contract type merges into the legacy `SlotMap` were
+  dropped, the card's `SettingsScope` coupling became a structural settings
+  form port, and details that changed in 0.2.x were ported (icon rename to
+  `IconChevronDownOutlineMedium`, `headless` modal without `closeLabel`).
+
 ### Fixed
 
+- The sidecar DSH adapter now reads session logs written by dsh `0.2.x`
+  (session-log format v4), which the agents board previously could not see at
+  all. Durable transcripts named `session.v4.jsonl.zstd` are discovered,
+  replayed, and preferred over a same-session `session.jsonl.zstd` when both
+  generations exist; v4 session headers are validated (the new required
+  `isSeeded` flag must be present and false — seeded fork sessions are excluded
+  like other delegated/inherited sessions), and the projection cache is read
+  from both layouts: the legacy single `storages/session_projcache.json` file
+  and the current per-record `storages/session_projcache/sessions/<session
+  id>.json` shards. Per-record shards win id collisions, their mtime drives
+  the `updated_at` fallback and `seq_grew` detection, oversized shards are
+  skipped, and quarantined `.json.bak.<stamp>` files are ignored.
 - The `/sidecar` client contribution now publishes `description` as the thunk
   the slash-menu runtime calls (`contribution.description()`), instead of a
   getter returning a string. Opening `/` no longer logs

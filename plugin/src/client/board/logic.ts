@@ -331,6 +331,45 @@ export function withAgentFilter(
   return next
 }
 
+/** One agent tab of the segmented board (design: 按 Agent 区分). */
+export interface AgentSegmentVM {
+  agent: BoardAgentFilter
+  label: string
+  /**
+   * Cards carrying this agent among the OTHER active filters (time window,
+   * status, dead); the agent condition itself is ignored so the tab always
+   * shows what clicking it would reveal.
+   */
+  count: number
+}
+
+/**
+ * Build the segmented-board agent tabs: every supported agent represented
+ * in the given (agent-unfiltered) cards, in adapter-stable order. A still
+ * selected agent keeps its tab at count 0 so the choice never strands the
+ * user after its last card ages out; unknown tokens are never reflected.
+ */
+export function agentSegments(
+  sessions: ReadonlyArray<Pick<SessionCardVM, 'agent'>>,
+  selected?: string,
+): AgentSegmentVM[] {
+  const counts = new Map<BoardAgentFilter, number>()
+  for (const session of sessions) {
+    const agent = normalizeAgentFilter(session.agent)
+    if (agent !== null) counts.set(agent, (counts.get(agent) ?? 0) + 1)
+  }
+  const available = new Set<BoardAgentFilter>(counts.keys())
+  const selectedAgent = normalizeAgentFilter(selected)
+  if (selectedAgent !== null) available.add(selectedAgent)
+  return SUPPORTED_AGENT_FILTERS
+    .filter((agent) => available.has(agent))
+    .map((agent) => ({
+      agent,
+      label: AGENT_DISPLAY_NAMES[agent],
+      count: counts.get(agent) ?? 0,
+    }))
+}
+
 // ---------------------------------------------------------------------------
 // Time-window filtering.
 // ---------------------------------------------------------------------------

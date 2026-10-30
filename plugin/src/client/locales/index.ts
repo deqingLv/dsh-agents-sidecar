@@ -2,8 +2,8 @@
  * Module-owned lightweight locale table for the agents-sidecar client half.
  *
  * WHY MODULE-OWNED (source-audit conclusion, T2.3): the installed SDK
- * surface (`@deepseek-ai/dsh-client-runtime` 0.1.1-rc.2 +
- * `@deepseek-ai/dsh-client-ui-slots`) ships only the locale TYPE currency
+ * surface (the browser plugin surface of dsh 0.1.x and 0.2.x) ships only
+ * the locale TYPE currency
  * (`LocaleNamespaceMap`, `Translate`, the `locale:` register option and the
  * `t` standard seat) plus the boot-once `slots.installLocale(face)` hook;
  * the `ctx.locale` service itself lives in a separate plugin

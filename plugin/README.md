@@ -20,9 +20,10 @@
 
 ## 前置条件
 
-- **dsh ≥ 0.1.1-rc.2**(`package.json` 的 `engines.dsh` / `dsh.engines.dsh` 均为 `>=0.1.1-rc.2`)。
-- peer 依赖 `@deepseek-ai/cordis@^4.0.1` 与 `@deepseek-ai/dsh-agent@^0.1.1-rc.2` 均为 optional,由 dsh profile 树提供,无需手工安装。
+- **dsh 0.1.1-rc.2 起至 0.2.x(< 0.3.0)**(`package.json` 的 `engines.dsh` / `dsh.engines.dsh` 均为 `>=0.1.1-rc.2 <0.3.0`)。
+- peer 依赖 `@deepseek-ai/cordis@^4.0.1` 与 `@deepseek-ai/dsh-agent@>=0.1.1-rc.2 <0.3.0` 均为 optional,由 dsh profile 树提供,无需手工安装。
 - **agents-sidecar CLI(可选)**:daemon 托管(自动拉起)与 macOS LaunchAgent 检测需要本机可调用的 `agents-sidecar`(或经 `sidecar.command` 配置的任意调用形态,如 `["python3", "/path/to/agents-sidecar.pyz"]`)。纯 PATH 名未命中宿主 `PATH` 时,插件会再搜 `~/.local/bin` 与 Homebrew/usr 前缀,因此继承 launchd `PATH` 的 GUI 宿主也能找到 `install.sh` 链接的 CLI。插件**绝不代装** sidecar;安装方法见[主仓 README](../README.md#installation)。
+- **设置页跨代兼容**:配置卡在 dsh 0.1.x 挂到设置项的键位 `settings.plugin.item`(经 `settingsScope` 绑定),在 dsh 0.2.x 挂到插件页的行配置页 `plugins.row.config`(经 `configForms` 绑定);两代都写同一个 Host settings 命名空间,写粒度与卡片内容不变。
 - 不装 CLI 也能用:只要已有 daemon 在跑(仓库 checkout 手动拉起、LaunchAgent 等),插件经 Unix socket 探测后**只读领养**它,不掌握其生死。
 - Node/pnpm 仅开发本插件时需要;npm 包携带预构建产物,安装免构建。
 

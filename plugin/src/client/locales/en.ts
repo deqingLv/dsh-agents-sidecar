@@ -302,6 +302,9 @@ export const en = {
   'board.topbar.agentFilter': 'Agent',
   'board.topbar.agentFilterAria': 'Filter sessions by agent type',
   'board.topbar.allAgents': 'All agents',
+  'board.topbar.agentTabsAria': 'Sessions split by agent',
+  'board.topbar.agentTabAll': 'All ({n})',
+  'board.topbar.agentTab': '{label} ({n})',
   'board.topbar.countWorking': '{n} working',
   'board.topbar.countWaiting': '{n} waiting',
   'board.topbar.countTotal': '{n} sessions total',
@@ -445,6 +448,8 @@ export const en = {
   'detail.timeline.hiddenNotice': '{n} earlier entries collapsed to stay smooth',
   'detail.timeline.showAll': 'Show all',
   'detail.timeline.chunkRun': '{n} streaming chunks',
+  'detail.timeline.hiddenForDsh':
+    'dsh sessions hide the event stream here — this panel is too narrow to show anything useful.',
   'detail.timeline.degradedPartial':
     'Some timeline sources are unavailable. The events shown may be incomplete.',
   'detail.timeline.degradedAll':

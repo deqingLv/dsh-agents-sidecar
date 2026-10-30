@@ -6,8 +6,9 @@
  * Each exported root factory's top-level component subscribes once to the
  * active locale, refreshing its complete descendant tree without leaf subscriptions.
  *
- * The settings card owns the staged-edit lifecycle over a bound
- * `SettingsScope` (browser mirror of the host settings namespace):
+ * The settings card owns the staged-edit lifecycle over a bound settings
+ * form port (0.1.x `SettingsScope` or 0.2.x `ConfigForm`, both structural):
+ * browser mirror of the host settings namespace):
  * resolved values come from the scope snapshot, edits stage locally, save
  * writes one complete top-level group per changed group (see
  * settings-glue.ts for the write-granularity rationale), and success is
@@ -19,7 +20,7 @@
 import { Button } from '@deepseek-ai/dsh-client-ui-primitives'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactElement } from 'react'
-import type { SettingsScope } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SettingsFormPort, SettingsFormSnapshot } from './client-context.ts'
 import { Board, type SessionFocusTarget } from './board/Board.tsx'
 import { ProjectView } from './board/project-view.tsx'
 import { AnalysisPanel } from './analysis/AnalysisPanel.tsx'
@@ -558,6 +559,11 @@ export function createFooterWidget(
   }
 }
 
+/** Owner props the row-configuration page passes to a keyed config entry. */
+interface SettingsCardEntryProps {
+  view?: 'summary' | 'page'
+}
+
 /** Fallback card values while the scope snapshot is not ready. */
 const FALLBACK_VALUES: SettingsCardValues = configToValues(DEFAULT_CONFIG_VIEW)
 
@@ -568,14 +574,18 @@ const FALLBACK_VALUES: SettingsCardValues = configToValues(DEFAULT_CONFIG_VIEW)
  */
 export function createSettingsCardEntry(
   controller: SidecarController,
-  scope: SettingsScope<SidecarConfigView>,
-): () => ReactElement {
+  scope: SettingsFormPort<SidecarConfigView>,
+): (props?: SettingsCardEntryProps) => ReactElement {
   const subscribeState = (cb: () => void): (() => void) => controller.subscribe(cb)
   const getState = (): SidecarViewState => controller.getState()
   const subscribeScope = (cb: () => void): (() => void) => scope.subscribe(cb)
-  const getSnapshot = (): ReturnType<typeof scope.getSnapshot> => scope.getSnapshot()
+  const getSnapshot = (): SettingsFormSnapshot<SidecarConfigView> => scope.getSnapshot()
 
-  return function SidecarSettingsCardEntry(): ReactElement {
+  return function SidecarSettingsCardEntry(props?: SettingsCardEntryProps): ReactElement {
+    // 0.2.x row configuration: the page draws its own chrome and only asks
+    // for `page`; `summary` is the row's missing-description fallback.
+    if (props?.view === 'summary') return <span>{t('settings.cardDescription')}</span>
+
     useActiveLocale()
     const snapshot = useSyncExternalStore(subscribeScope, getSnapshot, getSnapshot)
     const state = useSyncExternalStore(subscribeState, getState, getState)
@@ -586,8 +596,11 @@ export function createSettingsCardEntry(
     const resolved =
       snapshot.value !== undefined ? configToValues(snapshot.value) : FALLBACK_VALUES
     const values: SettingsCardValues = { ...resolved, ...staged }
+    // 0.1.x scope reports `mode`; the 0.2.x form's `writable` alone decides.
     const writable =
-      snapshot.status === 'ready' && snapshot.writable && snapshot.mode === 'host'
+      snapshot.status === 'ready' &&
+      snapshot.writable &&
+      (snapshot.mode === undefined || snapshot.mode === 'host')
     const dirty = !cardValuesEqual(values, resolved)
 
     const onChange = <K extends keyof SettingsCardValues>(

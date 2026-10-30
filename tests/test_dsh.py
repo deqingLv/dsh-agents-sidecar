@@ -111,17 +111,19 @@ def _make_stalling_discovery_binary(path):
     os.chmod(path, 0o755)
 
 
-def _write_durable_log(dsh_home, session_id, cwd="/fixture/project", **changes):
+def _write_durable_log(dsh_home, session_id, cwd="/fixture/project", version=0, **changes):
     header = {
         "type": "session",
-        "version": 0,
+        "version": version,
         "id": session_id,
         "cwd": cwd,
         "createdAt": 1_787_429_064_000,
         "delegationDepth": 0,
     }
+    if version == 4:
+        header["isSeeded"] = False
     header.update(changes)
-    path = dsh_module._transcript_path(dsh_home, cwd, session_id)
+    path = dsh_module._transcript_path(dsh_home, cwd, session_id, version)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("wb") as stream:
         _write_record(stream, header)
@@ -134,6 +136,45 @@ def _write_durable_log(dsh_home, session_id, cwd="/fixture/project", **changes):
                 "data": {"reason": {"kind": "completed"}},
             },
         )
+    return path
+
+
+def _write_projection_record(
+    dsh_home,
+    session_id,
+    cwd,
+    title,
+    format_version=4,
+    seq=7,
+    stats=None,
+):
+    """Write one per-record shard in the dsh 0.2.x projection-cache layout."""
+
+    directory = dsh_home / "storages" / "session_projcache" / "sessions"
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / (dsh_module._encode_segment(session_id) + ".json")
+    path.write_text(
+        json.dumps(
+            {
+                "version": 7,
+                "record": {
+                    "identity": {
+                        "cwd": cwd,
+                        "createdAt": 1_787_429_064_000,
+                        "formatVersion": format_version,
+                        "isSeeded": False,
+                        "inheritedEventCount": 0,
+                    },
+                    "rows": {
+                        "title": {"seq": seq, "val": title},
+                        "sessionStats": {"seq": seq, "val": stats or {"pendingCalls": {}}},
+                        "plan": {"seq": seq, "val": {}},
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     return path
 
 
@@ -249,6 +290,217 @@ class DSHDiscoveryTests(unittest.TestCase):
         self.assertNotIn("durable_only", sessions[0].extra)
         self.assertEqual(7, sessions[0].extra["seq"])
         self.assertEqual(0, decode.call_count)
+
+    def test_v4_durable_session_is_discovered_and_replayed(self):
+        transcript = _write_durable_log(
+            self.dsh_home,
+            "v4-headless",
+            cwd="/fixture/v4-project",
+            version=4,
+            agentPreset="standard",
+        )
+
+        sessions = self.discover()
+
+        self.assertEqual(["v4-headless"], [session.session_id for session in sessions])
+        session = sessions[0]
+        self.assertEqual("/fixture/v4-project", session.project)
+        self.assertEqual(str(transcript), session.transcript)
+        self.assertTrue(str(transcript).endswith("session.v4.jsonl.zstd"))
+        self.assertEqual(Status.IDLE, session.status)
+        self.assertEqual("session_store", session.extra["source"])
+        self.assertTrue(session.extra["durable_only"])
+
+        replay_binary = self.root / "replay-passthrough"
+        _make_passthrough_binary(replay_binary)
+        page = replay_dsh_events(
+            Path(session.transcript),
+            zstd_binary=str(replay_binary),
+        )
+        self.assertEqual(
+            ["session", "turn/end"], [record["type"] for record in page]
+        )
+        self.assertTrue(page.exhausted)
+
+    def test_v4_seeded_delegated_and_foreign_headers_are_rejected(self):
+        _write_durable_log(
+            self.dsh_home,
+            "v4-seeded",
+            cwd="/fixture/v4-project",
+            version=4,
+            isSeeded=True,
+        )
+        _write_durable_log(
+            self.dsh_home,
+            "v4-delegated",
+            cwd="/fixture/v4-project",
+            version=4,
+            delegationDepth=1,
+        )
+        unflagged = dsh_module._transcript_path(
+            self.dsh_home,
+            "/fixture/v4-project",
+            "v4-unflagged",
+            4,
+        )
+        unflagged.parent.mkdir(parents=True, exist_ok=True)
+        with unflagged.open("wb") as stream:
+            _write_record(
+                stream,
+                {
+                    "type": "session",
+                    "version": 4,
+                    "id": "v4-unflagged",
+                    "cwd": "/fixture/v4-project",
+                    "createdAt": 1_787_429_064_000,
+                    "delegationDepth": 0,
+                },
+            )
+
+        sessions = self.discover()
+
+        self.assertEqual([], [session.session_id for session in sessions])
+
+    def test_v4_transcript_wins_when_both_generations_exist(self):
+        legacy = _write_durable_log(
+            self.dsh_home,
+            "both-generations",
+            cwd="/fixture/both-project",
+        )
+        current = _write_durable_log(
+            self.dsh_home,
+            "both-generations",
+            cwd="/fixture/both-project",
+            version=4,
+        )
+        self.assertNotEqual(legacy, current)
+
+        sessions = self.discover()
+
+        self.assertEqual(
+            ["both-generations"], [session.session_id for session in sessions]
+        )
+        self.assertEqual(str(current), sessions[0].transcript)
+        self.assertTrue(sessions[0].transcript.endswith("session.v4.jsonl.zstd"))
+
+    def test_sharded_projection_cache_sessions_are_discovered(self):
+        session_id = "sharded-v4"
+        cwd = "/fixture/sharded-project"
+        transcript = _write_durable_log(self.dsh_home, session_id, cwd=cwd, version=4)
+        record = _write_projection_record(self.dsh_home, session_id, cwd, "Shard title")
+        shards = record.parent
+        (shards / "sharded-v4.json.bak.2026-10-30T00-00-00").write_text(
+            "{}", encoding="utf-8"
+        )
+        (shards / "foreign.json").write_text(
+            json.dumps({"version": 99, "note": "no record"}), encoding="utf-8"
+        )
+
+        sessions = self.discover()
+
+        self.assertEqual([session_id], [session.session_id for session in sessions])
+        session = sessions[0]
+        self.assertEqual("Shard title", session.title)
+        self.assertEqual("session_projcache", session.extra["source"])
+        self.assertEqual(str(record), session.extra["index"])
+        self.assertEqual(str(transcript), session.transcript)
+        self.assertTrue(session.transcript.endswith("session.v4.jsonl.zstd"))
+        self.assertEqual(7, session.extra["seq"])
+        self.assertFalse(session.extra["seq_grew"])
+        self.assertTrue(session.extra["transcript_exists"])
+        self.assertTrue(session.extra["replay_available"])
+
+        record = _write_projection_record(
+            self.dsh_home,
+            session_id,
+            cwd,
+            "Shard title",
+            seq=9,
+            stats={"openStep": {"seq": 3}, "pendingCalls": {}},
+        )
+        record_mtime = record.stat().st_mtime
+
+        sessions = self.discover()
+
+        self.assertEqual([session_id], [session.session_id for session in sessions])
+        session = sessions[0]
+        self.assertEqual(9, session.extra["seq"])
+        self.assertTrue(session.extra["seq_grew"])
+        self.assertTrue(session.extra["open_evidence"])
+        self.assertGreaterEqual(session.updated_at, record_mtime)
+
+    def test_sharded_records_merge_with_and_win_over_the_legacy_index(self):
+        index_path = self.dsh_home / "storages" / "session_projcache.json"
+        index_path.parent.mkdir(parents=True, exist_ok=True)
+        index_path.write_text(
+            json.dumps(
+                {
+                    "tables": {
+                        "sessions": {
+                            "collision": {
+                                "identity": {
+                                    "cwd": "/fixture/collision-project",
+                                    "createdAt": 1_787_429_064_000,
+                                },
+                                "rows": {
+                                    "title": {
+                                        "seq": 7,
+                                        "val": "Stale legacy title",
+                                    }
+                                },
+                            },
+                            "legacy-only": {
+                                "identity": {
+                                    "cwd": "/fixture/legacy-project",
+                                    "createdAt": 1_787_429_064_000,
+                                },
+                                "rows": {
+                                    "title": {"seq": 7, "val": "Legacy title"},
+                                    "sessionStats": {
+                                        "seq": 7,
+                                        "val": {"pendingCalls": {}},
+                                    },
+                                    "plan": {"seq": 7, "val": {}},
+                                },
+                            },
+                        }
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
+        collision_shard = _write_projection_record(
+            self.dsh_home,
+            "collision",
+            "/fixture/collision-project",
+            "Shard title",
+        )
+        shard_only = _write_projection_record(
+            self.dsh_home,
+            "shard-only",
+            "/fixture/shard-only-project",
+            "Shard only title",
+        )
+
+        sessions = self.discover()
+
+        self.assertEqual(
+            ["collision", "legacy-only", "shard-only"],
+            [session.session_id for session in sessions],
+        )
+        by_id = {session.session_id: session for session in sessions}
+        self.assertEqual("Shard title", by_id["collision"].title)
+        self.assertEqual(str(collision_shard), by_id["collision"].extra["index"])
+        self.assertTrue(
+            by_id["collision"].transcript.endswith("session.v4.jsonl.zstd")
+        )
+        self.assertEqual("Legacy title", by_id["legacy-only"].title)
+        self.assertEqual(str(index_path), by_id["legacy-only"].extra["index"])
+        self.assertTrue(
+            by_id["legacy-only"].transcript.endswith("session.jsonl.zstd")
+        )
+        self.assertEqual("Shard only title", by_id["shard-only"].title)
+        self.assertEqual(str(shard_only), by_id["shard-only"].extra["index"])
 
     def test_fast_exit_decoder_pipe_is_drained_after_process_exit(self):
         payload = json.dumps(

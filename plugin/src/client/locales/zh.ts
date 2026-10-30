@@ -307,6 +307,9 @@ export const zh = {
   'board.topbar.agentFilter': 'Agent',
   'board.topbar.agentFilterAria': '按 agent 类型过滤会话',
   'board.topbar.allAgents': '全部 agent',
+  'board.topbar.agentTabsAria': '按 agent 区分会话',
+  'board.topbar.agentTabAll': '全部 ({n})',
+  'board.topbar.agentTab': '{label} ({n})',
   'board.topbar.countWorking': '{n} 工作中',
   'board.topbar.countWaiting': '{n} 等待中',
   'board.topbar.countTotal': '共 {n} 个会话',
@@ -446,6 +449,7 @@ export const zh = {
   'detail.timeline.hiddenNotice': '为保持流畅,较早的 {n} 条已折叠',
   'detail.timeline.showAll': '全部显示',
   'detail.timeline.chunkRun': '{n} 个流式分块',
+  'detail.timeline.hiddenForDsh': 'dsh 会话不展示会话流,窗口太小也展示不了什么',
   'detail.timeline.degradedPartial':
     '部分时间线来源暂不可用,当前显示的事件可能不完整。',
   'detail.timeline.degradedAll':
