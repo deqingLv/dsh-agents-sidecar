@@ -1,6 +1,6 @@
 {
   "name": "dsh-agents-sidecar",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Agent Sidecar as a native DSH plugin: cross-agent monitoring, injection and bypass analysis / \u8de8 agent \u76d1\u63a7\u3001\u6ce8\u5165\u4e0e\u65c1\u8def\u5206\u6790",
   "type": "module",
   "main": "lib/index.js",

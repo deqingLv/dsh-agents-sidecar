@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-10-30
+
 ### Added
 
 - The session board is segmented by agent: a tab strip lists every agent
@@ -752,7 +754,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI and terminal-dashboard workflows for session listing, status, watching,
   and process inspection.
 
-[Unreleased]: https://github.com/deqingLv/dsh-agents-sidecar/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/deqingLv/dsh-agents-sidecar/compare/v0.12.1...HEAD
+[0.12.1]: https://github.com/deqingLv/dsh-agents-sidecar/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/deqingLv/dsh-agents-sidecar/compare/v0.11.4...v0.12.0
 [0.11.4]: https://github.com/shendeguize/AgentSideCar/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/shendeguize/AgentSideCar/compare/v0.11.2...v0.11.3
