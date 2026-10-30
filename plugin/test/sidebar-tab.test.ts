@@ -11,7 +11,7 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ClientContext } from '../src/client/client-context.ts'
 import type { SessionCardVM } from '../src/client/board/logic.ts'
 import type { SidecarViewState } from '../src/client/controller.ts'
 import { zh } from '../src/client/locales/zh.ts'

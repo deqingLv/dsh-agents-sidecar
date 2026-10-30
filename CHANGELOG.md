@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The DSH plugin now builds against `@deepseek-ai/dsh-agent` / `dsh-session`
+  `0.2.1-rc.3` and its browser client against the `0.2.1-rc.3` client UI
+  packages, while still running on dsh `0.1.1-rc.2` and newer: `dsh.engines.dsh`
+  and the `dsh-agent` peer widened to `>=0.1.1-rc.2 <0.3.0`. The browser half no
+  longer imports `dsh-client-runtime`, so it no longer depends on a package
+  dsh 0.2.x does not ship: slot services resolve through the plugin's own
+  structural `Context` face. The settings card now has two seats — the 0.1.x
+  `settings.plugin.item` cell (bound through `settingsScope`) and the 0.2.x
+  plugin-manager row configuration page (`plugins.row.config`, bound through
+  `configForms`); whichever generation's service is present is used, the other
+  seat stays inert. Slot-contract type merges into the legacy `SlotMap` were
+  dropped, the card's `SettingsScope` coupling became a structural settings
+  form port, and details that changed in 0.2.x were ported (icon rename to
+  `IconChevronDownOutlineMedium`, `headless` modal without `closeLabel`).
+
 ### Fixed
 
 - The `/sidecar` client contribution now publishes `description` as the thunk

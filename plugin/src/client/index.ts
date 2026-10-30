@@ -10,8 +10,9 @@
  * - a self-healing Agent Center row in the host sidebar;
  * - `sidebar.footer.action` (list slot, root scope): the connection-dot
  *   footer widget;
- * - `settings.plugin.item` (keyed slot, root scope): the settings card,
- *   keyed by the host-side namespace `dsh-agents-sidecar`;
+ * - the settings card: `settings.plugin.item` (keyed slot, root scope) on
+ *   dsh 0.1.x, `plugins.row.config` (keyed row-configuration page) on dsh
+ *   0.2.x, both keyed to the host-side namespace `dsh-agents-sidecar`;
  * - the lazily registered `/sidecar` command and optional better-sidebar
  *   mini tab.
  *
@@ -29,18 +30,17 @@
  *   this plugin's id/key, then registers the new component closure;
  * - graceful degradation: every mount is individually try/catch-ed —
  *   a failing seat logs and is skipped, never taking the GUI down;
- * - the settings card waits on the optional `settingsScope` service via
- *   `ctx.inject` (provided by dsh-client-ui-settings in the web app
- *   composition); board and widget mount without it.
+ * - the settings card waits on the optional settings service of the
+ *   running generation via `ctx.inject` (`settingsScope` on 0.1.x,
+ *   `configForms` on 0.2.x); board and widget mount without it.
  */
 
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-// Type-only slot-contract merges into SlotMap (erased at runtime):
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
-import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
-import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
-import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
-import type { SettingsScope, SettingsScopeSpec } from '@deepseek-ai/dsh-client-runtime/client'
+import type {
+  ClientContext,
+  ConfigFormsPort,
+  SettingsFormPort,
+  SidecarSlotName,
+} from './client-context.ts'
 import { registerSidecarCommand } from './commands.ts'
 import { PLUGIN_ID, SidecarController } from './controller.ts'
 import { createInjectActions, createVerifyProbe } from './inject-glue.ts'
@@ -81,13 +81,20 @@ const CENTER_ENTRY_ID = 'dsh-agents-sidecar-center'
 const SETTINGS_NAMESPACE = 'dsh-agents-sidecar'
 
 /**
+ * Key of this bundle's own row on the dsh 0.2.x plugins page:
+ * `<bundle package name>#<row id>` (harness
+ * packages/client/ui-plugin-manager/src/client/slot-contract.ts).
+ */
+const ROW_CONFIG_KEY = `${name}#${ENTRY_ID}`
+
+/**
  * Structural face of the `settingsScope` binder service provided by
- * dsh-client-ui-settings (not a published type surface for plugins in this
- * dsh version; shape verified against harness
- * packages/client/ui-settings/src/client/settings-scope.ts).
+ * dsh-client-runtime on dsh 0.1.x (shape verified against harness
+ * packages/client/ui-settings/src/client/settings-scope.ts; 0.2.x replaces
+ * it with the `configForms` service and its per-namespace `ConfigForm`).
  */
 interface SettingsScopeBinderFace {
-  bind<T>(spec: SettingsScopeSpec<T>): SettingsScope<T>
+  bind<T>(spec: { namespace: string }): SettingsFormPort<T>
 }
 
 /** Structural Cordis face keeps the unpublished locale package out of runtime imports. */
@@ -95,12 +102,11 @@ interface LocaleInjectContextFace {
   inject(deps: string[], callback: (ctx: unknown) => void): unknown
 }
 
-/** The four slot seats this plugin occupies (all merged into SlotMap). */
-type SidecarSlot =
-  | 'shell.overlay'
-  | 'conversation.view'
-  | 'sidebar.footer.action'
-  | 'settings.plugin.item'
+/** The keyed settings seats, per harness generation (both keyed by namespace/row). */
+const KEYED_SLOTS: Partial<Record<SidecarSlotName, string>> = {
+  'settings.plugin.item': SETTINGS_NAMESPACE,
+  'plugins.row.config': ROW_CONFIG_KEY,
+}
 
 /**
  * Apply-guard: whether the slot ledger already holds this plugin's entry
@@ -109,13 +115,14 @@ type SidecarSlot =
  * check runs inside the deferred `slots.inject` callback — i.e. at actual
  * registration time, when the ledger is authoritative.
  */
-function hasOwnEntry(ctx: ClientContext, slot: SidecarSlot): boolean {
+function hasOwnEntry(ctx: ClientContext, slot: SidecarSlotName): boolean {
+  const key = KEYED_SLOTS[slot]
+  const entries = ctx.slots.entries(slot)
+  if (key !== undefined) {
+    return entries.some((entry) => entry.options.key === key)
+  }
   const entryId = slot === 'shell.overlay' ? CENTER_ENTRY_ID : ENTRY_ID
-  return ctx.slots
-    .entries(slot)
-    .some((entry) =>
-      entry.options.id === entryId ||
-      (slot === 'settings.plugin.item' && entry.options.key === SETTINGS_NAMESPACE))
+  return entries.some((entry) => entry.options.id === entryId)
 }
 
 /**
@@ -400,7 +407,65 @@ export function apply(ctx: ClientContext): void {
     console.error('dsh-agents-sidecar: footer widget mount failed', err)
   }
 
-  // Seat 4: settings card, once the optional settingsScope service resolves.
+  // Settings defaults seed the board filters until the user touches them
+  // (localStorage value or filter gesture wins); inject.default-mode feeds
+  // the panel's late-bound mode reader; analysis.enabled feeds the analysis
+  // entry's late-bound gate. Both generations carry the same value shape.
+  const adoptSettingsDefaults = (scope: SettingsFormPort<SidecarConfigView>): void => {
+    const value = scope.getSnapshot().value
+    if (value?.ui !== undefined) controller.adoptConfigDefaults(value.ui)
+    if (value?.inject !== undefined) injectPrefs.defaultMode = value.inject.defaultMode
+    if (value?.analysis !== undefined) analysisPrefs.enabled = value.analysis.enabled
+  }
+
+  // Seat 4a (dsh 0.2.x): the plugin manager's row-configuration page.
+  // 0.2.x moved browser settings from the keyed `settings.plugin.item` cell
+  // to `configForms` + the keyed `plugins.row.config` seat; the card content
+  // and write granularity are unchanged. Inert on 0.1.x (no configForms).
+  try {
+    ctx.inject(['configForms'], (injected) => {
+      const fctx = injected as ClientContext & { configForms: ConfigFormsPort }
+      try {
+        const form = fctx.configForms.get<SidecarConfigView>(SETTINGS_NAMESPACE)
+        const adoptDefaults = (): void => adoptSettingsDefaults(form)
+        fctx.effect(
+          () => form.subscribe(adoptDefaults),
+          'dsh-agents-sidecar: configForms→filter defaults',
+        )
+        adoptDefaults()
+
+        const SidecarRowConfigEntry = createSettingsCardEntry(controller, form)
+        fctx.effect(
+          () => fctx.configForms.whileServed([SETTINGS_NAMESPACE], () =>
+            acquireWithHandoff(
+              () => hasOwnEntry(fctx, 'plugins.row.config')
+                ? undefined
+                : fctx.slots.register({
+                    name: 'plugins.row.config',
+                    key: ROW_CONFIG_KEY,
+                  }, SidecarRowConfigEntry),
+              {
+                isCollision: isRegistrationCollision,
+                onError: (error) => {
+                  console.error('dsh-agents-sidecar: row configuration registration failed', error)
+                },
+                onTimeout: () => {
+                  console.error('dsh-agents-sidecar: row configuration handoff timed out')
+                },
+              },
+            )),
+          'dsh-agents-sidecar: row configuration seat',
+        )
+      } catch (err) {
+        console.error('dsh-agents-sidecar: row configuration mount failed', err)
+      }
+    })
+  } catch (err) {
+    console.error('dsh-agents-sidecar: configForms injection failed', err)
+  }
+
+  // Seat 4b (dsh 0.1.x): the settings pane's keyed card, once the optional
+  // settingsScope service resolves. Inert on 0.2.x (no settingsScope).
   try {
     // The inject callback receives the base cordis Context; narrow once
     // (slots/effect are inherited, settingsScope is the resolved service).
@@ -410,17 +475,7 @@ export function apply(ctx: ClientContext): void {
         const scope = sctx.settingsScope.bind<SidecarConfigView>({
           namespace: SETTINGS_NAMESPACE,
         })
-
-        // ui.* settings defaults seed the board filters until the user
-        // touches them (localStorage value or filter gesture wins);
-        // inject.default-mode feeds the panel's late-bound mode reader;
-        // analysis.enabled feeds the analysis entry's late-bound gate.
-        const adoptDefaults = (): void => {
-          const value = scope.getSnapshot().value
-          if (value?.ui !== undefined) controller.adoptConfigDefaults(value.ui)
-          if (value?.inject !== undefined) injectPrefs.defaultMode = value.inject.defaultMode
-          if (value?.analysis !== undefined) analysisPrefs.enabled = value.analysis.enabled
-        }
+        const adoptDefaults = (): void => adoptSettingsDefaults(scope)
         sctx.effect(
           () => scope.subscribe(adoptDefaults),
           'dsh-agents-sidecar: settings→filter defaults',

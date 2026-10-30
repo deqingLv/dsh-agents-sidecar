@@ -148,6 +148,27 @@ describe('slot handoff wiring', () => {
     }
     expect(source).not.toMatch(/if \(hasOwnEntry\([^)]*\)\) return \(\) => \{\}/)
   })
+
+  it('seats the settings card in both generations without a runtime import', () => {
+    const index = readFileSync(
+      new URL('../src/client/index.ts', import.meta.url),
+      'utf8',
+    )
+    expect(index).not.toContain('@deepseek-ai/dsh-client-runtime')
+    expect(index).toContain('configForms.whileServed([SETTINGS_NAMESPACE]')
+    expect(index).toContain("name: 'plugins.row.config'")
+    expect(index).toContain('key: ROW_CONFIG_KEY')
+    // `template` keyed by namespace, so a re-entry after reload is skipped.
+    expect(index).toContain("name: 'settings.plugin.item'")
+    expect(index).toContain('key: SETTINGS_NAMESPACE')
+
+    const mount = readFileSync(
+      new URL('../src/client/mount.tsx', import.meta.url),
+      'utf8',
+    )
+    expect(mount).not.toContain("@deepseek-ai/dsh-client-runtime/client")
+    expect(mount).toContain("props?.view === 'summary'")
+  })
 })
 
 describe('style lifecycle source contract', () => {

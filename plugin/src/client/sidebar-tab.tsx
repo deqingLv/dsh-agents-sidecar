@@ -8,7 +8,7 @@
 
 import { createElement as h, useEffect, useState, useSyncExternalStore } from 'react'
 import type { ReactElement, ReactNode } from 'react'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ClientContext } from './client-context.ts'
 import type { SidecarController, SidecarViewState } from './controller.ts'
 import {
   acquireWithHandoff,

@@ -37,7 +37,7 @@
 
 import {
   Button,
-  IconChevronDownOutline14,
+  IconChevronDownOutlineMedium,
   Input,
   Pill,
 } from '@deepseek-ai/dsh-client-ui-primitives'
@@ -352,7 +352,7 @@ export function SettingsCard(props: SettingsCardProps): ReactNode {
           <span className={css['description']}>{t('settings.cardDescription')}</span>
         </span>
         {props.dirty ? <Pill className={css['pending']}>{t('settings.unsaved')}</Pill> : null}
-        <IconChevronDownOutline14
+        <IconChevronDownOutlineMedium
           className={`${css['chevron']} ${open ? css['chevronOpen'] : ''}`}
         />
       </button>

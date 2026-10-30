@@ -32,7 +32,7 @@ import type { FetchLike, RequestInitLike, ResponseLike } from '../src/client/api
 // the other component tests use keeps this suite in a bare node environment.
 vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
   Button: 'button',
-  IconChevronDownOutline14: 'svg',
+  IconChevronDownOutlineMedium: 'svg',
   Input: 'input',
   Modal: 'div',
   Pill: 'span',

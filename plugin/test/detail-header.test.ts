@@ -26,7 +26,7 @@ import { SessionStore } from '../src/session-store.ts'
 
 vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
   Button: 'button',
-  IconChevronDownOutline14: 'svg',
+  IconChevronDownOutlineMedium: 'svg',
   Input: 'input',
   Modal: 'div',
   Pill: 'span',

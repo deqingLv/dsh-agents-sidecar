@@ -5832,7 +5832,7 @@ window.__ModuleLoader__.load({
 							className: settings_card_module_css_default["pending"],
 							children: t$2("settings.unsaved")
 						}) : null,
-						/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconChevronDownOutline14, { className: `${settings_card_module_css_default["chevron"]} ${open ? settings_card_module_css_default["chevronOpen"] : ""}` })
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconChevronDownOutlineMedium, { className: `${settings_card_module_css_default["chevron"]} ${open ? settings_card_module_css_default["chevronOpen"] : ""}` })
 					]
 				}), open ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: settings_card_module_css_default["body"],
@@ -10370,7 +10370,6 @@ window.__ModuleLoader__.load({
 						open: injectOpen,
 						onClose: closeInject,
 						title: t("inject.title"),
-						closeLabel: t("inject.close"),
 						className: detail_view_module_css_default["injectDialog"],
 						headless: true,
 						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InjectPanel, {
@@ -11066,8 +11065,9 @@ window.__ModuleLoader__.load({
 		* Each exported root factory's top-level component subscribes once to the
 		* active locale, refreshing its complete descendant tree without leaf subscriptions.
 		*
-		* The settings card owns the staged-edit lifecycle over a bound
-		* `SettingsScope` (browser mirror of the host settings namespace):
+		* The settings card owns the staged-edit lifecycle over a bound settings
+		* form port (0.1.x `SettingsScope` or 0.2.x `ConfigForm`, both structural):
+		* browser mirror of the host settings namespace):
 		* resolved values come from the scope snapshot, edits stage locally, save
 		* writes one complete top-level group per changed group (see
 		* settings-glue.ts for the write-granularity rationale), and success is
@@ -11463,7 +11463,8 @@ window.__ModuleLoader__.load({
 			const getState = () => controller.getState();
 			const subscribeScope = (cb) => scope.subscribe(cb);
 			const getSnapshot = () => scope.getSnapshot();
-			return function SidecarSettingsCardEntry() {
+			return function SidecarSettingsCardEntry(props) {
+				if (props?.view === "summary") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: t("settings.cardDescription") });
 				useActiveLocale();
 				const snapshot = (0, react.useSyncExternalStore)(subscribeScope, getSnapshot, getSnapshot);
 				const state = (0, react.useSyncExternalStore)(subscribeState, getState, getState);
@@ -11475,7 +11476,7 @@ window.__ModuleLoader__.load({
 					...resolved,
 					...staged
 				};
-				const writable = snapshot.status === "ready" && snapshot.writable && snapshot.mode === "host";
+				const writable = snapshot.status === "ready" && snapshot.writable && (snapshot.mode === void 0 || snapshot.mode === "host");
 				const dirty = !cardValuesEqual(values, resolved);
 				const onChange = (field, value) => {
 					setSaveFailed(false);
@@ -12729,6 +12730,17 @@ window.__ModuleLoader__.load({
 		/** Host-side settings namespace (host half registers it via ctx.settings). */
 		const SETTINGS_NAMESPACE = "dsh-agents-sidecar";
 		/**
+		* Key of this bundle's own row on the dsh 0.2.x plugins page:
+		* `<bundle package name>#<row id>` (harness
+		* packages/client/ui-plugin-manager/src/client/slot-contract.ts).
+		*/
+		const ROW_CONFIG_KEY = `${name}#${ENTRY_ID}`;
+		/** The keyed settings seats, per harness generation (both keyed by namespace/row). */
+		const KEYED_SLOTS = {
+			"settings.plugin.item": SETTINGS_NAMESPACE,
+			"plugins.row.config": ROW_CONFIG_KEY
+		};
+		/**
 		* Apply-guard: whether the slot ledger already holds this plugin's entry
 		* (list slots match their seat-specific `id`, the keyed settings slot by
 		* namespace `key`). `entries()` answers [] for undeclared slots, and the
@@ -12736,8 +12748,11 @@ window.__ModuleLoader__.load({
 		* registration time, when the ledger is authoritative.
 		*/
 		function hasOwnEntry(ctx, slot) {
+			const key = KEYED_SLOTS[slot];
+			const entries = ctx.slots.entries(slot);
+			if (key !== void 0) return entries.some((entry) => entry.options.key === key);
 			const entryId = slot === "shell.overlay" ? CENTER_ENTRY_ID : ENTRY_ID;
-			return ctx.slots.entries(slot).some((entry) => entry.options.id === entryId || slot === "settings.plugin.item" && entry.options.key === SETTINGS_NAMESPACE);
+			return entries.some((entry) => entry.options.id === entryId);
 		}
 		/**
 		* Lease the optional Host locale service for this injected child fiber.
@@ -12933,17 +12948,46 @@ window.__ModuleLoader__.load({
 			} catch (err) {
 				console.error("dsh-agents-sidecar: footer widget mount failed", err);
 			}
+			const adoptSettingsDefaults = (scope) => {
+				const value = scope.getSnapshot().value;
+				if (value?.ui !== void 0) controller.adoptConfigDefaults(value.ui);
+				if (value?.inject !== void 0) injectPrefs.defaultMode = value.inject.defaultMode;
+				if (value?.analysis !== void 0) analysisPrefs.enabled = value.analysis.enabled;
+			};
+			try {
+				ctx.inject(["configForms"], (injected) => {
+					const fctx = injected;
+					try {
+						const form = fctx.configForms.get(SETTINGS_NAMESPACE);
+						const adoptDefaults = () => adoptSettingsDefaults(form);
+						fctx.effect(() => form.subscribe(adoptDefaults), "dsh-agents-sidecar: configForms→filter defaults");
+						adoptDefaults();
+						const SidecarRowConfigEntry = createSettingsCardEntry(controller, form);
+						fctx.effect(() => fctx.configForms.whileServed([SETTINGS_NAMESPACE], () => acquireWithHandoff(() => hasOwnEntry(fctx, "plugins.row.config") ? void 0 : fctx.slots.register({
+							name: "plugins.row.config",
+							key: ROW_CONFIG_KEY
+						}, SidecarRowConfigEntry), {
+							isCollision: isRegistrationCollision,
+							onError: (error) => {
+								console.error("dsh-agents-sidecar: row configuration registration failed", error);
+							},
+							onTimeout: () => {
+								console.error("dsh-agents-sidecar: row configuration handoff timed out");
+							}
+						})), "dsh-agents-sidecar: row configuration seat");
+					} catch (err) {
+						console.error("dsh-agents-sidecar: row configuration mount failed", err);
+					}
+				});
+			} catch (err) {
+				console.error("dsh-agents-sidecar: configForms injection failed", err);
+			}
 			try {
 				ctx.inject(["settingsScope"], (injected) => {
 					const sctx = injected;
 					try {
 						const scope = sctx.settingsScope.bind({ namespace: SETTINGS_NAMESPACE });
-						const adoptDefaults = () => {
-							const value = scope.getSnapshot().value;
-							if (value?.ui !== void 0) controller.adoptConfigDefaults(value.ui);
-							if (value?.inject !== void 0) injectPrefs.defaultMode = value.inject.defaultMode;
-							if (value?.analysis !== void 0) analysisPrefs.enabled = value.analysis.enabled;
-						};
+						const adoptDefaults = () => adoptSettingsDefaults(scope);
 						sctx.effect(() => scope.subscribe(adoptDefaults), "dsh-agents-sidecar: settings→filter defaults");
 						adoptDefaults();
 						const SidecarSettingsCardEntry = createSettingsCardEntry(controller, scope);
