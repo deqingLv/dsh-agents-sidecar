@@ -1546,6 +1546,14 @@ class RemoteWatchBootstrapTests(unittest.TestCase):
             environment = os.environ.copy()
             environment["HOME"] = str(root / "home")
             environment["TMPDIR"] = str(root)
+            for variable in (
+                "CLAUDE_CONFIG_DIR",
+                "CODEX_HOME",
+                "DSHC_HOME",
+                "DSH_HOME",
+                "KIMI_CODE_HOME",
+            ):
+                environment.pop(variable, None)
             for run in range(20):
                 result = subprocess.run(
                     [sys.executable, "-I", "-c", remote.REMOTE_WATCH_BOOTSTRAP]
