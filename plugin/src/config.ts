@@ -144,7 +144,7 @@ export const Config: z<Config> = z.object({
         .array(String)
         .default(['agents-sidecar'])
         .description(
-          'sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 ["python3", "/path/to/agents-sidecar.pyz"]);插件绝不代装',
+          'sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 ["python3", "/path/to/agents-sidecar.pyz"]);PATH 名未命中时插件再搜 ~/.local/bin 与 Homebrew/usr 前缀(GUI 宿主继承 launchd 的 PATH);插件绝不代装',
         ),
       runtimeDir: z
         .string()

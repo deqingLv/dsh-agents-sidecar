@@ -50,6 +50,7 @@
  * @module dsh-agents-sidecar
  */
 
+import { accessSync, constants, statSync } from 'node:fs'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { homedir } from 'node:os'
 import { isAbsolute, join, resolve } from 'node:path'
@@ -63,6 +64,7 @@ import {
   type AnalysisInput,
   type AnalysisSession,
 } from './analysis.ts'
+import { resolveSidecarCommand } from './command-resolution.ts'
 import { bakedConfigDrift, Config } from './config.ts'
 import { Reconciler, SidecarSocketClient } from './bridge.ts'
 import {
@@ -319,6 +321,21 @@ const ANALYSIS_INPUT_LIMIT = 6000
 const SERVICE_PRESENT = /^service is (?:running|loaded|degraded)/m
 
 /**
+ * True when `path` names an executable regular file this host can spawn.
+ * Command resolution probes its candidate directories with this; a missing,
+ * non-regular or non-executable path reads as "not there" rather than throwing.
+ */
+function isExecutableFile(path: string): boolean {
+  try {
+    if (!statSync(path).isFile()) return false
+    accessSync(path, constants.X_OK)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
  * Resolve the effective runtime directory the way sidecar/daemon.py
  * `default_runtime_dir()` does: explicit config wins, then the
  * AGENTS_SIDECAR_RUNTIME_DIR / legacy AGENT_SIDECAR_HOME environment of the
@@ -440,7 +457,13 @@ function describeUnifiedSession(session: UnifiedSession): string {
 export function apply(ctx: HostContext, config: Config): void {
   const runtimeDir = resolveRuntimeDir(config.sidecar.runtimeDir, process.env)
   const socketPath = join(runtimeDir, SOCKET_NAME)
-  const command = config.sidecar.command
+  const resolution = resolveSidecarCommand(config.sidecar.command, {
+    isExecutable: isExecutableFile,
+    env: process.env,
+    homedir: homedir(),
+    platform: process.platform,
+  })
+  const command = resolution.command
   /** Explicit redirect only when configured; the ambient env already flows. */
   const childEnv: NodeJS.ProcessEnv | undefined =
     config.sidecar.runtimeDir.trim() !== '' ? { [RUNTIME_ENV]: runtimeDir } : undefined
@@ -449,6 +472,22 @@ export function apply(ctx: HostContext, config: Config): void {
     ctx.logger[level](
       meta === undefined ? `dsh-agents-sidecar: ${msg}` : `dsh-agents-sidecar: ${msg} ${JSON.stringify(meta)}`,
     )
+  }
+
+  // A GUI host inherits launchd's PATH, which usually omits `~/.local/bin`
+  // where install.sh links the CLI. Say which absolute path was chosen, or say
+  // exactly what was searched and how to fix it, instead of letting a spawn
+  // ENOENT surface later as an opaque daemon start failure.
+  if (resolution.resolvedPath !== undefined) {
+    log('info', 'resolved the sidecar executable from a fallback directory', {
+      configured: config.sidecar.command,
+      command,
+    })
+  } else if (resolution.searched.length > 0) {
+    log('warn', 'sidecar executable not found; install it or set sidecar.command', {
+      configured: config.sidecar.command,
+      searched: resolution.searched,
+    })
   }
 
   /** Clamped per-line forwarding of daemon output (design §4.c, S8-safe). */

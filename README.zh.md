@@ -1003,6 +1003,13 @@ dsh plugin --profile web add dsh-agents-sidecar
   `analysis.provider` 与 `analysis.model` 构成一对：两者都留空时复用宿主默认
   模型，两者都非空时选择显式路由。设置卡会显示解析后的路由，并阻止保存不完整
   的 pair。
+- `sidecar.command`（默认 `["agents-sidecar"]`）是插件拉起 daemon 的 argv。
+  纯 PATH 名先按宿主 `PATH` 查找，再依次查找 `~/.local/bin`，macOS 上追加
+  `/opt/homebrew/bin` 与 `/usr/local/bin`——因此继承 launchd `PATH` 的 GUI 宿主
+  也能找到 `install.sh` 链接到 `~/.local/bin` 的 CLI。命中后改写为绝对路径并记录
+  日志；全部未命中时日志列出搜索过的目录。显式绝对路径或多段 argv（如
+  `["python3", "/path/to/agents-sidecar.pyz"]`）按原样使用。插件本身绝不安装
+  CLI。
 - `skill.provide`（默认开启）经 dsh Skill 注册表内嵌提供 agents-sidecar
   Skill；文件系统已安装的同名 Skill 自动优先。
 

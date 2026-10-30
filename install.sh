@@ -1120,18 +1120,21 @@ if requested != "latest" and requested != tag:
 if release.get("draft") is not False or release.get("prerelease") is not False:
     raise SystemExit("release is draft or prerelease")
 version = tag[1:]
-artifact_name = "agents-sidecar-{}.pyz".format(version)
+# Tags published before the CLI rename ship `agent-sidecar-<version>.pyz`, and
+# every tag from the next release on ships `agents-sidecar-<version>.pyz`.
+# Accept either name, preferring the current one, so `--version latest` and
+# pinned older tags both keep resolving the exact asset they have.
+candidates = (
+    "agents-sidecar-{}.pyz".format(version),
+    "agent-sidecar-{}.pyz".format(version),
+)
 checksum_name = "SHA256SUMS"
-expected_urls = {
-    artifact_name: (
-        "https://github.com/shendeguize/AgentSideCar/releases/download/"
-        "{}/{}".format(tag, artifact_name)
-    ),
-    checksum_name: (
-        "https://github.com/shendeguize/AgentSideCar/releases/download/"
-        "{}/{}".format(tag, checksum_name)
-    ),
-}
+release_base = (
+    "https://github.com/shendeguize/AgentSideCar/releases/download/"
+    "{}/".format(tag)
+)
+expected_urls = {name: release_base + name for name in candidates}
+expected_urls[checksum_name] = release_base + checksum_name
 assets = release.get("assets")
 if not isinstance(assets, list):
     raise SystemExit("release assets are missing")
@@ -1148,9 +1151,14 @@ for asset in assets:
     if url != expected_urls[name]:
         raise SystemExit("release asset URL mismatch for {}".format(name))
     resolved[name] = url
-if set(resolved) != set(expected_urls):
-    missing = sorted(set(expected_urls).difference(resolved))
-    raise SystemExit("release is missing exact asset(s): {}".format(", ".join(missing)))
+if checksum_name not in resolved:
+    raise SystemExit("release is missing exact asset(s): {}".format(checksum_name))
+identified = [name for name in candidates if name in resolved]
+if not identified:
+    raise SystemExit(
+        "release is missing exact asset(s): {}".format(", ".join(candidates))
+    )
+artifact_name = identified[0]
 (output / "version").write_text(version + "\n", encoding="utf-8")
 (output / "tag").write_text(tag + "\n", encoding="utf-8")
 (output / "artifact-name").write_text(artifact_name + "\n", encoding="utf-8")

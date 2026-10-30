@@ -1,3 +1,4 @@
+import { accessSync, constants, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { createInterface } from "node:readline";
@@ -442,6 +443,77 @@ var AnalysisEngine = class {
 	}
 };
 //#endregion
+//#region src/command-resolution.ts
+/**
+* Resolve the configured `sidecar.command` argv into something the host can
+* actually spawn.
+*
+* The default command is the bare PATH name `agents-sidecar`, but a macOS GUI
+* host inherits launchd's `PATH`, which does not include `~/.local/bin` — the
+* prefix `install.sh` links the CLI into. A bare name is therefore searched on
+* `PATH` first and then in the conventional install directories, and a hit is
+* rewritten to its absolute path. Explicit paths and multi-part argv (for
+* example `python3 /path/to/agents-sidecar.pyz`) are used verbatim: the plugin
+* never second-guesses an operator's explicit invocation.
+*
+* Pure: every filesystem answer arrives through {@link CommandResolutionDeps},
+* so the search is unit-testable without touching a real host.
+*
+* @module
+*/
+/** Directories searched after `PATH` for a bare command name. */
+function fallbackDirectories(deps) {
+	const directories = [join(deps.homedir, ".local", "bin")];
+	if (deps.platform === "darwin") directories.push("/opt/homebrew/bin");
+	directories.push("/usr/local/bin");
+	return directories;
+}
+/** `PATH` entries in search order, without empty segments. */
+function searchPath(deps) {
+	const raw = deps.env?.PATH ?? deps.env?.Path ?? "";
+	const delimiter = deps.platform === "win32" ? ";" : ":";
+	return raw.split(delimiter).filter((entry) => entry !== "");
+}
+/**
+* True when the argv head is an explicit location rather than a PATH lookup.
+* Both separators count so a Windows-style relative path also passes through.
+*/
+function isExplicitLocation(head) {
+	return isAbsolute(head) || head.includes("/") || head.includes("\\");
+}
+/**
+* Resolve `command` against PATH and then the fallback directories.
+*
+* A bare name found on PATH is returned unchanged — the spawn's own lookup
+* already handles it, and keeping the name preserves `PATH` precedence. Only
+* when `PATH` misses does the fallback directory set get a chance, and only
+* then does the result carry {@link CommandResolution.resolvedPath}.
+*/
+function resolveSidecarCommand(command, deps) {
+	const argv = [...command];
+	const head = argv[0];
+	if (argv.length !== 1 || head === void 0 || head === "" || isExplicitLocation(head)) return {
+		command: argv,
+		searched: []
+	};
+	for (const directory of searchPath(deps)) if (deps.isExecutable(join(directory, head))) return {
+		command: argv,
+		searched: []
+	};
+	for (const directory of fallbackDirectories(deps)) {
+		const candidate = join(directory, head);
+		if (deps.isExecutable(candidate)) return {
+			command: [candidate],
+			resolvedPath: candidate,
+			searched: []
+		};
+	}
+	return {
+		command: argv,
+		searched: fallbackDirectories(deps)
+	};
+}
+//#endregion
 //#region src/config.ts
 /**
 * Composition config for the dsh-agents-sidecar host half (design §6, scoped
@@ -484,7 +556,7 @@ const Config = z.object({
 		backoffLimit: z.natural().min(1).default(5).description("托管失败熔断阈值:连续失败达到该次数后停止重启并进入 FAILED")
 	}).description("daemon 生命周期治理"),
 	sidecar: z.object({
-		command: z.array(String).default(["agents-sidecar"]).description("sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 [\"python3\", \"/path/to/agents-sidecar.pyz\"]);插件绝不代装"),
+		command: z.array(String).default(["agents-sidecar"]).description("sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 [\"python3\", \"/path/to/agents-sidecar.pyz\"]);PATH 名未命中时插件再搜 ~/.local/bin 与 Homebrew/usr 前缀(GUI 宿主继承 launchd 的 PATH);插件绝不代装"),
 		runtimeDir: z.string().default("").description("运行时目录:留空用默认 ~/.agents_sidecar(尊重 AGENTS_SIDECAR_RUNTIME_DIR 环境变量);非空时经环境变量传给受托管的 daemon")
 	}).description("sidecar 调用方式"),
 	stream: z.object({
@@ -5487,6 +5559,57 @@ var DaemonSupervisor = class {
 };
 //#endregion
 //#region src/index.ts
+/**
+* Agent Sidecar — dsh host-half plugin entry (M1 + M2 + M3 assembly).
+*
+* Wires the pure modules onto the cordis context:
+*   SessionStore → SidecarSocketClient → FusionQuery (holder) → Reconciler
+*   → DaemonSupervisor → InjectGateway (dsh + send-cli executors)
+*   → AnalysisEngine (lazy agents.create + fusion input adapter)
+*   → createRoutes → ctx.webServer prefix route.
+*
+* M3 fusion wiring in brief: FusionQuery lives behind a holder facade so
+* the dsh event feed can bind lazily (`ctx.inject(['sessions'])`, swap-in/
+* swap-out); sessionQuery resolves per call via reflect `get`; the daemon
+* `replay` op arrives through a paging adapter over `client.replay`; and
+* the reconciler's store face tees subscribe events into fusion's ring.
+*
+* Named exports only: postmortem 0001 documents that a default-exported
+* plugin object silently drops `inject`, so the loader must see the named
+* `name`/`inject`/`Config`/`apply` faces directly on the module namespace.
+*
+* `inject` declares only the two services every milestone needs (webServer,
+* subprocess). `agents` — the M2 dsh in-process injection path — is
+* consumed through a LAZY `ctx.inject(['agents'], …)` instead: cordis
+* `inject` knows no optional tier (`Inject = (keyof M)[] | map`, all
+* required), so a top-level declaration would pend the whole fiber in any
+* composition without dsh-agent and take the M1 read surface down with it.
+* dsh-base does bundle `@deepseek-ai/dsh-agent`, so in standard
+* compositions the lazy callback fires at boot anyway; in agent-less
+* compositions the plugin still loads and the injection surface degrades
+* to the send-cli path only (a dsh-target execute fails with an honest
+* "agents service unavailable" detail) while the M3 analysis actions
+* answer 501 `analysis_unavailable` (same binding gates both).
+*
+* Service contracts consumed here were verified against the installed dsh
+* 0.1.1-rc.2 type declarations, not docs:
+* - `ctx.webServer.register({kind:'prefix', path, handler})` → disposer;
+*   handler is plain node:http and owns the response lifecycle
+*   (@deepseek-ai/dsh-host-webserver lib/types/index.d.ts).
+* - `ctx.subprocess.spawn(spec)` is fully explicit (argv/cwd/stdio/graceMs/
+*   env, argv never shell-interpreted); the handle exposes `done`,
+*   `stdin` (iff spawned with `stdin: 'pipe'`), tree-scoped `terminate()`
+*   (SIGTERM → graceMs → SIGKILL) and `waitForExit()`
+*   (@deepseek-ai/dsh-subprocess lib/types/types.d.ts).
+* - `ctx.agents` is dsh-agent's AgentRegistry (`get(id)` live lookup,
+*   `resume({resumeSessionId,agentOptions?})` → AgentHandle); the structural
+*   {@link AgentsServiceFace} in dsh-inject.ts is satisfied directly.
+* The faces below are structural on purpose: the plugin's type surface
+* stays on the two devDependency SDKs (cordis, schemastery) while the
+* service packages resolve at runtime from the dsh profile tree.
+*
+* @module dsh-agents-sidecar
+*/
 const name = "dsh-agents-sidecar";
 /** Required services; see the module doc for why `agents` is lazy instead. */
 const inject = ["webServer", "subprocess"];
@@ -5544,6 +5667,20 @@ const ANALYSIS_INPUT_LIMIT = 6e3;
 * the single sanitized message line IS the contract.
 */
 const SERVICE_PRESENT = /^service is (?:running|loaded|degraded)/m;
+/**
+* True when `path` names an executable regular file this host can spawn.
+* Command resolution probes its candidate directories with this; a missing,
+* non-regular or non-executable path reads as "not there" rather than throwing.
+*/
+function isExecutableFile(path) {
+	try {
+		if (!statSync(path).isFile()) return false;
+		accessSync(path, constants.X_OK);
+		return true;
+	} catch {
+		return false;
+	}
+}
 /**
 * Resolve the effective runtime directory the way sidecar/daemon.py
 * `default_runtime_dir()` does: explicit config wins, then the
@@ -5630,12 +5767,26 @@ function describeUnifiedSession(session) {
 function apply(ctx, config) {
 	const runtimeDir = resolveRuntimeDir(config.sidecar.runtimeDir, process.env);
 	const socketPath = join(runtimeDir, SOCKET_NAME);
-	const command = config.sidecar.command;
+	const resolution = resolveSidecarCommand(config.sidecar.command, {
+		isExecutable: isExecutableFile,
+		env: process.env,
+		homedir: homedir(),
+		platform: process.platform
+	});
+	const command = resolution.command;
 	/** Explicit redirect only when configured; the ambient env already flows. */
 	const childEnv = config.sidecar.runtimeDir.trim() !== "" ? { [RUNTIME_ENV]: runtimeDir } : void 0;
 	const log = (level, msg, meta) => {
 		ctx.logger[level](meta === void 0 ? `dsh-agents-sidecar: ${msg}` : `dsh-agents-sidecar: ${msg} ${JSON.stringify(meta)}`);
 	};
+	if (resolution.resolvedPath !== void 0) log("info", "resolved the sidecar executable from a fallback directory", {
+		configured: config.sidecar.command,
+		command
+	});
+	else if (resolution.searched.length > 0) log("warn", "sidecar executable not found; install it or set sidecar.command", {
+		configured: config.sidecar.command,
+		searched: resolution.searched
+	});
 	/** Clamped per-line forwarding of daemon output (design §4.c, S8-safe). */
 	const forwardLines = (stream, level) => {
 		if (stream === void 0) return;

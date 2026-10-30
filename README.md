@@ -1218,6 +1218,15 @@ Key configuration, summarized:
   both blank reuse the host default, and both nonblank select an explicit
   route. The Settings card reports the resolved route and blocks saving a
   partial pair.
+- `sidecar.command` (default `["agents-sidecar"]`) is the argv the plugin
+  spawns. A bare PATH name is searched on the host `PATH` first and then in
+  `~/.local/bin`, plus `/opt/homebrew/bin` and `/usr/local/bin` on macOS, so a
+  GUI host that inherits launchd's `PATH` still finds the CLI that
+  `install.sh` linked into `~/.local/bin`. A hit there is rewritten to its
+  absolute path and logged; a complete miss logs the directories it searched.
+  An explicit absolute path, or a multi-part argv such as
+  `["python3", "/path/to/agents-sidecar.pyz"]`, is used verbatim. The plugin
+  never installs the CLI itself.
 - `skill.provide` (default on) embeds the agents-sidecar skill through the dsh
   skill registry; a filesystem-installed skill of the same name automatically
   takes precedence.

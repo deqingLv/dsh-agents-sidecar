@@ -42,6 +42,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `install.sh` now installs releases published before this rename. Its asset
+  name check accepted only `agents-sidecar-<version>.pyz`, while every tag
+  published so far attaches `agent-sidecar-<version>.pyz`, so `--version
+  latest` could not install any released artifact. It now accepts either name,
+  prefers the current one when a tag publishes both, and still verifies
+  `SHA256SUMS` and the zipapp's embedded version.
+- The DSH plugin resolves a bare `sidecar.command` name past the host's
+  inherited `PATH`. After a PATH miss it now looks in `~/.local/bin`, plus
+  `/opt/homebrew/bin` and `/usr/local/bin` on macOS, rewrites a hit to its
+  absolute path, and logs the path it chose; a complete miss logs the
+  directories it searched. A GUI host inherits launchd's `PATH`, which usually
+  omits `~/.local/bin`, so the CLI that `install.sh` links there used to fail
+  at spawn and surface only as an offline board. Explicit absolute paths and
+  multi-part argv are still used verbatim.
 - The DSH plugin's danger notices are readable again instead of being red text
   on a red fill. They took their text from `--dsw-alias-state-error-primary`
   and their background from `--dsw-alias-state-error-secondary`, and the dark

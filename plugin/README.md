@@ -22,7 +22,7 @@
 
 - **dsh ≥ 0.1.1-rc.2**(`package.json` 的 `engines.dsh` / `dsh.engines.dsh` 均为 `>=0.1.1-rc.2`)。
 - peer 依赖 `@deepseek-ai/cordis@^4.0.1` 与 `@deepseek-ai/dsh-agent@^0.1.1-rc.2` 均为 optional,由 dsh profile 树提供,无需手工安装。
-- **agents-sidecar CLI(可选)**:daemon 托管(自动拉起)与 macOS LaunchAgent 检测需要本机可调用的 `agents-sidecar`(或经 `sidecar.command` 配置的任意调用形态,如 `["python3", "/path/to/agents-sidecar.pyz"]`)。插件**绝不代装** sidecar;安装方法见[主仓 README](../README.md#installation)。
+- **agents-sidecar CLI(可选)**:daemon 托管(自动拉起)与 macOS LaunchAgent 检测需要本机可调用的 `agents-sidecar`(或经 `sidecar.command` 配置的任意调用形态,如 `["python3", "/path/to/agents-sidecar.pyz"]`)。纯 PATH 名未命中宿主 `PATH` 时,插件会再搜 `~/.local/bin` 与 Homebrew/usr 前缀,因此继承 launchd `PATH` 的 GUI 宿主也能找到 `install.sh` 链接的 CLI。插件**绝不代装** sidecar;安装方法见[主仓 README](../README.md#installation)。
 - 不装 CLI 也能用:只要已有 daemon 在跑(仓库 checkout 手动拉起、LaunchAgent 等),插件经 Unix socket 探测后**只读领养**它,不掌握其生死。
 - Node/pnpm 仅开发本插件时需要;npm 包携带预构建产物,安装免构建。
 
@@ -153,7 +153,7 @@ resume,不得据此声称 DSH 注入整体不受支持。
 |---|---|---|---|
 | `daemon.policy` | `'adopt-or-host'` \| `'adopt-only'` \| `'off'` | `adopt-or-host` | daemon 托管策略:`adopt-or-host` 探测并领养既有 daemon,否则自行拉起;`adopt-only` 只领养绝不拉起;`off` 不管理生命周期(仍只读对账既有 daemon 的数据) |
 | `daemon.backoffLimit` | 自然数(≥1) | `5` | 托管失败熔断阈值:连续失败达到该次数后停止重启并进入 FAILED |
-| `sidecar.command` | `string[]` | `['agents-sidecar']` | sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 `["python3", "/path/to/agents-sidecar.pyz"]`);插件绝不代装 |
+| `sidecar.command` | `string[]` | `['agents-sidecar']` | sidecar 可执行命令(argv 前缀):PATH 名、绝对路径,或多段命令(如 `["python3", "/path/to/agents-sidecar.pyz"]`)。PATH 名先按宿主 `PATH` 查找,未命中再搜 `~/.local/bin`(macOS 另加 `/opt/homebrew/bin`、`/usr/local/bin`),命中即改写为绝对路径并记日志——GUI 宿主继承 launchd 的 `PATH`,通常不含 `~/.local/bin`;全部未命中时日志列出搜索过的目录。显式绝对路径与多段 argv 原样使用;插件绝不代装 |
 | `sidecar.runtimeDir` | `string` | `''` | 运行时目录:留空按 daemon 同款规则解析(`AGENTS_SIDECAR_RUNTIME_DIR` 环境变量,兼容旧名 `AGENT_SIDECAR_HOME`,否则 `~/.agents_sidecar`);非空时经环境变量传给受托管的 daemon |
 | `stream.reconcileActiveMs` | 自然数(≥100) | `2000` | 对账快照周期(有会话工作中,毫秒) |
 | `stream.reconcileIdleMs` | 自然数(≥100) | `10000` | 对账快照周期(空闲,毫秒) |

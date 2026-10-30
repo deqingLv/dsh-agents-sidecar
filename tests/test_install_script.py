@@ -74,12 +74,19 @@ class ReleaseFixture:
         self.write_release()
         self._write_fake_curl()
 
-    @property
-    def artifact_url(self):
+    def url_for(self, name):
         return (
             "https://github.com/shendeguize/AgentSideCar/releases/download/"
-            "{}/{}".format(TAG, ARTIFACT_NAME)
+            "{}/{}".format(TAG, name)
         )
+
+    @property
+    def artifact_url(self):
+        return self.url_for(ARTIFACT_NAME)
+
+    @property
+    def legacy_artifact_name(self):
+        return "agent-sidecar-{}.pyz".format(VERSION)
 
     @property
     def checksums_url(self):
@@ -88,24 +95,30 @@ class ReleaseFixture:
             "{}/SHA256SUMS".format(TAG)
         )
 
-    def write_release(self, *, checksum=None, assets=None):
+    def write_release(self, *, checksum=None, assets=None, names=None):
+        if names is None:
+            names = (ARTIFACT_NAME,)
         payload = make_zipapp(VERSION)
         self.artifact.write_bytes(payload)
+        for name in names:
+            self.root.joinpath(name).write_bytes(payload)
         digest = hashlib.sha256(payload).hexdigest() if checksum is None else checksum
         self.checksums.write_text(
-            "{}  {}\n".format(digest, ARTIFACT_NAME),
+            "".join("{}  {}\n".format(digest, name) for name in names),
             encoding="ascii",
         )
         if assets is None:
             assets = [
                 {
-                    "name": ARTIFACT_NAME,
-                    "browser_download_url": self.artifact_url,
-                },
+                    "name": name,
+                    "browser_download_url": self.url_for(name),
+                }
+                for name in names
+            ] + [
                 {
                     "name": "SHA256SUMS",
                     "browser_download_url": self.checksums_url,
-                },
+                }
             ]
         self.metadata.write_text(
             json.dumps(
@@ -350,6 +363,45 @@ raise SystemExit(result.returncode)
                 self.fixture.checksums_url,
             ],
             requests,
+        )
+
+    def test_legacy_asset_name_still_installs_already_published_tags(self):
+        legacy_name = self.fixture.legacy_artifact_name
+        self.fixture.write_release(names=(legacy_name,))
+
+        result = self.run_installer("--version", TAG, "--prefix", self.prefix)
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        target = self.target()
+        self.assertEqual(
+            self.fixture.root.joinpath(legacy_name).read_bytes(),
+            target.read_bytes(),
+        )
+        self.assertEqual(
+            [
+                "https://api.github.com/repos/shendeguize/AgentSideCar/releases/tags/"
+                + TAG,
+                self.fixture.url_for(legacy_name),
+                self.fixture.checksums_url,
+            ],
+            self.fixture.log.read_text(encoding="utf-8").splitlines(),
+        )
+
+    def test_current_asset_name_wins_when_a_tag_publishes_both_names(self):
+        legacy_name = self.fixture.legacy_artifact_name
+        self.fixture.write_release(names=(ARTIFACT_NAME, legacy_name))
+
+        result = self.run_installer("--prefix", self.prefix)
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        # Only the current-name artifact is fetched; the legacy alias is not.
+        self.assertEqual(
+            [
+                "https://api.github.com/repos/shendeguize/AgentSideCar/releases/latest",
+                self.fixture.artifact_url,
+                self.fixture.checksums_url,
+            ],
+            self.fixture.log.read_text(encoding="utf-8").splitlines(),
         )
 
     def test_checksum_mismatch_leaves_existing_install_untouched(self):
